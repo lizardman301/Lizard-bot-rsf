@@ -20,12 +20,10 @@ async def on_ready():
     print('Logged in as {0.user}'.format(client))
     print('-------------------------------')
 
-    #remind people about rr
-
 #variables that we use
 currentRound = 0
 
-#restore previous data stored in a pickle file
+#restore previous data stored in a pickle file on startup
 with open('data.pkl', 'rb') as f:
     currentRound = pickle.load(f)
 
