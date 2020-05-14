@@ -113,11 +113,7 @@ async def on_message(message):
 
     #General use commands
     if command == "ping-lizard":
-        print(message.author.id)
-        if message.author.id == 198958659986784256:
-            msg = "Fuck you, Lizardman"
-        else:
-            msg = "Pong!"
+        msg = "Pong!"
 
         await message.channel.send(msg);
 
@@ -137,4 +133,4 @@ async def on_message(message):
 
 
 
-client.run('MzE3Mjk0NDE0Mzc0NTAyNDAw.XbOmWw.mnyrpCOCAgykBhGyhmlEivttsVo')
+client.run('Your-cool-key-here')
