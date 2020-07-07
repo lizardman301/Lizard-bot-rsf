@@ -23,14 +23,14 @@ CREATE TABLE IF NOT EXISTS `channels` (
 CREATE TABLE IF NOT EXISTS `settings` (
   `setting_id` bigint(20) unsigned zerofill NOT NULL AUTO_INCREMENT,
   `chan_id` bigint(20) unsigned NOT NULL,
-  `round` int(4) unsigned NOT NULL DEFAULT 0,
-  `round_msg` varchar(2000) DEFAULT "Winner's Round {0} can play! Losers can play till top 8 losers side. If you have a bye Round {0}, Please Wait!",
+  `round` varchar(20) DEFAULT "",
+  `round_msg` varchar(1983) DEFAULT "Winner's Round {0} can play! Losers can play till top 8 losers side. If you have a bye Round {0}, Please Wait!",
   `status` varchar(2000) DEFAULT "Winner's side Round {0} is allowed to play! Losers can play till top 8.",
   `stream` varchar(2000) DEFAULT 'There are no streams set for this channel',
   PRIMARY KEY (`setting_id`),
   KEY `chan_id` (`chan_id`),
   CONSTRAINT `chan_id_fk` FOREIGN KEY (`chan_id`) REFERENCES `channels` (`chan_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

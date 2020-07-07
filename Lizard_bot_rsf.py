@@ -52,7 +52,7 @@ def settings_exist(chan_id):
 
     return 1 # Return truthy value for checking
 
-# Read a setting from database for a given chanel
+# Read a setting from database for a given channel
 def read(setting, chan_id):
     conn = make_conn() # Make DB Connection
 
@@ -86,9 +86,6 @@ async def on_message(message):
         msg ="Oops, I'm broken"
         print(msg)
 
-    # Get the current round
-    currentRound = read('round', chan_id)
-
     if message.author == client.user:
         return
 
@@ -113,21 +110,19 @@ async def on_message(message):
             print("Round count reset.")
             
             # Set current round to 0
-            save('round', 0, chan_id)
+            save('round', "", chan_id)
 
         #set what round winners can play
         elif command == "round":
             if len(params) < 1:
                 msg = "Usage: !round <round number>"
             else:
-                currentRound = params[0]
-
                 # Display the round message
-                msg = makebold(read('round_msg', chan_id).format(currentRound))
-                print("Round is now {0}".format(currentRound))
+                msg = makebold(read('round_msg', chan_id).format(params[0]))
+                print("Round is now {0}".format(params[0]))
                 
                 # Save round
-                save('round', currentRound, chan_id)
+                save('round', params[0], chan_id)
 
         #annoy people to refresh brackets
         elif command == "refresh":
@@ -178,12 +173,15 @@ async def on_message(message):
 
     #allows players to see what round it was
     elif command == "status":
-        if currentRound == 0:
-            msg = makebold("Tournament has not begun. Please wait for the TOs to start Round 1!")
-        else:
+        # Get the current round
+        currentRound = read('round', chan_id)
+
+        if currentRound:
             # Read the status message for a channel and make it bold
             # Currently the message must have {0} so it can fill in the current round
             msg = makebold(read(command, chan_id).format(currentRound))
+        else:
+            msg = makebold("Tournament has not begun. Please wait for the TOs to start Round 1!")
 
     elif command == "stream":
         # Read the stream message for a channel
