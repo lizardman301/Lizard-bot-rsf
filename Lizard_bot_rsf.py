@@ -164,15 +164,15 @@ def round(currentRound, chan_id):
 
 @client.event
 async def on_message(message):
-    msg = "Oops, Bad Command" # Add default message to stop errors
-    chan_id = message.channel.id # Channel ID to make it easier to grab
+    chan = message.channel # Makes it easier to send 
+    chan_id = chan.id # Channel ID to make it easier to grab
     guild_id = message.guild.id
 
     # Check if the channel is in the DB
     # Add it if it isn't
     if not settings_exist(guild_id, chan_id):
-        msg ="Oops, I'm broken"
-        print(msg)
+        await chan.send("Oops, I'm broken")
+        print("Oops, I'm broken")
 
     prefix = read_guild('prefix', guild_id) # Get prefix for the channel
 
@@ -185,7 +185,7 @@ async def on_message(message):
         #check for "can we play" in a message
         results = p.fullmatch(message.content.lower())
         if results:
-            await message.channel.send(regexs[regex])
+            await chan.send(regexs[regex])
 
     if not message.content.startswith(prefix):
         return
@@ -217,9 +217,9 @@ async def on_message(message):
 
     # Administrative commands
     if bot_role in [y.id for y in message.author.roles]:
-        #reset round c\to 0
+        #reset round to 0
         if command == "reset":
-            msg = "Resetting round count..."
+            await chan.send("Resetting round count...")
             print("Round count reset.")
 
             # Save current round to an empty string
@@ -228,18 +228,18 @@ async def on_message(message):
         #set what round winners can play
         elif command == "round":
             if len(params) < 1:
-                msg = "Usage: !round <round number>"
+                await chan.send("Usage: !round <round number>")
             else:
                 # Save round
                 save('round', " ".join(params), chan_id)
                 print("Round is now {0}".format(" ".join(params)))
 
                 # Display the round message
-                msg = round(read('round', chan_id), chan_id)
+                await chan.send(round(read('round', chan_id), chan_id))
 
         #annoy people to refresh brackets
         elif command == "refresh":
-            msg = makebold("REFRESH YOUR BRACKETS\nREFRESH YOUR BRACKETS\nREFRESH YOUR BRACKETS\nREFRESH YOUR BRACKETS")
+            await chan.send(makebold("REFRESH YOUR BRACKETS\nREFRESH YOUR BRACKETS\nREFRESH YOUR BRACKETS\nREFRESH YOUR BRACKETS"))
 
         #remind message author after a certain period of time (minutes)
         elif command == "remind":
@@ -270,6 +270,7 @@ async def on_message(message):
             else:
                 msg = makebold("{0} its been {1} minutes, don't forget \"{2}\"!").format(user.mention,time,reason)
 
+            await chan.send(msg)
             print("{0} has been reminded after {1} minutes.".format(user,time))
 
         # Allows the TOs to edit certain messaging
@@ -282,24 +283,25 @@ async def on_message(message):
             
             if params[0] in ['bot_role','prefix']:
                 save_guild(params[0], new_msg, guild_id) # Save the new message to the proper setting in a given channel
+                new_msg = ' '.join(ping_be_gone(params[1:])
             else:
                 save(params[0], new_msg, chan_id) # Save the new message to the proper setting in a given channel
             
-            msg = "The new {0} is: {1}".format(params[0],makebold(new_msg)) # Print the new message for a given setting
+            await chan.send("The new {0} is: {1}".format(params[0],makebold(new_msg))) # Print the new message for a given setting
 
     #General use commands
     if command == "lizardman":
         print("Pinged by {0}".format(message.author))
-        msg = "Fuck you, Lizardman"
+        await chan.send("Fuck you, Lizardman")
 
     #allows players to see what round it was
     elif command == "status":
         # Get the current round
-        msg = round(read('round', chan_id), chan_id)
+        await chan.send(round(read('round', chan_id), chan_id))
 
     elif command == "stream":
         # Read the stream message for a channel
-        msg = read(command, chan_id)
+        await chan.send(read(command, chan_id))
 
     # Ping the TO for the current channel
     elif command == "tos":
@@ -313,14 +315,10 @@ async def on_message(message):
             msg = tos
         else:
             msg = "Oops, there is no TO associated with this channel. Please try somewhere else."
-
+        await chan.send(msg)
     #lists all commands
     elif command == "help-lizard":
-        msg = "Player commands ```\n{0}current-round``` \nTO commands ```{0}ping-lizard\n{0}refresh\n{0}remind <time> [reason] \n{0}reset \n{0}round <#> ```"
-
-    # Send message to chat
-    # Also removed from the end of every command block to cut down on repeated lines
-    await message.channel.send(msg)
+        await chan.send("Player commands ```\n{0}current-round``` \nTO commands ```{0}ping-lizard\n{0}refresh\n{0}remind <time> [reason] \n{0}reset \n{0}round <#> ```")
 
 # Have the bot listen for commands
 client.run(bot)
