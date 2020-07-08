@@ -10,8 +10,6 @@ from secret import sql_host,sql_port,sql_user,sql_pw,sql_db,bot # Store secret i
 
 client = discord.Client()
 
-prefix = '\\' # My test server has a carl-bot with !/? prefixes
-
 def makebold(s):
     return "**" + s + "**"
 
@@ -124,32 +122,30 @@ def round(currentRound, chan_id):
 
 @client.event
 async def on_message(message):
-    if message.author == client.user:
-        return
-
-    chan_id = message.channel.id # Channel ID to make it easier to grab
-    p = re.compile('[Cc]an we play.*')
-    #check for "can we play" in a message
-    results = p.fullmatch(message.content.lower())
-    if results:
-        await message.channel.send(round(read('round', chan_id), chan_id))
-
-    p = re.compile('[Cc]hecking in.*')
-    #check for "can we play" in a message
-    results = p.fullmatch(message.content.lower())
-    if results:
-        await message.channel.send(makebold('MAKE SURE TO CHECK IN ON CHALLONGE'))
-
-    if not message.content.startswith(prefix):
-        return
-
     msg = "Oops, Bad Command" # Add default message to stop errors
+    chan_id = message.channel.id # Channel ID to make it easier to grab
 
     # Check if the channel is in the DB
     # Add it if it isn't
     if not settings_exist(chan_id):
         msg ="Oops, I'm broken"
         print(msg)
+
+    prefix = read('prefix', chan_id) # Get prefix for the channel
+
+    if message.author == client.user:
+        return
+
+    regexs = {'can we play':round(read('round', chan_id), chan_id), 'checking in':makebold('MAKE SURE TO CHECK IN ON CHALLONGE')}
+    for regex in regexs:
+        p = re.compile(regex+'.*')
+        #check for "can we play" in a message
+        results = p.fullmatch(message.content.lower())
+        if results:
+            await message.channel.send(regexs[regex])
+
+    if not message.content.startswith(prefix):
+        return
 
     # Double slice to lower to save lines
     # Help people accidentally typing caps
