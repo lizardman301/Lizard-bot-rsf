@@ -2,6 +2,7 @@ import discord
 import asyncio
 from threading import Timer
 from discord.ext import commands
+import re
 # Cleaned up what imports I knew
 
 import pymysql.cursors # Use for DB connections
@@ -13,6 +14,40 @@ prefix = '\\' # My test server has a carl-bot with !/? prefixes
 
 def makebold(s):
     return "**" + s + "**"
+
+def ping_be_gone(list, guild):
+    #for the list passed, it will return a list with any pings replaced with text of the ping instead
+    #needs guild passed too so that it can return the equivalent nick/role names
+    user_reg = '<@!\d*>'
+    role_reg = '<@&\d*>'
+
+    for i, x in enumerate(list):
+        u_pings = re.fullmatch(user_reg,x)
+
+        #match found for user pings
+        if u_pings:
+            #grab id and replace
+            m = re.search('\d+',x)
+            id = m.group(0)
+            user = guild.get_member(int(id))
+            #replace with nickname
+            list[i] = user.display_name
+            continue
+       
+        r_pings = re.fullmatch(role_reg,x)
+
+        #match found for role pings
+        if r_pings:
+            #grab id and replace
+            m = re.search('\d+',x)
+            id = m.group(0)
+            role = guild.get_role(int(id))
+            #replace with name of role
+            list[i] = role.name
+            continue
+
+    #return new list with now pings
+    return list
 
 @client.event
 async def on_ready():
@@ -65,6 +100,7 @@ def read(setting, chan_id):
     finally:
         conn.close() # Close the connection
 
+# Save a setting for a given channel to the database
 def save(setting, data, chan_id):
     conn = make_conn() # Make DB Connection
 
@@ -76,40 +112,78 @@ def save(setting, data, chan_id):
     finally:
         conn.close() # Close the connection
 
+# Format the status message
+# This is because there was two spots that did this and copypasta was too much
+def round(currentRound, chan_id):
+    if currentRound:
+            # Read the status message for a channel and make it bold
+            # Currently the message must have {0} so it can fill in the current round
+            return makebold(read('status', chan_id).format(currentRound))
+    else:
+        return makebold("Tournament has not begun. Please wait for the TOs to start Round 1!")
+
 @client.event
 async def on_message(message):
-    chan_id = message.channel.id
-    
+    if message.author == client.user:
+        return
+
+    chan_id = message.channel.id # Channel ID to make it easier to grab
+    p = re.compile('[Cc]an we play.*')
+    #check for "can we play" in a message
+    results = p.fullmatch(message.content.lower())
+    if results:
+        await message.channel.send(round(read('round', chan_id), chan_id))
+
+    p = re.compile('[Cc]hecking in.*')
+    #check for "can we play" in a message
+    results = p.fullmatch(message.content.lower())
+    if results:
+        await message.channel.send(makebold('MAKE SURE TO CHECK IN ON CHALLONGE'))
+
+    if not message.content.startswith(prefix):
+        return
+
+    msg = "Oops, Bad Command" # Add default message to stop errors
+
     # Check if the channel is in the DB
     # Add it if it isn't
     if not settings_exist(chan_id):
         msg ="Oops, I'm broken"
         print(msg)
 
-    if message.author == client.user:
-        return
-
-    if not message.content.startswith(prefix):
-        return
-
-    # Double slice to save a line
-    command = message.content.split(' ')[0][1:]
+    # Double slice to lower to save lines
+    # Help people accidentally typing caps
+    command = message.content.split(' ')[0][1:].lower() 
     
     if len(message.content.split(' ')) > 1:
         params = message.content.split(' ')[1:]
+        
+        # If the command isn't edit
+        # Strip the @
+        if command not in 'edit':
+            params = ping_be_gone(params,message.guild)
     else:
-        #create empty list
-        params = [];
+        # Empty list if no parameters
+        params = []
 
-    #TO only commands
-    if "TOs" in [y.name for y in message.author.roles]:
-        #reset round count to 0
+    bot_role = read('bot_role', chan_id) # Grab the role id that should have access to the administrative commands
+
+    # If no bot_role specified (like a new channel)
+    # Set bot_role equal to @everyone
+    if not bot_role:
+        for role in message.author.roles:
+            if role.name == '@everyone':
+                bot_role = role.id
+                break
+
+    # Administrative commands
+    if bot_role in [y.id for y in message.author.roles]:
+        #reset round c\to 0
         if command == "reset":
             msg = "Resetting round count..."
-
             print("Round count reset.")
-            
-            # Set current round to 0
+
+            # Save current round to an empty string
             save('round', "", chan_id)
 
         #set what round winners can play
@@ -117,18 +191,18 @@ async def on_message(message):
             if len(params) < 1:
                 msg = "Usage: !round <round number>"
             else:
-                # Display the round message
-                msg = makebold(read('round_msg', chan_id).format(params[0]))
-                print("Round is now {0}".format(params[0]))
-                
                 # Save round
-                save('round', params[0], chan_id)
+                save('round', " ".join(params), chan_id)
+                print("Round is now {0}".format(" ".join(params)))
+
+                # Display the round message
+                msg = round(read('round', chan_id), chan_id)
 
         #annoy people to refresh brackets
         elif command == "refresh":
             msg = makebold("REFRESH YOUR BRACKETS\nREFRESH YOUR BRACKETS\nREFRESH YOUR BRACKETS\nREFRESH YOUR BRACKETS")
 
-        #remind message author after a ceratin period of time (minutes)
+        #remind message author after a certain period of time (minutes)
         elif command == "remind":
             #time is in minutes
             msg = ""
@@ -158,34 +232,40 @@ async def on_message(message):
 
         # Allows the TOs to edit certain messaging
         elif command == "edit":
-            # Edit params[0] to match the DB column name for the round message
-            # Where possible match command names to the DB column names
-            if params[0] == 'round':
-                params[0]= 'round_msg'
+            # Grab just the BigInt part of bot_role
+            if params[0] == 'bot_role':
+                params[1] = str(message.role_mentions[0].id)
 
             new_msg = ' '.join(params[1:]) # Rejoin the rest of the parameters with spaces
             save(params[0], new_msg, chan_id) # Save the new message to the proper setting in a given channel
-            msg = "The new {0} message is: {1}".format(params[0],makebold(new_msg)) # Print the new message for a given setting
+            msg = "The new {0} is: {1}".format(params[0],makebold(new_msg)) # Print the new message for a given setting
 
     #General use commands
-    if command == "ping-lizard":
-        msg = "Pong!"
+    if command == "lizardman":
+        print("Pinged by {0}".format(message.author))
+        msg = "Fuck you, Lizardman"
 
     #allows players to see what round it was
     elif command == "status":
         # Get the current round
-        currentRound = read('round', chan_id)
-
-        if currentRound:
-            # Read the status message for a channel and make it bold
-            # Currently the message must have {0} so it can fill in the current round
-            msg = makebold(read(command, chan_id).format(currentRound))
-        else:
-            msg = makebold("Tournament has not begun. Please wait for the TOs to start Round 1!")
+        msg = round(read('round', chan_id), chan_id)
 
     elif command == "stream":
         # Read the stream message for a channel
         msg = read(command, chan_id)
+
+    # Ping the TO for the current channel
+    elif command == "tos":
+        # Read users/roles to ping
+        tos = read(command, chan_id)
+
+        # If read() return a truthy value
+        # Set message equal to value
+        # Else print default message
+        if tos:
+            msg = tos
+        else:
+            msg = "Oops, there is no TO associated with this channel. Please try somewhere else."
 
     #lists all commands
     elif command == "help-lizard":
