@@ -59,12 +59,19 @@ def make_conn():
 # Check if the channel is in the table
 # If not, add it the channels and settings tables
 # chan_id int channel ID
-def settings_exist(chan_id):
+def settings_exist(guild_id, chan_id):
     conn = make_conn() # Make DB connection
-    channels = [] # Store a list of our channels
+    channels = [] # Store a list of all channels
+    guilds = [] # Store a list of all guilds
 
     try:
         with conn.cursor() as cursor:
+            # Select all channel IDs in the DB
+            sql = "SELECT guild_id FROM guilds" 
+            cursor.execute(sql)
+            for row in cursor:
+                guilds.append(row['guild_id']) # Add IDs to the list
+
             # Select all channel IDs in the DB
             sql = "SELECT chan_id FROM channels" 
             cursor.execute(sql)
@@ -74,16 +81,51 @@ def settings_exist(chan_id):
             # If the ID is not in the list
             # Add the ID to the channels table
             # Add the ID to the settings table (This will initialize the default values)
+            if guild_id not in guilds:
+                sql = "INSERT INTO guilds (guild_id) VALUES (%s)"
+                cursor.execute(sql, (guild_id,))
+                
+                sql = "INSERT INTO guild_settings (guild_id) VALUES (%s)"
+                cursor.execute(sql, (guild_id,))
+
+            # If the ID is not in the list
+            # Add the ID to the channels table
+            # Add the ID to the settings table (This will initialize the default values)
             if chan_id not in channels:
                 sql = "INSERT INTO channels (chan_id) VALUES (%s)"
                 cursor.execute(sql, (chan_id,))
                 
-                sql = "INSERT INTO settings (chan_id) VALUES (%s)"
+                sql = "INSERT INTO channel_settings (chan_id) VALUES (%s)"
                 cursor.execute(sql, (chan_id,))
     finally:
         conn.close() # Close the connection
 
     return 1 # Return truthy value for checking
+
+# Read a setting from database for a given guild
+def read_guild(setting, guild_id):
+    conn = make_conn() # Make DB Connection
+
+    try:
+        with conn.cursor() as cursor:
+            # Select the desired setting from the DB for the given guild
+            sql = "SELECT " + setting + " FROM guild_settings WHERE guild_id = %s"
+            cursor.execute(sql, (guild_id))
+            return cursor.fetchone()[setting] # Return the value for the setting
+    finally:
+        conn.close() # Close the connection
+
+# Save a setting for a given guild to the database
+def save_guild(setting, data, guild_id):
+    conn = make_conn() # Make DB Connection
+
+    try:
+        with conn.cursor() as cursor:
+            # Update the desired setting in the DB for the given guild
+            sql = "UPDATE guild_settings SET " + setting + " = %s WHERE guild_id = %s"
+            cursor.execute(sql, (data, guild_id))
+    finally:
+        conn.close() # Close the connection
 
 # Read a setting from database for a given channel
 def read(setting, chan_id):
@@ -92,7 +134,7 @@ def read(setting, chan_id):
     try:
         with conn.cursor() as cursor:
             # Select the desired setting from the DB for the given channel
-            sql = "SELECT " + setting + " FROM settings WHERE chan_id = %s"
+            sql = "SELECT " + setting + " FROM channel_settings WHERE chan_id = %s"
             cursor.execute(sql, (chan_id))
             return cursor.fetchone()[setting] # Return the value for the setting
     finally:
@@ -105,7 +147,7 @@ def save(setting, data, chan_id):
     try:
         with conn.cursor() as cursor:
             # Update the desired setting in the DB for the given channel
-            sql = "UPDATE settings SET " + setting + " = %s WHERE chan_id = %s"
+            sql = "UPDATE channel_settings SET " + setting + " = %s WHERE chan_id = %s"
             cursor.execute(sql, (data, chan_id))
     finally:
         conn.close() # Close the connection
@@ -124,14 +166,15 @@ def round(currentRound, chan_id):
 async def on_message(message):
     msg = "Oops, Bad Command" # Add default message to stop errors
     chan_id = message.channel.id # Channel ID to make it easier to grab
+    guild_id = message.guild.id
 
     # Check if the channel is in the DB
     # Add it if it isn't
-    if not settings_exist(chan_id):
+    if not settings_exist(guild_id, chan_id):
         msg ="Oops, I'm broken"
         print(msg)
 
-    prefix = read('prefix', chan_id) # Get prefix for the channel
+    prefix = read_guild('prefix', guild_id) # Get prefix for the channel
 
     if message.author == client.user:
         return
@@ -162,7 +205,7 @@ async def on_message(message):
         # Empty list if no parameters
         params = []
 
-    bot_role = read('bot_role', chan_id) # Grab the role id that should have access to the administrative commands
+    bot_role = read_guild('bot_role', guild_id) # Grab the role id that should have access to the administrative commands
 
     # If no bot_role specified (like a new channel)
     # Set bot_role equal to @everyone
@@ -215,6 +258,9 @@ async def on_message(message):
             else:
                 msg = "OK! I will ping you in {0} minutes to remind you about \"{1}\"".format(time,reason)
 
+            # sends message back to confirm reminder
+            await message.channel.send(msg)
+
             print("Reminding {0} in {1} minutes for {2}...".format(user,time,reason))
 
             #wait message time
@@ -233,7 +279,12 @@ async def on_message(message):
                 params[1] = str(message.role_mentions[0].id)
 
             new_msg = ' '.join(params[1:]) # Rejoin the rest of the parameters with spaces
-            save(params[0], new_msg, chan_id) # Save the new message to the proper setting in a given channel
+            
+            if params[0] in ['bot_role','prefix']:
+                save_guild(params[0], new_msg, guild_id) # Save the new message to the proper setting in a given channel
+            else:
+                save(params[0], new_msg, chan_id) # Save the new message to the proper setting in a given channel
+            
             msg = "The new {0} is: {1}".format(params[0],makebold(new_msg)) # Print the new message for a given setting
 
     #General use commands
