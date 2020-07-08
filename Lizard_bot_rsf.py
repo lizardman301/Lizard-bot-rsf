@@ -215,9 +215,11 @@ async def on_message(message):
             else:
                 msg = "OK! I will ping you in {0} minutes to remind you about \"{1}\"".format(time,reason)
 
+            # sends message back to confirm reminder
+            await message.channel.send(msg)
             print("Reminding {0} in {1} minutes for {2}...".format(user,time,reason))
 
-            #wait message time
+            # wait message time
             await asyncio.sleep(60 * time)
             if len(reason) == 0:
                 msg = makebold("{0} its been {1} minutes, you have been reminded!".format(user.mention,time))
