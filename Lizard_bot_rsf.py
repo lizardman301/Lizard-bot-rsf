@@ -283,7 +283,7 @@ async def on_message(message):
             
             if params[0] in ['bot_role','prefix']:
                 save_guild(params[0], new_msg, guild_id) # Save the new message to the proper setting in a given channel
-                new_msg = ' '.join(ping_be_gone(params[1:]))
+                new_msg = ' '.join(ping_be_gone(params[1:],message.guild))
             else:
                 save(params[0], new_msg, chan_id) # Save the new message to the proper setting in a given channel
             
