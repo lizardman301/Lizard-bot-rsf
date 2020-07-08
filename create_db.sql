@@ -23,9 +23,8 @@ CREATE TABLE IF NOT EXISTS `channels` (
 CREATE TABLE IF NOT EXISTS `settings` (
   `setting_id` bigint(20) unsigned zerofill NOT NULL AUTO_INCREMENT,
   `chan_id` bigint(20) unsigned NOT NULL,
-  `round` varchar(20) DEFAULT "",
-  `round_msg` varchar(1983) DEFAULT "Winner's Round {0} can play! Losers can play till top 8 losers side. If you have a bye Round {0}, Please Wait!",
-  `status` varchar(2000) DEFAULT "Winner's side Round {0} is allowed to play! Losers can play till top 8.",
+  `round` varchar(50) DEFAULT "",
+  `status` varchar(1953) DEFAULT "Winner's Round {0} can play! Losers can play till top 8 losers side. If you have a bye Round {0}, Please Wait!",
   `stream` varchar(2000) DEFAULT 'There are no streams set for this channel',
   PRIMARY KEY (`setting_id`),
   KEY `chan_id` (`chan_id`),
