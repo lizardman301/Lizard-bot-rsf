@@ -217,8 +217,22 @@ async def on_message(message):
 
     # Administrative commands
     if bot_role in [y.id for y in message.author.roles]:
+        # Print the name of the bot role
+        if command == 'bot_role':
+            # The role id # means little to people
+            # Do some logic to check the author roles to find
+            # the bot role id and the name associated with it
+            for role in message.author.roles:
+                if role.id == bot_role:
+                    await chan.send("The bot_role is {0}".format(makebold(role.name)))
+                    break
+
+        # Print the prefix for lizardbot
+        elif command == 'prefix-lizard':
+            await chan.send("The prefix is {0}".format(makebold(read_guild('prefix', guild_id))))
+
         #reset round to 0
-        if command == "reset":
+        elif command == "reset":
             await chan.send("Resetting round count...")
             print("Round count reset.")
 
@@ -275,19 +289,26 @@ async def on_message(message):
 
         # Allows the TOs to edit certain messaging
         elif command == "edit":
+            editable_command = params[0].lower() # lower the command we are editing
+            
             # Grab just the BigInt part of bot_role
-            if params[0] == 'bot_role':
+            if editable_command == 'bot_role':
                 params[1] = str(message.role_mentions[0].id)
 
             new_msg = ' '.join(params[1:]) # Rejoin the rest of the parameters with spaces
-            
-            if params[0] in ['bot_role','prefix']:
-                save_guild(params[0], new_msg, guild_id) # Save the new message to the proper setting in a given channel
-                new_msg = ' '.join(ping_be_gone(params[1:]))
+
+            # If editable command is a guild command, save to guild settings
+            # Else save to channel_settings
+            if editable_command in ['bot_role','prefix']:
+                save_guild(editable_command, new_msg, guild_id) # Save the new message to the proper setting in a given guild
             else:
-                save(params[0], new_msg, chan_id) # Save the new message to the proper setting in a given channel
-            
-            await chan.send("The new {0} is: {1}".format(params[0],makebold(new_msg))) # Print the new message for a given setting
+                save(editable_command, new_msg, chan_id) # Save the new message to the proper setting in a given channel
+
+            # Remove the bot pinging TOs on the confirmation message
+            if editable_command in ['tos']:
+                new_msg = ' '.join(ping_be_gone(params[1:], message.guild)) # Remove the bot pinging the TO
+
+            await chan.send("The new {0} is: {1}".format(makebold(editable_command), makebold(new_msg))) # Print the new message for a given setting
 
     #General use commands
     if command == "lizardman":
