@@ -339,7 +339,7 @@ async def on_message(message):
         await chan.send(msg)
     #lists all commands
     elif command == "help-lizard":
-        await chan.send("Player commands ```\n{0}current-round``` \nTO commands ```{0}ping-lizard\n{0}refresh\n{0}remind <time> [reason] \n{0}reset \n{0}round <#> ```")
+        await chan.send("For more information about the bot and its commands: https://github.com/lizardman301/Lizard-bot-rsf")
 
 # Have the bot listen for commands
 client.run(bot)
