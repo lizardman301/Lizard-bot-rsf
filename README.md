@@ -12,6 +12,9 @@ Immediately after the bot joins the server use the command `!edit bot_role <role
 
 These commands will only be available to be used by those with the role mentioned above.
 
+`!bot_role`
+Returns the role that allows access to the administrator commands.
+
 `!edit <setting> <value>`
 
 There are multiple settings that can be edited to allow customization.
@@ -37,6 +40,9 @@ There are multiple settings that can be edited to allow customization.
 	 * Recommended to make it ping each individual TO
 	 * Unique for each channel
 	 * Default value:
+
+`!prefixlizard`
+Prints the prefix currently in use for lizardbot.
 
 `!remind <time in minutes> [reason]`
 Allows the user to set a timed reminder. When used it will ping the user, with the reason for the reminder if specified, after the alloted time. Useful if you are have to handle multiple situations at once.
