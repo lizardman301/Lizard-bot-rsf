@@ -57,9 +57,8 @@ async def on_ready():
 def make_conn():
     return pymysql.connect(host=sql_host, port=sql_port, user=sql_user, password=sql_pw, db=sql_db, charset='utf8mb4', autocommit=True, cursorclass=pymysql.cursors.DictCursor)
 
-# Check if the channel is in the table
-# If not, add it the channels and settings tables
-# chan_id int channel ID
+# Check if the guild/channel is in the table
+# If not, add it the guilds, channels, and settings tables
 def settings_exist(guild_id, chan_id):
     conn = make_conn() # Make DB connection
 
@@ -288,7 +287,7 @@ async def on_message(message):
     #allows players to see what round it was
     elif command == "status":
         # Get the current round
-        await chan.send(round(read('channel', 'round', chan_id), chan_id))
+        await chan.send(round_msg(read('channel', 'round', chan_id), chan_id))
 
     elif command == "stream":
         # Read the stream message for a channel
