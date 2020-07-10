@@ -6,6 +6,7 @@ import re
 # Cleaned up what imports I knew
 
 import pymysql.cursors # Use for DB connections
+from random import random # Use to generate random numbers
 from secret import sql_host,sql_port,sql_user,sql_pw,sql_db,bot # Store secret information
 
 client = discord.Client()
@@ -61,109 +62,79 @@ def make_conn():
 # chan_id int channel ID
 def settings_exist(guild_id, chan_id):
     conn = make_conn() # Make DB connection
-    channels = [] # Store a list of all channels
-    guilds = [] # Store a list of all guilds
 
     try:
         with conn.cursor() as cursor:
-            # Select all channel IDs in the DB
-            sql = "SELECT guild_id FROM guilds" 
-            cursor.execute(sql)
-            for row in cursor:
-                guilds.append(row['guild_id']) # Add IDs to the list
+            for level in ['guild','channel']:
+                ids = [] # Store a list of all ids
+                id = guild_id if level == 'guild' else chan_id # Set variable id based on what level of setting
 
-            # Select all channel IDs in the DB
-            sql = "SELECT chan_id FROM channels" 
-            cursor.execute(sql)
-            for row in cursor:
-                channels.append(row['chan_id']) # Add IDs to the list
+                # Select all IDs in the DB for the given level
+                sql = "SELECT " + level + "_id FROM " + level + "s"
+                cursor.execute(sql)
+                for row in cursor:
+                    ids.append(row[level + '_id']) # Add IDs to the list
 
-            # If the ID is not in the list
-            # Add the ID to the channels table
-            # Add the ID to the settings table (This will initialize the default values)
-            if guild_id not in guilds:
-                sql = "INSERT INTO guilds (guild_id) VALUES (%s)"
-                cursor.execute(sql, (guild_id,))
-                
-                sql = "INSERT INTO guild_settings (guild_id) VALUES (%s)"
-                cursor.execute(sql, (guild_id,))
-
-            # If the ID is not in the list
-            # Add the ID to the channels table
-            # Add the ID to the settings table (This will initialize the default values)
-            if chan_id not in channels:
-                sql = "INSERT INTO channels (chan_id) VALUES (%s)"
-                cursor.execute(sql, (chan_id,))
-                
-                sql = "INSERT INTO channel_settings (chan_id) VALUES (%s)"
-                cursor.execute(sql, (chan_id,))
+                # If the ID is not in the list
+                # Add the ID to the guild/channel table
+                # Add the ID to the guild/channel_settings table (This will initialize the default values)
+                if id not in ids:
+                    sql = "INSERT INTO " + level + "s (" + level + "_id) VALUES (%s)"
+                    cursor.execute(sql, (id,))
+                    
+                    sql = "INSERT INTO " + level + "_settings (" + level + "_id) VALUES (%s)"
+                    cursor.execute(sql, (id,))
     finally:
         conn.close() # Close the connection
 
     return 1 # Return truthy value for checking
 
-# Read a setting from database for a given guild
-def read_guild(setting, guild_id):
+# Read a setting from database for a given guild/channel
+def read(level, setting, id):
     conn = make_conn() # Make DB Connection
 
     try:
         with conn.cursor() as cursor:
-            # Select the desired setting from the DB for the given guild
-            sql = "SELECT " + setting + " FROM guild_settings WHERE guild_id = %s"
-            cursor.execute(sql, (guild_id))
+            # Select the desired setting from the DB for the given guild/channel
+            sql = "SELECT " + setting + " FROM " + level + "_settings WHERE " + level + "_id = %s"
+            cursor.execute(sql, (id))
             return cursor.fetchone()[setting] # Return the value for the setting
     finally:
         conn.close() # Close the connection
 
-# Save a setting for a given guild to the database
-def save_guild(setting, data, guild_id):
+# Save a setting for a given guild/channel to the database
+def save(level, setting, data, id):
     conn = make_conn() # Make DB Connection
 
     try:
         with conn.cursor() as cursor:
-            # Update the desired setting in the DB for the given guild
-            sql = "UPDATE guild_settings SET " + setting + " = %s WHERE guild_id = %s"
-            cursor.execute(sql, (data, guild_id))
-    finally:
-        conn.close() # Close the connection
-
-# Read a setting from database for a given channel
-def read(setting, chan_id):
-    conn = make_conn() # Make DB Connection
-
-    try:
-        with conn.cursor() as cursor:
-            # Select the desired setting from the DB for the given channel
-            sql = "SELECT " + setting + " FROM channel_settings WHERE chan_id = %s"
-            cursor.execute(sql, (chan_id))
-            return cursor.fetchone()[setting] # Return the value for the setting
-    finally:
-        conn.close() # Close the connection
-
-# Save a setting for a given channel to the database
-def save(setting, data, chan_id):
-    conn = make_conn() # Make DB Connection
-
-    try:
-        with conn.cursor() as cursor:
-            # Update the desired setting in the DB for the given channel
-            sql = "UPDATE channel_settings SET " + setting + " = %s WHERE chan_id = %s"
-            cursor.execute(sql, (data, chan_id))
+            # Update the desired setting in the DB for the given guild/channel
+            sql = "UPDATE " + level + "_settings SET " + setting + " = %s WHERE " + level + "_id = %s"
+            cursor.execute(sql, (data, id))
     finally:
         conn.close() # Close the connection
 
 # Format the status message
 # This is because there was two spots that did this and copypasta was too much
-def round(currentRound, chan_id):
+def round_msg(currentRound, chan_id):
     if currentRound:
             # Read the status message for a channel and make it bold
             # Currently the message must have {0} so it can fill in the current round
-            return makebold(read('status', chan_id).format(currentRound))
+            return makebold(read('channel', 'status', chan_id).format(currentRound))
     else:
         return makebold("Tournament has not begun. Please wait for the TOs to start Round 1!")
 
+# Returns a coin flip
+def flip():
+    if (int(round(random()*10*2)) % 2) == 0:
+        return "Heads" # Return terminates the function so no need for an else block
+    return "Tails"
+
 @client.event
 async def on_message(message):
+    if message.author == client.user:
+        return
+
     chan = message.channel # Makes it easier to send 
     chan_id = chan.id # Channel ID to make it easier to grab
     guild_id = message.guild.id
@@ -174,12 +145,9 @@ async def on_message(message):
         await chan.send("Oops, I'm broken")
         print("Oops, I'm broken")
 
-    prefix = read_guild('prefix', guild_id) # Get prefix for the channel
+    prefix = read('guild', 'prefix', guild_id) # Get prefix for the channel
 
-    if message.author == client.user:
-        return
-
-    regexs = {'can we play':round(read('round', chan_id), chan_id), 'checking in':makebold('MAKE SURE TO CHECK IN ON CHALLONGE')}
+    regexs = {'can we play':round_msg(read('channel', 'round', chan_id), chan_id), 'checking in':makebold('MAKE SURE TO CHECK IN ON CHALLONGE')}
     for regex in regexs:
         p = re.compile(regex+'.*')
         #check for "can we play" in a message
@@ -192,11 +160,11 @@ async def on_message(message):
 
     # Double slice to lower to save lines
     # Help people accidentally typing caps
-    command = message.content.split(' ')[0][1:].lower() 
-    
+    command = message.content.split(' ')[0][1:].lower()
+
     if len(message.content.split(' ')) > 1:
         params = message.content.split(' ')[1:]
-        
+
         # If the command isn't edit
         # Strip the @
         if command not in 'edit':
@@ -205,7 +173,7 @@ async def on_message(message):
         # Empty list if no parameters
         params = []
 
-    bot_role = read_guild('bot_role', guild_id) # Grab the role id that should have access to the administrative commands
+    bot_role = read('guild', 'bot_role', guild_id) # Grab the role id that should have access to the administrative commands
 
     # If no bot_role specified (like a new channel)
     # Set bot_role equal to @everyone
@@ -229,7 +197,10 @@ async def on_message(message):
 
         # Print the prefix for lizardbot
         elif command == 'prefix-lizard':
-            await chan.send("The prefix is {0}".format(makebold(read_guild('prefix', guild_id))))
+            await chan.send("The prefix is {0}".format(makebold(read('guild', 'prefix', guild_id))))
+
+        elif command == 'coin-flip':
+            await chan.send("The coin landed on: {0}".format(flip()))
 
         #reset round to 0
         elif command == "reset":
@@ -237,7 +208,7 @@ async def on_message(message):
             print("Round count reset.")
 
             # Save current round to an empty string
-            save('round', "", chan_id)
+            save('channel', 'round', "", chan_id)
 
         #set what round winners can play
         elif command == "round":
@@ -245,11 +216,11 @@ async def on_message(message):
                 await chan.send("Usage: !round <round number>")
             else:
                 # Save round
-                save('round', " ".join(params), chan_id)
+                save('channel', 'round', " ".join(params), chan_id)
                 print("Round is now {0}".format(" ".join(params)))
 
                 # Display the round message
-                await chan.send(round(read('round', chan_id), chan_id))
+                await chan.send(round_msg(read('channel', 'round', chan_id), chan_id))
 
         #annoy people to refresh brackets
         elif command == "refresh":
@@ -274,7 +245,6 @@ async def on_message(message):
 
             # sends message back to confirm reminder
             await message.channel.send(msg)
-
             print("Reminding {0} in {1} minutes for {2}...".format(user,time,reason))
 
             # wait message time
@@ -300,9 +270,9 @@ async def on_message(message):
             # If editable command is a guild command, save to guild settings
             # Else save to channel_settings
             if editable_command in ['bot_role','prefix']:
-                save_guild(editable_command, new_msg, guild_id) # Save the new message to the proper setting in a given guild
+                save('guild', editable_command, new_msg, guild_id) # Save the new message to the proper setting in a given guild
             else:
-                save(editable_command, new_msg, chan_id) # Save the new message to the proper setting in a given channel
+                save('channel', editable_command, new_msg, chan_id) # Save the new message to the proper setting in a given channel
 
             # Remove the bot pinging TOs on the confirmation message
             if editable_command in ['tos']:
@@ -337,6 +307,7 @@ async def on_message(message):
         else:
             msg = "Oops, there is no TO associated with this channel. Please try somewhere else."
         await chan.send(msg)
+
     #lists all commands
     elif command == "help-lizard":
         await chan.send("For more information about the bot and its commands: https://github.com/lizardman301/Lizard-bot-rsf")
