@@ -288,16 +288,16 @@ async def on_message(message):
     #allows players to see what round it was
     elif command == "status":
         # Get the current round
-        await chan.send(round(read('round', chan_id), chan_id))
+        await chan.send(round(read('channel', 'round', chan_id), chan_id))
 
     elif command == "stream":
         # Read the stream message for a channel
-        await chan.send(read(command, chan_id))
+        await chan.send(read('channel', command, chan_id))
 
     # Ping the TO for the current channel
     elif command == "tos":
         # Read users/roles to ping
-        tos = read(command, chan_id)
+        tos = read('channel', command, chan_id)
 
         # If read() return a truthy value
         # Set message equal to value
