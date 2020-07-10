@@ -41,7 +41,7 @@ There are multiple settings that can be edited to allow customization.
 	 * Unique for each channel
 	 * Default value:
 
-`!prefixlizard`
+`!prefix-lizard`
 Prints the prefix currently in use for lizardbot.
 
 `!remind <time in minutes> [reason]`
