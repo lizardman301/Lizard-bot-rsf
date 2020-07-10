@@ -62,6 +62,9 @@ Commands everyone can use
 `!help-lizard`
 Links back to this page.
 
+`!pingtest`
+Explains how to run a ping test using https://testmyspeed.onl/ and a common server.
+
 `!status`
 Returns the current round number in a message that can be customized.  Will let users know if a tournament has not begun.
 
