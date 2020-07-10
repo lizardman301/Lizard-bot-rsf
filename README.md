@@ -15,6 +15,9 @@ These commands will only be available to be used by those with the role mentione
 `!bot_role`
 Returns the role that allows access to the administrator commands.
 
+`!coin-flip`
+A coin is flipped and the result is returned. Either heads or tails.
+
 `!edit <setting> <value>`
 
 There are multiple settings that can be edited to allow customization.
@@ -61,6 +64,9 @@ Commands everyone can use
 
 `!help-lizard`
 Links back to this page.
+
+`!pingtest`
+Explains how to run a ping test using https://testmyspeed.onl/ and a common server.
 
 `!status`
 Returns the current round number in a message that can be customized.  Will let users know if a tournament has not begun.

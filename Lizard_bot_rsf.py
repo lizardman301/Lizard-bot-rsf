@@ -282,7 +282,12 @@ async def on_message(message):
     #General use commands
     if command == "lizardman":
         print("Pinged by {0}".format(message.author))
-        await chan.send("Fuck you, Lizardman")
+        await chan.send("Fuck you, Lizardman") # - Joe Munday
+
+    elif command == "pingtest":
+        # Lets the user know how to conduct a pingtest if one is needed, due to lag ingame
+        msg = "To initiate a ping test, both players go to https://testmyspeed.onl/ and choose a common server between each players location. Send the results of both tests to the TO."
+        await chan.send(msg)
 
     #allows players to see what round it was
     elif command == "status":
