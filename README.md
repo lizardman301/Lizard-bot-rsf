@@ -15,6 +15,9 @@ These commands will only be available to be used by those with the role mentione
 `!bot_role`
 Returns the role that allows access to the administrator commands.
 
+`!coin-flip`
+A coin is flipped and the result is returned. Either heads or tails.
+
 `!edit <setting> <value>`
 
 There are multiple settings that can be edited to allow customization.
