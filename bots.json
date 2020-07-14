@@ -1,0 +1,20 @@
+{
+	"admin_commands": {
+		"botrole":"",
+		"coin-flip":"",
+		"edit":"",
+		"prefix-lizard":"",
+		"refresh":"",
+		"remind":"",
+		"reset":"",
+		"round":""
+	},
+	"common_commands": {
+		"help-lizard":"",
+		"lizardman":"",
+		"pingtest":"",
+		"status":"",
+		"stream":"",
+		"TOs":""
+	}
+}
