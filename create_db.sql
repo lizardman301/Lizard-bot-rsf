@@ -30,8 +30,8 @@ CREATE TABLE IF NOT EXISTS `guilds` (
 CREATE TABLE IF NOT EXISTS `guild_settings` (
   `setting_id` bigint(20) unsigned zerofill NOT NULL AUTO_INCREMENT,
   `guild_id` bigint(20) unsigned NOT NULL,
-  `prefix` varchar(1) NOT NULL DEFAULT '!',
-  `bot_role` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `prefix-lizard` varchar(1) NOT NULL DEFAULT '!',
+  `botrole` bigint(20) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`setting_id`),
   KEY `guild_id` (`guild_id`),
   CONSTRAINT `guild_id_fk` FOREIGN KEY (`guild_id`) REFERENCES `guilds` (`guild_id`)
