@@ -1,4 +1,4 @@
-from utilities import (register, bold, pings_b_gone, read_db, save_db, settings_exist)
+from utilities import (register, bold, pings_b_gone, is_channel, read_db, save_db, settings_exist)
 import asyncio
 import random
 
@@ -60,12 +60,17 @@ async def edit(command, msg, user, channel, *args, **kwargs):
     full_msg = kwargs['full_msg'] # Allows us to access the role_mentions
     command_channels = {} # Stores channels to iterate over
 
-    # Check for multi-channel changes
+    # Check for multi-channel changes at message start
     if full_msg.channel_mentions:
-        for chnl in full_msg.channel_mentions:
-            if 'text' in chnl.type:
-                command_channels.update({chnl.id: chnl.mention}) # Save channel for later
-                params.remove(chnl.mention) # Remove the channel from the params
+        for param in params:
+            if is_channel(param):
+                for chnl in full_msg.channel_mentions:
+                    if chnl.id == is_channel(param) and 'text' in chnl.type:
+                        command_channels.update({chnl.id: chnl.mention}) # Save channel for later
+            else:
+                break
+        for chnl in command_channels:
+            params.remove(command_channels[chnl]) # Remove the channel from the params
 
     editable_command = params[0].lower() # Lower the command we are editing
     params.remove(editable_command) # Remove the command from the params

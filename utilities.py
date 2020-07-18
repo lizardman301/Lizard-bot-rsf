@@ -2,7 +2,7 @@ import re
 import pymysql.cursors # Use for DB connections
 from secret import sql_host,sql_port,sql_user,sql_pw,sql_db # Store secret information
 
-_callbacks = {}
+_callbacks = {} # Yaksha
 
 # Yaksha
 def register(command):
@@ -24,6 +24,12 @@ def get_callbacks():
     registration into a class instead.
     '''
     return _callbacks
+
+def is_channel(channel):
+    reg = re.compile('<#\d*>')
+    if reg.fullmatch(channel):
+        return int(channel[2:][:-1])
+    return 0
 
 # Add Markdown for bold
 def bold(string):

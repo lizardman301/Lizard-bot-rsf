@@ -20,10 +20,7 @@ A coin is flipped and the result is returned. Either heads or tails.
 
 `!edit [channel(s)] <setting> <value>`
 
-If multiple channels are listed, the setting will be updated to the same value across all listed channels
-**Currently, this change prevents message with channel mentions, e.g. !edit status Winner's of Round {0} report to #Winners**
-**This is due to the fact that I use the *message.channel_mentions* to check for channel mentions and remove them from the whole message**
-
+If multiple channels are listed, the setting will be updated to the same value across all listed channels.
 There are multiple settings that can be edited to allow customization.
 
  * botrole
@@ -69,7 +66,7 @@ Commands everyone can use
 `!help-lizard`
 Links back to this page.
 
-`lizardman`
+`!lizardman`
 Ping! Pong!
 
 `!pingtest`
