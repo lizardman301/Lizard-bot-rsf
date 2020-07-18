@@ -6,7 +6,7 @@ Simple discord bot originally built for the r/streetfighter East Coast online we
 
 In order to get started, you need to invite Lizard-BOT to the discord server you wish to use to run tournaments.  [Invite link here.](https://discord.com/oauth2/authorize?client_id=317294414374502400&scope=bot&permissions=321600)
 
-Immediately after the bot joins the server use the command `!edit bot_role <role>` with the role of your choice to make it so that only those with that role can access the commands meant for the Tournament Organizers. From there, feel free to use all the commands listed below to adjust the bot to your needs.
+Immediately after the bot joins the server use the command `!edit botrole <role>` with the role of your choice to make it so that only those with that role can access the commands meant for the Tournament Organizers. From there, feel free to use all the commands listed below to adjust the bot to your needs.
 
 ## TO Commands
 
@@ -18,7 +18,11 @@ Returns the role that allows access to the administrator commands.
 `!coin-flip`
 A coin is flipped and the result is returned. Either heads or tails.
 
-`!edit <setting> <value>`
+`!edit [channel(s)] <setting> <value>`
+
+If multiple channels are listed, the setting will be updated to the same value across all listed channels
+**Currently, this change prevents message with channel mentions, e.g. !edit status Winner's of Round {0} report to #Winners**
+**This is due to the fact that I use the *message.channel_mentions* to check for channel mentions and remove them from the whole message**
 
 There are multiple settings that can be edited to allow customization.
 

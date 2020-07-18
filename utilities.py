@@ -29,16 +29,19 @@ def get_callbacks():
 def bold(string):
     return "**" + string + "**"
 
-def pings_b_gone(list):
-    #for the list passed, it will return a list with any pings replaced with text of the ping instead
-    reg = re.compile('<@(!|&)\d*>')
+# Simplify removing pings more
+def pings_b_gone(mentions):
+    mention_list = {} # Empty dict to store values in
 
-    for i, x in enumerate(list):
-        if reg.fullmatch(x):
-            list [i] = x[3:][:-1]
+    # For each mention, get the name and the mention value
+    for mention in mentions:
+        # Check for nickname
+        if mention.display_name:
+            mention_list.update({mention.display_name: mention.mention})
+            continue
+        mention_list.update({mention.name: mention.mention})
 
-    #return new list with now pings
-    return list
+    return mention_list
 
 # Create a connection to the database
 def make_conn():
@@ -70,6 +73,8 @@ def settings_exist(guild_id, chan_id):
                     
                     sql = "INSERT INTO " + level + "_settings (" + level + "_id) VALUES (%s)"
                     cursor.execute(sql, (id,))
+    except Exception:
+        return 0 # Falsy value to fail
     finally:
         conn.close() # Close the connection
 

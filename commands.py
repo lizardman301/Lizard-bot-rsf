@@ -1,4 +1,4 @@
-from utilities import (pings_b_gone, bold, read_db, save_db, register, get_callbacks)
+from utilities import (register, bold, pings_b_gone, read_db, save_db, settings_exist)
 import asyncio
 import random
 
@@ -58,34 +58,50 @@ async def coin_flip(command, msg, user, channel, *args, **kwargs):
 async def edit(command, msg, user, channel, *args, **kwargs):
     params = msg.split(' ')
     full_msg = kwargs['full_msg'] # Allows us to access the role_mentions
+    command_channels = {} # Stores channels to iterate over
 
-    editable_command = params[0].lower() # lower the command we are editing
-    params.remove(editable_command)
+    # Check for multi-channel changes
+    if full_msg.channel_mentions:
+        for chnl in full_msg.channel_mentions:
+            if 'text' in chnl.type:
+                command_channels.update({chnl.id: chnl.mention}) # Save channel for later
+                params.remove(chnl.mention) # Remove the channel from the params
+
+    editable_command = params[0].lower() # Lower the command we are editing
+    params.remove(editable_command) # Remove the command from the params
+
+    # Rejoin the rest of the parameters with spaces
+    db_message = ' '.join(params) # The message we send to the Database
+    channel_message = ' '.join(params) # The message that gets sent
 
     # Grab just the BigInt part of bot_role
     if editable_command in ['botrole']:
-        params[0] = str(full_msg.role_mentions[0].id)
         # Allow @everyone to be a botrole
         if '@everyone' in params:
-            params[0] = kwargs['guild'].default_role.id
-
-    new_msg = ' '.join(params) # Rejoin the rest of the parameters with spaces
-
-    # If editable command is a guild command, save to guild settings
-    # Else save to channel_settings
-    if editable_command in ['botrole','prefix-lizard']:
-        save_db('guild', editable_command, new_msg, kwargs['guild']) # Save the new message to the proper setting in a given guild
-    else:
-        save_db('channel', editable_command, new_msg, channel.id) # Save the new message to the proper setting in a given channel
-
+            db_message = str(full_msg.guild.default_role.id)
+        else:
+            db_message = str(full_msg.role_mentions[0].id)
     # Remove the bot pinging TOs on the confirmation message
-    if editable_command in ['tos']:
-        mentions = []
-        for mention in full_msg.mentions:
-            mentions.append(mention.name) # Remove the bot pinging the TO
-        new_msg = ' '.join(mentions)
+    elif editable_command in ['tos']:
+        mentions = pings_b_gone(full_msg.mentions)
+        db_message = ' '.join(mentions.values()) # Put mention values into the database
+        channel_message = ' '.join(mentions.keys()) # Send usernames back to the channel
 
-    return "The new {0} is: {1}".format(bold(editable_command), bold(new_msg)) # Print the new message for a given setting
+    # Check for guild settings, channel settings, or multi channel settings
+    if editable_command in ['botrole','prefix-lizard']:
+        save_db('guild', editable_command, db_message, kwargs['guild']) # Save the new message to the proper setting in a given guild
+    elif command_channels:
+        # For each channel, save the setting
+        for chnl in command_channels: 
+            # We have to double check that the channel is in the DB
+            if settings_exist(kwargs['guild'], chnl):
+                save_db('channel', editable_command, db_message, chnl) # Save the new message to the proper setting in a given channel
+                await channel.send("The new {0} for {1} is: {2}".format(bold(editable_command), command_channels[chnl], bold(channel_message))) 
+        return "All listed channels had the {0} updated to {1}".format(bold(editable_command), bold(channel_message))
+    else:
+        save_db('channel', editable_command, db_message, channel.id) # Save the new message to the proper setting in a given channel
+
+    return "The new {0} is: {1}".format(bold(editable_command), bold(channel_message)) # Print the new message for a given setting
 
 @register('prefix-lizard')
 async def prefix(command, msg, user, channel, *args, **kwargs):
