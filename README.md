@@ -6,7 +6,7 @@ Simple discord bot originally built for the r/streetfighter East Coast online we
 
 In order to get started, you need to invite Lizard-BOT to the discord server you wish to use to run tournaments.  [Invite link here.](https://discord.com/oauth2/authorize?client_id=317294414374502400&scope=bot&permissions=321600)
 
-Immediately after the bot joins the server use the command `!edit bot_role <role>` with the role of your choice to make it so that only those with that role can access the commands meant for the Tournament Organizers. From there, feel free to use all the commands listed below to adjust the bot to your needs.
+Immediately after the bot joins the server use the command `!edit botrole <role>` with the role of your choice to make it so that only those with that role can access the commands meant for the Tournament Organizers. From there, feel free to use all the commands listed below to adjust the bot to your needs.
 
 ## TO Commands
 
@@ -18,10 +18,12 @@ Returns the role that allows access to the administrator commands.
 `!coin-flip`
 A coin is flipped and the result is returned. Either heads or tails.
 
-`!edit <setting> <value>`
+`!edit [channel(s)] <setting> <value>`
 
+If multiple channels are listed, the setting will be updated to the same value across all listed channels.
 There are multiple settings that can be edited to allow customization.
 
+##### Server-wide
  * botrole
 	 * This role determines what role is needed to access the TO Commands
 	 * New value must be a ping to the role desired
@@ -30,9 +32,16 @@ There are multiple settings that can be edited to allow customization.
 	 * Allows you to change the prefix for commands
 	 * Useful if you use multiple bots that may have similar commands and prefixes
 	 * Default Value: !
+
+##### Channel-Specific
+ * bracket
+	 * Allows you to add a link to a bracket for users to view
+	 * Unique for each channel
+	 * Default value: There is no bracket set for this channel
  * status
 	 * Allows you to change the flavor text of the !round and !status commands for individual channels
 	 * Text uses {0} as a marker for where the round count will be added
+	 * Unique for each channel
 	 * Default value: Winner's Round {0} can play! Losers can play till top 8 losers side. If you have a bye Round {0}, Please Wait!
  * stream
 	 * Allows you to add a stream link that users can ping to get a link of
@@ -65,7 +74,7 @@ Commands everyone can use
 `!help-lizard`
 Links back to this page.
 
-`lizardman`
+`!lizardman`
 Ping! Pong!
 
 `!pingtest`
