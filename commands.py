@@ -5,6 +5,10 @@ import random
 # All @register() are a product of reviewing Yaksha
 # See utilities.register for more information
 
+@register('bracket')
+async def bracket(command, msg, user, channel, *args, **kwargs):
+    return read_db('channel', command, channel.id)
+
 @register('help-lizard')
 async def help_lizard(command, msg, user, channel, *args, **kwargs):
     return "For more information about the bot and its commands: https://github.com/lizardman301/Lizard-bot-rsf"
@@ -39,6 +43,7 @@ async def TOs(command, msg, user, channel, *args, **kwargs):
         return tos
     return "Oops, there is no TO associated with this channel. Please try somewhere else."
 
+# Admin Commands
 
 @register('botrole')
 async def botrole(command, msg, user, channel, *args, **kwargs):

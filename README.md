@@ -23,6 +23,7 @@ A coin is flipped and the result is returned. Either heads or tails.
 If multiple channels are listed, the setting will be updated to the same value across all listed channels.
 There are multiple settings that can be edited to allow customization.
 
+##### Server-wide
  * botrole
 	 * This role determines what role is needed to access the TO Commands
 	 * New value must be a ping to the role desired
@@ -31,9 +32,16 @@ There are multiple settings that can be edited to allow customization.
 	 * Allows you to change the prefix for commands
 	 * Useful if you use multiple bots that may have similar commands and prefixes
 	 * Default Value: !
+
+##### Channel-Specific
+ * bracket
+	 * Allows you to add a link to a bracket for users to view
+	 * Unique for each channel
+	 * Default value: There is no bracket set for this channel
  * status
 	 * Allows you to change the flavor text of the !round and !status commands for individual channels
 	 * Text uses {0} as a marker for where the round count will be added
+	 * Unique for each channel
 	 * Default value: Winner's Round {0} can play! Losers can play till top 8 losers side. If you have a bye Round {0}, Please Wait!
  * stream
 	 * Allows you to add a stream link that users can ping to get a link of

@@ -10,6 +10,7 @@
 		"round":""
 	},
 	"common_commands": {
+		"bracket":"",
 		"help-lizard":"",
 		"lizardman":"",
 		"pingtest":"",
