@@ -106,7 +106,6 @@ async def edit(command, msg, user, channel, *args, **kwargs):
             # We have to double check that the channel is in the DB
             if settings_exist(kwargs['guild'], chnl):
                 save_db('channel', editable_command, db_message, chnl) # Save the new message to the proper setting in a given channel
-                await channel.send("The new {0} for {1} is: {2}".format(bold(editable_command), command_channels[chnl], bold(channel_message))) 
         return "All listed channels had the {0} updated to {1}".format(bold(editable_command), bold(channel_message))
     else:
         save_db('channel', editable_command, db_message, channel.id) # Save the new message to the proper setting in a given channel
