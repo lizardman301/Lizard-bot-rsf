@@ -39,7 +39,7 @@ async def on_message(message):
         user = message.author # The author
 
         # Check if the message begins with a command
-        if msg[1:].lower().startswith(command.lower()):
+        if msg.split(' ')[0][1:].lower() in command.lower():
             # Remove the command from the start
             msg = msg[len(command)+1:].strip()
             command = command.lower()
