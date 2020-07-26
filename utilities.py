@@ -1,5 +1,7 @@
-import re
 import pymysql.cursors # Use for DB connections
+import re # Process strings
+
+# Local imports
 from secret import sql_host,sql_port,sql_user,sql_pw,sql_db # Store secret information
 
 _callbacks = {} # Yaksha
@@ -25,15 +27,27 @@ def get_callbacks():
     '''
     return _callbacks
 
-def is_channel(channel):
-    reg = re.compile('<#\d*>')
-    if reg.fullmatch(channel):
-        return int(channel[2:][:-1])
-    return 0
-
 # Add Markdown for bold
 def bold(string):
     return "**" + string + "**"
+
+# Get all users in a Discord
+def get_users(msg):
+    users = msg.guild.members
+    userDict = {}
+
+    # Get their distinct name and their nickname
+    for user in users:
+        userDict.update({user.name + '#' + str(user.discriminator): user.display_name.lower()})
+
+    return userDict
+
+# Perform regex to find out if a string is a Discord channel
+def is_channel(channel):
+    reg = re.compile('<#\d*>')
+    if reg.fullmatch(channel):
+        return int(channel[2:][:-1]) # Return only the channel ID
+    return 0
 
 # Simplify removing pings more
 def pings_b_gone(mentions):

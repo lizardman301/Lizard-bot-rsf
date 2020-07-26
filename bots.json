@@ -1,6 +1,7 @@
 {
 	"admin_commands": {
 		"botrole":"",
+		"challonge":"",
 		"coin-flip":"",
 		"edit":"",
 		"prefix-lizard":"",

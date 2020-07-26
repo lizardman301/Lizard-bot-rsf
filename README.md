@@ -15,13 +15,22 @@ These commands will only be available to be used by those with the role mentione
 `!botrole`
 Returns the role that allows access to the administrator commands.
 
+`!challonge <subcommand> <bracket url>`
+Uses Challonge's API to pull data into Discord
+
+##### Subcommands
+**Subcommands are still actively being implemented**
+
+ * checkin
+	 * Checks the given bracket for users that are not checked in and users whose Challonge names are not in the server
+
 `!coin-flip`
 A coin is flipped and the result is returned. Either heads or tails.
 
 `!edit [channel(s)] <setting> <value>`
+There are multiple settings that can be edited to allow customization.
 
 If multiple channels are listed, the setting will be updated to the same value across all listed channels.
-There are multiple settings that can be edited to allow customization.
 
 ##### Server-wide
  * botrole
@@ -32,6 +41,10 @@ There are multiple settings that can be edited to allow customization.
 	 * Allows you to change the prefix for commands
 	 * Useful if you use multiple bots that may have similar commands and prefixes
 	 * Default Value: !
+ * challonge
+	 * Specifies the challonge subdomain to check for tournaments
+	 * Necessary for Challonge integration
+	 * Default Value:
 
 ##### Channel-Specific
  * bracket
@@ -90,9 +103,9 @@ Returns the stream link, if one is set.
 Sends a message back with all the Tournament Organizers pinged, if set.
 
 ## Contributers
-* **Nogarremi** - *Database implentation* - [Twitter](https://twitter.com/Nogarremi)
 * **Lizardman** - *Initial work, owner of bot, bug hunting* - [Twitter](https://twitter.com/lizardman301)
 * **Axio** - *Initial Idea and general help*
+* **Nogarremi** - *Database implentation, primary developer* - [Twitter](https://twitter.com/Nogarremi)
 
 ## Other Resources
 * **[Yaksha Bot](https://github.com/ellipses/Yaksha)** - *Created by ellipses. We used this for additional ideas about proper structuring of code for ease of expandability and readability. Yaksha Bot was released under an MIT license and this bot(Lizard-bot-rsf) is re-released as Mozilla Public License 2.0 but to ensure ellipses is credited, the functions copied and then edited by the contributors are commented with "# Yaksha" to give credit*

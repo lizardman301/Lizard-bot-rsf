@@ -1,6 +1,8 @@
+import os
+
+# Local imports
 import commands
 import utilities
-import os
 
 # Yaksha
 class Interface():

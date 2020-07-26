@@ -1,6 +1,11 @@
-from utilities import (register, bold, pings_b_gone, is_channel, read_db, save_db, settings_exist)
+import json
 import asyncio
 import random
+import requests
+
+# Local imports
+from secret import api_key
+from utilities import (register, bold, get_users, is_channel, pings_b_gone, read_db, save_db, settings_exist)
 
 # All @register() are a product of reviewing Yaksha
 # See utilities.register for more information
@@ -47,9 +52,47 @@ async def TOs(command, msg, user, channel, *args, **kwargs):
 
 @register('botrole')
 async def botrole(command, msg, user, channel, *args, **kwargs):
+    # Pull the role name from the user's roles
     for role in user.roles:
         if role.id == read_db('guild', command, kwargs['guild']):
             return "The bot role is {0}".format(bold(role.name))
+
+@register('challonge')
+async def challonge(command, msg, user, channel, *args, **kwargs):
+    base_url = "https://api.challonge.com/v1/tournaments/" # Base url to access Challonge's API
+    subcommand = msg.split(' ')[0] # The function trying to be accomplished
+    tour_url = msg.split(' ')[1] # Bracket to pull from
+    subdomain = read_db('guild', command, kwargs['guild']) # Server's subdomain with Challonge
+    users = get_users(kwargs['full_msg']) # Get all discord users
+
+    # Properly add the subdomain to the bracket url
+    if subdomain:
+        tour_url = subdomain + '-' + tour_url
+
+    # Get the participants for the tournament
+    parts_get = requests.get(base_url + tour_url + "/participants.json", params={'api_key':api_key})
+    if '200' in str(parts_get.status_code):
+        if subcommand in 'checkin':
+            discord_parts = [] # Used for people missing from the server
+            checked_parts = [] # Used for people not checked in
+            
+            # Check each participant to see if they are in the server and checked in
+            for p in parts_get.json():
+                p = p['participant']
+
+                if not p['checked_in']:
+                    checked_parts.append(p['name'])
+
+                if p['name'].lower() not in users.values():
+                    discord_parts.append(p['name'])
+
+            return_msg = "**NOT CHECKED IN:** {0}\n**NOT IN DISCORD:** {1}".format(', '.join(checked_parts), ', '.join(discord_parts))
+
+        # Bad command catching
+        else:
+            return_msg = "Invalid Challonge subcommand"
+
+        return return_msg
 
 @register('coin-flip')
 async def coin_flip(command, msg, user, channel, *args, **kwargs):

@@ -1,10 +1,11 @@
 import discord
-import os
 import json
+import os
 
+# Local imports
 import interface
-from utilities import read_db,settings_exist
 from secret import token
+from utilities import read_db,settings_exist
 
 client = discord.Client()
 
