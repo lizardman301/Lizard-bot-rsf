@@ -35,14 +35,15 @@ async def on_message(message):
         return
 
     for command in client.commands.keys():
+        command = command.lower()
         msg = message.content # The message
         user = message.author # The author
+        attempted_cmd = msg.split(' ')[0][1:].lower()
 
         # Check if the message begins with a command
-        if msg.split(' ')[0][1:].lower() in command.lower():
+        if attempted_cmd and attempted_cmd in command.lower():
             # Remove the command from the start
             msg = msg[len(command)+1:].strip()
-            command = command.lower()
             
             # Await the interface calling the command
             response = await client.interface.call_command(command, msg, user, message.channel, guild=message.guild.id, full_msg=message)
