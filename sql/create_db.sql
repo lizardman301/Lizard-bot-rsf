@@ -48,9 +48,10 @@ CREATE TABLE IF NOT EXISTS `channel_settings` (
   `status` VARCHAR(1953) NULL DEFAULT 'Winner\'s Round {0} can play! Losers can play till top 8 losers side. If you have a bye Round {0}, Please Wait!',
   `stream` VARCHAR(2000) NULL DEFAULT 'There are no streams set for this channel',
   `bracket` VARCHAR(2000) NULL DEFAULT 'There is no bracket set for this channel',
+  `seeding` VARCHAR(80) NULL DEFAULT '',
   PRIMARY KEY (`setting_id`),
   INDEX `channel_id` (`channel_id`),
-  CONSTRAINT `chan_id_fk` FOREIGN KEY (`channel_id`) REFERENCES `channels` (`channel_id`)
+  CONSTRAINT `channel_id_fk` FOREIGN KEY (`channel_id`) REFERENCES `channels` (`channel_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.

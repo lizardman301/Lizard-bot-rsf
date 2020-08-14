@@ -1,13 +1,14 @@
-import json
 import asyncio
+import json
 import random
+import re
 import requests
 
 # Local imports
 from secret import api_key
-from utilities import (register, bold, get_users, is_channel, pings_b_gone, read_db, save_db, settings_exist)
+from commands.utilities import (register, bold, get_users, is_channel, pings_b_gone, checkin, seeding, read_db, save_db, settings_exist)
 
-# All @register() are a product of reviewing Yaksha
+# All @register decorators are a product of reviewing Yaksha
 # See utilities.register for more information
 
 @register('bracket')
@@ -59,40 +60,52 @@ async def botrole(command, msg, user, channel, *args, **kwargs):
 
 @register('challonge')
 async def challonge(command, msg, user, channel, *args, **kwargs):
-    base_url = "https://api.challonge.com/v1/tournaments/" # Base url to access Challonge's API
-    subcommand = msg.split(' ')[0] # The function trying to be accomplished
-    tour_url = msg.split(' ')[1] # Bracket to pull from
-    subdomain = read_db('guild', command, kwargs['guild']) # Server's subdomain with Challonge
-    users = get_users(kwargs['full_msg']) # Get all discord users
+    async with channel.typing():
+        base_url = "https://api.challonge.com/v1/tournaments/" # Base url to access Challonge's API
+        subcommand = msg.split(' ')[0].lower() # The function trying to be accomplished
+        tour_url = msg.split(' ')[1] # Bracket to pull from
+        subdomain = read_db('guild', command, kwargs['guild']) # Server's subdomain with Challonge
 
-    # Properly add the subdomain to the bracket url
-    if subdomain:
-        tour_url = subdomain + '-' + tour_url
+        # Properly add the subdomain to the bracket url
+        if subdomain:
+            tour_url = subdomain + '-' + tour_url
 
-    # Get the participants for the tournament
-    parts_get = requests.get(base_url + tour_url + "/participants.json", params={'api_key':api_key})
-    if '200' in str(parts_get.status_code):
-        if subcommand in 'checkin':
-            discord_parts = [] # Used for people missing from the server
-            checked_parts = [] # Used for people not checked in
-            
-            # Check each participant to see if they are in the server and checked in
-            for p in parts_get.json():
-                p = p['participant']
+        # Get the participants for the tournament
+        parts_get = requests.get(base_url + tour_url + "/participants.json", params={'api_key':api_key})
+        if '200' in str(parts_get.status_code):
+            parts = parts_get.json() # Convert response from json to Python Dictionary
 
-                if not p['checked_in']:
-                    checked_parts.append(p['name'])
+            # If Checkin
+            if subcommand in 'checkin':
+                not_checked_in_parts, not_discord_parts = checkin(parts, get_users(kwargs['full_msg']))
 
-                if p['name'].lower() not in users.values():
-                    discord_parts.append(p['name'])
+                # Message showing who is not checked in and who is not in the Discord
+                return_msg = "**NOT CHECKED IN:** {0}\n**NOT IN DISCORD:** {1}".format(', '.join(not_checked_in_parts), ', '.join(not_discord_parts))
 
-            return_msg = "**NOT CHECKED IN:** {0}\n**NOT IN DISCORD:** {1}".format(', '.join(checked_parts), ', '.join(discord_parts))
+            # If Seeding
+            elif subcommand in 'seeding':
+                # If msg has 3 params left 3rd one must be seed number
+                # Else, seed whole bracket
+                seed_num = int(msg.split(' ')[2]) if len(msg.split(' ')) > 2 else 0
 
-        # Bad command catching
-        else:
-            return_msg = "Invalid Challonge subcommand"
+                # Get Google Sheets ID
+                sheet_id = read_db('channel', subcommand, channel.id)
 
-        return return_msg
+                # If seeding hasn't been set, inform user
+                if not sheet_id:
+                    return "There is no seeding sheet for this channel. Please view [INSERT DOCUMENTATION LINK] for a walkthrough"
+                
+                # Seeding takes place in different method
+                await channel.send("**SEEDING:**\n {0}".format(',\n'.join(seeding(sheet_id, parts, base_url + '/' + tour_url,seed_num)[1:-1].split(', '))))
+
+                # Final message that seeding is complete
+                return_msg = bold("SEEDING IS NOW COMPLETE!\nPLEASE REFRESH YOUR BRACKETS\nWAIT FOR THE ROUND 1 ANNOUNCEMENT TO START PLAYING")
+
+            # Bad command catching
+            else:
+                return_msg = "Invalid Challonge subcommand"
+
+            return return_msg # Return the final message
 
 @register('coin-flip')
 async def coin_flip(command, msg, user, channel, *args, **kwargs):
@@ -139,6 +152,10 @@ async def edit(command, msg, user, channel, *args, **kwargs):
         mentions = pings_b_gone(full_msg.mentions)
         db_message = ' '.join(mentions.values()) # Put mention values into the database
         channel_message = ' '.join(mentions.keys()) # Send usernames back to the channel
+    elif editable_command in ['seeding']:
+        reg = re.compile('[a-zA-Z0-9-_]+')
+        if not reg.fullmatch(params[0]):
+            return "Invalid Sheets spreadsheet ID. Please view [INSERT DOCUMENTATION LINK] for a walkthrough"
 
     # Check for guild settings, channel settings, or multi channel settings
     if editable_command in ['botrole','prefix-lizard']:

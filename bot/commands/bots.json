@@ -18,5 +18,20 @@
 		"status":"",
 		"stream":"",
 		"TOs":""
+	},
+	"challonge_subcommands": {
+		"checkin":"",
+		"seeding":""
+	},
+	"edit_subcommands": {
+		"botrole":"",
+		"brackets":"",
+		"challonge":"",
+		"prefix-lizard":"",
+		"seeding":"",
+		"status":"",
+		"stream":"",
+		"tos":""
 	}
+	
 }

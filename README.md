@@ -1,6 +1,6 @@
 # Lizard-BOT
 
-Simple discord bot originally built for the r/streetfighter East Coast online weekly tournament to help players see current round and with some commands for TOs. Support for multiple channels to run multiple tournaments at once and allows for custom prefixes, round flavor text, and more. Requires discord.py and pymysql.
+Simple discord bot originally built for the r/StreetFighter East Coast online weekly tournament to help players see current round and with some commands for TOs. Support for multiple channels to run multiple tournaments at once and allows for custom prefixes, round flavor text, and more. Requires discord.py and pymysql.
 
 # How to Use
 
@@ -15,7 +15,7 @@ These commands will only be available to be used by those with the role mentione
 `!botrole`
 Returns the role that allows access to the administrator commands.
 
-`!challonge <subcommand> <bracket url>`
+`!challonge <subcommand> <bracket url> [OPTIONALS]`
 Uses Challonge's API to pull data into Discord
 
 ##### Subcommands
@@ -23,6 +23,8 @@ Uses Challonge's API to pull data into Discord
 
  * checkin
 	 * Checks the given bracket for users that are not checked in and users whose Challonge names are not in the server
+ * seeding <bracket url> [number of players to seed(Must be integer greater than or equal to 1)]
+	 * Seeds the tournament based on points in the spreadsheet and the number of players to seed
 
 `!coin-flip`
 A coin is flipped and the result is returned. Either heads or tails.
@@ -37,20 +39,25 @@ If multiple channels are listed, the setting will be updated to the same value a
 	 * This role determines what role is needed to access the TO Commands
 	 * New value must be a ping to the role desired
 	 * Default value: @everyone
- * prefix-lizard
-	 * Allows you to change the prefix for commands
-	 * Useful if you use multiple bots that may have similar commands and prefixes
-	 * Default Value: !
  * challonge
 	 * Specifies the challonge subdomain to check for tournaments
 	 * Necessary for Challonge integration
 	 * Default Value:
+ * prefix-lizard
+	 * Allows you to change the prefix for commands
+	 * Useful if you use multiple bots that may have similar commands and prefixes
+	 * Default Value: !
 
 ##### Channel-Specific
  * bracket
 	 * Allows you to add a link to a bracket for users to view
 	 * Unique for each channel
 	 * Default value: There is no bracket set for this channel
+ * seeding
+	 * Allows you to set the Google Sheets spreadsheet ID to be used to check points
+	 * Please see: [INSERT DOCUMENTATION LINK] for instructions on creating/adapting a spreadsheet
+	 * Unique for each channel
+	 * Default value: 
  * status
 	 * Allows you to change the flavor text of the !round and !status commands for individual channels
 	 * Text uses {0} as a marker for where the round count will be added
@@ -108,6 +115,6 @@ Sends a message back with all the Tournament Organizers pinged, if set.
 * **Nogarremi** - *Database implentation, primary developer* - [Twitter](https://twitter.com/Nogarremi)
 
 ## Other Resources
-* **[Yaksha Bot](https://github.com/ellipses/Yaksha)** - *Created by ellipses. We used this for additional ideas about proper structuring of code for ease of expandability and readability. Yaksha Bot was released under an MIT license and this bot(Lizard-bot-rsf) is re-released as Mozilla Public License 2.0 but to ensure ellipses is credited, the functions copied and then edited by the contributors are commented with "# Yaksha" to give credit*
+* **[Yaksha Bot](https://github.com/ellipses/Yaksha)** - *Created by ellipses. We used this for additional ideas about proper structuring of code for ease of expandability and readability. Yaksha Bot was released under an MIT license and this bot(Lizard-bot-rsf) is released as Mozilla Public License 2.0 but to ensure ellipses is credited, the functions copied and then edited by the contributors are commented with "# Yaksha" to give credit*
 
 If you have any further questions or concerns, feel free to contact me via discord @lizardman301#0301.

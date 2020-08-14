@@ -1,8 +1,11 @@
+from pprint import pformat # Dictionary String Formatter
 import pymysql.cursors # Use for DB connections
 import re # Process strings
+import requests # HTTP functions
 
 # Local imports
-from secret import sql_host,sql_port,sql_user,sql_pw,sql_db # Store secret information
+from secret import (sql_host,sql_port,sql_user,sql_pw,sql_db, api_key) # Store secret information
+from commands.sheets.sheets import sheets # Talk to Google Sheets API
 
 _callbacks = {} # Yaksha
 
@@ -62,6 +65,62 @@ def pings_b_gone(mentions):
         mention_list.update({mention.name: mention.mention})
 
     return mention_list
+
+def checkin(parts, users):
+    not_discord_parts = [] # Used for people missing from the server
+    not_checked_in_parts = [] # Used for people not checked in
+
+    # Check each participant to see if they are in the server and checked in
+    for p in parts:
+        p = p['participant']
+
+        # If participant not checked in, add them to the bad list
+        if not p['checked_in']:
+            not_checked_in_parts.append(p['name'])
+
+        # If participant not in the Discord, add them to the bad list
+        if p['name'].lower() not in users.values():
+            not_discord_parts.append(p['name'])
+
+    return not_checked_in_parts, not_discord_parts
+
+def seeding(sheet_id, parts, url, seed_num):
+    player_points = [] # Stores "player point_value" for sorting later
+
+    # Get dict of associated players and their points
+    players_to_points = sheets(sheet_id)
+
+    # Check each participant and if they have points
+    for p in parts:
+        p = p['participant']
+
+        # If player has points, add to list for later sorting
+        if p['challonge_username'] in players_to_points:
+            player_points.append(p['challonge_username'] + ' ' + players_to_points[p['challonge_username']])
+
+    # Players are listed by highest points and then alphabetically
+    # Truncated by how many we are seeding
+    # First sort is done on the player name, players with names higher in the alphabet win ties
+    # Second sort is done on the point value
+    player_points = sorted(sorted(player_points, key=lambda part: part.split(' ')[0].lower()), key=lambda part: int(part.split(' ')[1]), reverse=True)[0:seed_num if 0 < seed_num <= len(player_points) else len(player_points)]
+
+    # Associate seeding number with the player
+    finished_seeding ={}
+    for x in range(len(player_points)):
+        finished_seeding.update({x+1: player_points[x]})
+
+    # Check if player is in sorted, truncated list and update their seed number
+    for p in parts:
+        p = p['participant']
+
+        for player in finished_seeding:
+            # If Challonge user equals the username we have for seeding
+            # Then, update seed number with their index location
+            if p['challonge_username'] == finished_seeding[player].split(' ')[0]:
+                requests.put(url + "/participants/" + str(p['id']) + ".json", params={'api_key':api_key, 'participant[seed]':player})
+
+    # Return seeding list
+    return pformat(finished_seeding)
 
 # Create a connection to the database
 def make_conn():
