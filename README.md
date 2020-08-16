@@ -55,7 +55,7 @@ If multiple channels are listed, the setting will be updated to the same value a
 	 * Default value: There is no bracket set for this channel
  * seeding
 	 * Allows you to set the Google Sheets spreadsheet ID to be used to check points
-	 * Please see: [INSERT DOCUMENTATION LINK] for instructions on creating/adapting a spreadsheet
+	 * Please see: https://github.com/lizardman301/Lizard-bot-rsf/blob/master/doc/seeding_with_sheets.md for instructions on creating/adapting a spreadsheet
 	 * Unique for each channel
 	 * Default value: 
  * status
@@ -74,7 +74,7 @@ If multiple channels are listed, the setting will be updated to the same value a
 	 * Default value:
 
 `!prefix-lizard`
-Prints the prefix currently in use for lizardbot.
+Prints the prefix currently in use for Lizard-BOT.
 
 `!remind <time in minutes> [reason]`
 Allows the user to set a timed reminder. When used it will ping the user, with the reason for the reminder if specified, after the alloted time. Useful if you are have to handle multiple situations at once.

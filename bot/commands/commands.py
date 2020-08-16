@@ -93,7 +93,7 @@ async def challonge(command, msg, user, channel, *args, **kwargs):
 
                 # If seeding hasn't been set, inform user
                 if not sheet_id:
-                    return "There is no seeding sheet for this channel. Please view [INSERT DOCUMENTATION LINK] for a walkthrough"
+                    return "There is no seeding sheet for this channel. Please view https://github.com/lizardman301/Lizard-bot-rsf/blob/master/doc/seeding_with_sheets.md for a walkthrough"
                 
                 # Seeding takes place in different method
                 await channel.send("**SEEDING:**\n {0}".format(',\n'.join(seeding(sheet_id, parts, base_url + '/' + tour_url,seed_num)[1:-1].split(', '))))
@@ -155,7 +155,7 @@ async def edit(command, msg, user, channel, *args, **kwargs):
     elif editable_command in ['seeding']:
         reg = re.compile('[a-zA-Z0-9-_]+')
         if not reg.fullmatch(params[0]):
-            return "Invalid Sheets spreadsheet ID. Please view [INSERT DOCUMENTATION LINK] for a walkthrough"
+            return "Invalid Sheets spreadsheet ID. Please view https://github.com/lizardman301/Lizard-bot-rsf/blob/master/doc/seeding_with_sheets.md for a walkthrough"
 
     # Check for guild settings, channel settings, or multi channel settings
     if editable_command in ['botrole','prefix-lizard']:

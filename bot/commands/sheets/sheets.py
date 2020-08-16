@@ -7,7 +7,7 @@ def sheets(sheet_id):
     service = build('sheets', 'v4', credentials=creds)
 
     # Call the Sheets API
-    result = service.spreadsheets().values().get(spreadsheetId=sheet_id, range="'Seeding'!A1:C").execute()
+    result = service.spreadsheets().values().get(spreadsheetId=sheet_id, range="'Seeding'!A1:Z").execute()
     values = result.get('values', [])
 
     if not values:
