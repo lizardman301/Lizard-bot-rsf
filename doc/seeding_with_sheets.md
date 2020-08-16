@@ -101,7 +101,7 @@ Each row will be for a specific player.
 
 Give permissions to Lizard-BOT to view your sheet
 1. Click share in the upper right
-2. Copy 'INSERT ACCOUNT EMAIL'
+2. Copy 'lizard-bot-service@lizard-bot.iam.gserviceaccount.com'
 3. Paste that into the invite box and push Enter on your keyboard
 4. On the followup page, change the access from Editor to Viewer
 5. Uncheck Notify people
