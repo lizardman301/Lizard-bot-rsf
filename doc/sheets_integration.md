@@ -24,7 +24,7 @@ Time to get started with Google
 Account created, API key obtained. Now, put it to use
 Lizard-BOT has a non-upload file call secret.py in the bot\ folder
 1. Edit bot\secret.py
-2. Add 'api_key ="INSERT API KEY" to the file
+2. Add 'api_key ="INSERT API KEY" to the file'
 3. Save file
 
 #### That's it for adding Challonge API 
