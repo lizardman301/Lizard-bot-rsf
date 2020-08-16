@@ -1,3 +1,4 @@
+from discord.utils import escape_markdown # Regexing fun simplified
 import pymysql.cursors # Use for DB connections
 import re # Process strings
 import requests # HTTP functions
@@ -68,6 +69,7 @@ def pings_b_gone(mentions):
 def checkin(parts, users):
     not_discord_parts = [] # Used for people missing from the server
     not_checked_in_parts = [] # Used for people not checked in
+    match_md = r'((([_*]).+?\3[^_*]*)*)([_*])'
 
     # Check each participant to see if they are in the server and checked in
     for p in parts:
@@ -75,11 +77,11 @@ def checkin(parts, users):
 
         # If participant not checked in, add them to the bad list
         if not p['checked_in']:
-            not_checked_in_parts.append(p['name'])
+            not_checked_in_parts.append(escape_markdown(p['name']))
 
         # If participant not in the Discord, add them to the bad list
         if p['name'].lower() not in users.values() or p['challonge_username'].lower() not in users.values():
-            not_discord_parts.append(p['name'])
+            not_discord_parts.append(escape_markdown(p['name']))
 
     return not_checked_in_parts, not_discord_parts
 
