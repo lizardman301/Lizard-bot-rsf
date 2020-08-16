@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS `guild_settings` (
   `guild_id` bigint(20) unsigned NOT NULL,
   `prefix-lizard` varchar(1) NOT NULL DEFAULT '!',
   `botrole` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `challonge` VARCHAR(60) NOT NULL DEFAULT '',
   PRIMARY KEY (`setting_id`),
   KEY `guild_id` (`guild_id`),
   CONSTRAINT `guild_id_fk` FOREIGN KEY (`guild_id`) REFERENCES `guilds` (`guild_id`)
@@ -47,9 +48,10 @@ CREATE TABLE IF NOT EXISTS `channel_settings` (
   `status` VARCHAR(1953) NULL DEFAULT 'Winner\'s Round {0} can play! Losers can play till top 8 losers side. If you have a bye Round {0}, Please Wait!',
   `stream` VARCHAR(2000) NULL DEFAULT 'There are no streams set for this channel',
   `bracket` VARCHAR(2000) NULL DEFAULT 'There is no bracket set for this channel',
+  `seeding` VARCHAR(80) NULL DEFAULT '',
   PRIMARY KEY (`setting_id`),
   INDEX `channel_id` (`channel_id`),
-  CONSTRAINT `chan_id_fk` FOREIGN KEY (`channel_id`) REFERENCES `channels` (`channel_id`)
+  CONSTRAINT `channel_id_fk` FOREIGN KEY (`channel_id`) REFERENCES `channels` (`channel_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.

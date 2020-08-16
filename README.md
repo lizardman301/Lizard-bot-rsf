@@ -1,12 +1,20 @@
 # Lizard-BOT
 
-Simple discord bot originally built for the r/streetfighter East Coast online weekly tournament to help players see current round and with some commands for TOs. Support for multiple channels to run multiple tournaments at once and allows for custom prefixes, round flavor text, and more. Requires discord.py and pymysql.
+Simple discord bot originally built for the r/StreetFighter East Coast online weekly tournament to help players see current round and with some commands for TOs. Support for multiple channels to run multiple tournaments at once and allows for custom prefixes, round flavor text, and more. Requires discord.py and pymysql.
 
 # How to Use
 
 In order to get started, you need to invite Lizard-BOT to the discord server you wish to use to run tournaments.  [Invite link here.](https://discord.com/oauth2/authorize?client_id=317294414374502400&scope=bot&permissions=321600)
 
 Immediately after the bot joins the server use the command `!edit botrole <role>` with the role of your choice to make it so that only those with that role can access the commands meant for the Tournament Organizers. From there, feel free to use all the commands listed below to adjust the bot to your needs.
+
+### Note about Challonge
+
+If the Challonge community that organizes the tournaments does **NOT** have a dedicated subdomain, e.g. challonge.com/communities/1c9ef6d4805d8a3071631f4f, then **Challonge's API** will **ALWAYS** be unable to find the tournament.
+None of the Challonge integration will work until the community becomes a ["Pro" community](https://challonge.com/communities/about#pro-features) and sets a custom subdomain, e.g. redditfighting.challonge.com
+
+If the Challonge community tournament does not add the Lizard-BOT Challonge account as a collaborator or a tournament hosted by a Challonge user, the checkin command **WILL** work but the seeding command will **NOT** work.
+This is because tournaments are read-only by default. Any attempts by Lizard-BOT to updating seeding numbers will fail since Lizard-BOT doesn't have permissions.
 
 ## TO Commands
 
@@ -15,19 +23,40 @@ These commands will only be available to be used by those with the role mentione
 `!botrole`
 Returns the role that allows access to the administrator commands.
 
+`!challonge <subcommand> <bracket URL identifier> [OPTIONALS]`
+Uses Challonge's API to pull data into Discord
+
+Bracket URL identifier is what comes at the end of the URL
+For example
+	redditfighting.challonge.com/wwyi8jhk
+	Bracket URL identifier = wwyi8jhk
+
+
+##### Subcommands
+**Subcommands are still actively being implemented**
+
+ * checkin
+	 * Checks the given bracket for users that are not checked in and users whose Challonge names are not in the server
+ * seeding <bracket url> [number of players to seed(Must be integer greater than or equal to 1)]
+	 * Seeds the tournament based on points in the spreadsheet and the number of players to seed
+
 `!coin-flip`
 A coin is flipped and the result is returned. Either heads or tails.
 
 `!edit [channel(s)] <setting> <value>`
+There are multiple settings that can be edited to allow customization.
 
 If multiple channels are listed, the setting will be updated to the same value across all listed channels.
-There are multiple settings that can be edited to allow customization.
 
 ##### Server-wide
  * botrole
 	 * This role determines what role is needed to access the TO Commands
 	 * New value must be a ping to the role desired
 	 * Default value: @everyone
+ * challonge
+	 * Specifies the challonge subdomain to check for tournaments
+	 * Necessary for Challonge integration
+	 * Default Value:
  * prefix-lizard
 	 * Allows you to change the prefix for commands
 	 * Useful if you use multiple bots that may have similar commands and prefixes
@@ -38,6 +67,11 @@ There are multiple settings that can be edited to allow customization.
 	 * Allows you to add a link to a bracket for users to view
 	 * Unique for each channel
 	 * Default value: There is no bracket set for this channel
+ * seeding
+	 * Allows you to set the Google Sheets spreadsheet ID to be used to check points
+	 * Please see: [Our Documentation](https://github.com/lizardman301/Lizard-bot-rsf/blob/master/doc/seeding_with_sheets.md) for instructions on creating/adapting a spreadsheet
+	 * Unique for each channel
+	 * Default value: 
  * status
 	 * Allows you to change the flavor text of the !round and !status commands for individual channels
 	 * Text uses {0} as a marker for where the round count will be added
@@ -54,7 +88,7 @@ There are multiple settings that can be edited to allow customization.
 	 * Default value:
 
 `!prefix-lizard`
-Prints the prefix currently in use for lizardbot.
+Prints the prefix currently in use for Lizard-BOT.
 
 `!remind <time in minutes> [reason]`
 Allows the user to set a timed reminder. When used it will ping the user, with the reason for the reminder if specified, after the alloted time. Useful if you are have to handle multiple situations at once.
@@ -78,7 +112,7 @@ Links back to this page.
 Ping! Pong!
 
 `!pingtest`
-Explains how to run a ping test using https://testmyspeed.onl/ and a common server.
+Explains how to run a ping test using <https://testmyspeed.onl/> and a common server.
 
 `!status`
 Returns the current round number in a message that can be customized.  Will let users know if a tournament has not begun.
@@ -90,11 +124,11 @@ Returns the stream link, if one is set.
 Sends a message back with all the Tournament Organizers pinged, if set.
 
 ## Contributers
-* **Nogarremi** - *Database implentation* - [Twitter](https://twitter.com/Nogarremi)
 * **Lizardman** - *Initial work, owner of bot, bug hunting* - [Twitter](https://twitter.com/lizardman301)
 * **Axio** - *Initial Idea and general help*
+* **Nogarremi** - *Database implentation, primary developer* - [Twitter](https://twitter.com/Nogarremi)
 
 ## Other Resources
-* **[Yaksha Bot](https://github.com/ellipses/Yaksha)** - *Created by ellipses. We used this for additional ideas about proper structuring of code for ease of expandability and readability. Yaksha Bot was released under an MIT license and this bot(Lizard-bot-rsf) is re-released as Mozilla Public License 2.0 but to ensure ellipses is credited, the functions copied and then edited by the contributors are commented with "# Yaksha" to give credit*
+* **[Yaksha Bot](https://github.com/ellipses/Yaksha)** - *Created by ellipses. We used this for additional ideas about proper structuring of code for ease of expandability and readability. Yaksha Bot was released under an MIT license and this bot(Lizard-bot-rsf) is released as Mozilla Public License 2.0 but to ensure ellipses is credited, the functions copied and then edited by the contributors are commented with "# Yaksha" to give credit*
 
 If you have any further questions or concerns, feel free to contact me via discord @lizardman301#0301.

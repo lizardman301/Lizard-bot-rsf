@@ -1,6 +1,10 @@
-import re
 import pymysql.cursors # Use for DB connections
-from secret import sql_host,sql_port,sql_user,sql_pw,sql_db # Store secret information
+import re # Process strings
+import requests # HTTP functions
+
+# Local imports
+from secret import (sql_host,sql_port,sql_user,sql_pw,sql_db, api_key) # Store secret information
+from commands.sheets.sheets import sheets # Talk to Google Sheets API
 
 _callbacks = {} # Yaksha
 
@@ -25,15 +29,27 @@ def get_callbacks():
     '''
     return _callbacks
 
-def is_channel(channel):
-    reg = re.compile('<#\d*>')
-    if reg.fullmatch(channel):
-        return int(channel[2:][:-1])
-    return 0
-
 # Add Markdown for bold
 def bold(string):
     return "**" + string + "**"
+
+# Get all users in a Discord
+def get_users(msg):
+    users = msg.guild.members
+    userDict = {}
+
+    # Get their distinct name and their nickname
+    for user in users:
+        userDict.update({user.name + '#' + str(user.discriminator): user.display_name.lower()})
+
+    return userDict
+
+# Perform regex to find out if a string is a Discord channel
+def is_channel(channel):
+    reg = re.compile('<#\d*>')
+    if reg.fullmatch(channel):
+        return int(channel[2:][:-1]) # Return only the channel ID
+    return 0
 
 # Simplify removing pings more
 def pings_b_gone(mentions):
@@ -48,6 +64,67 @@ def pings_b_gone(mentions):
         mention_list.update({mention.name: mention.mention})
 
     return mention_list
+
+def checkin(parts, users):
+    not_discord_parts = [] # Used for people missing from the server
+    not_checked_in_parts = [] # Used for people not checked in
+
+    # Check each participant to see if they are in the server and checked in
+    for p in parts:
+        p = p['participant']
+
+        # If participant not checked in, add them to the bad list
+        if not p['checked_in']:
+            not_checked_in_parts.append(p['name'])
+
+        # If participant not in the Discord, add them to the bad list
+        if p['name'].lower() not in users.values() or p['challonge_username'].lower() not in users.values():
+            not_discord_parts.append(p['name'])
+
+    return not_checked_in_parts, not_discord_parts
+
+def seeding(sheet_id, parts, url, seed_num):
+    player_points = [] # Stores "player point_value" for sorting later
+
+    # Get dict of associated players and their points
+    players_to_points = sheets(sheet_id)
+    
+    if isinstance(players_to_points, str):
+        return players_to_points
+
+    # Check each participant and if they have points
+    for p in parts:
+        p = p['participant']
+
+        # If player has points, add to list for later sorting
+        if p['challonge_username'] in players_to_points:
+            player_points.append(p['challonge_username'] + ' ' + players_to_points[p['challonge_username']])
+
+    # Players are listed by highest points and then alphabetically
+    # Truncated by how many we are seeding
+    # First sort is done on the player name, players with names higher in the alphabet win ties
+    # Second sort is done on the point value
+    player_points = sorted(sorted(player_points, key=lambda part: part.split(' ')[0].lower()), key=lambda part: int(part.split(' ')[1]), reverse=True)[0:seed_num if 0 < seed_num <= len(player_points) else len(player_points)]
+
+    # Associate seeding number with the player
+    finished_seeding ={}
+    for x in range(len(player_points)):
+        finished_seeding.update({x+1: player_points[x]})
+
+    # Check if player is in sorted, truncated list and update their seed number
+    for p in parts:
+        p = p['participant']
+
+        for player in finished_seeding:
+            # If Challonge user equals the username we have for seeding
+            # Then, update seed number with their index location
+            if p['challonge_username'] == finished_seeding[player].split(' ')[0]:
+                response = requests.put(url + "/participants/" + str(p['id']) + ".json", params={'api_key':api_key, 'participant[seed]':player})
+                if '401' in str(response.status_code):
+                    return "Lizard-BOT does not have access to that tournament"
+
+    # Return seeding list
+    return finished_seeding
 
 # Create a connection to the database
 def make_conn():

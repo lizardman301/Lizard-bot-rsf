@@ -1,20 +1,17 @@
-import commands
-import utilities
-import os
+# Local imports
+from commands import commands
+from commands.utilities import (get_callbacks, read_db)
 
 # Yaksha
 class Interface():
 
     # Yaksha
     # Initialize Interface with all our nice defaults
-    def __init__(self, config, bot_commands):
+    def __init__(self, admin_commands):
         self._func_mapping = {} # Map for future reference
         self._modules = [commands] # Stores the reference to each .py we have command functions in
-        self.config = config # Bring over the config
-
         self.remap_functions() # Map functions for reference by command name
-
-        self.admin_commands = self.config.get('admin_commands', {}).keys() # Seperate our admin commands
+        self.admin_commands = admin_commands # Bring over the admin commands
 
     # Yaksha
     def remap_functions(self):
@@ -27,7 +24,7 @@ class Interface():
         to. This is later used by self.call_command when handling
         messages.
         '''
-        name_mapping = utilities.get_callbacks()
+        name_mapping = get_callbacks()
         
         for key, value in name_mapping.items():
             func_name = value[0]
@@ -72,10 +69,10 @@ class Interface():
         Performs various checks on the user and the
         command to determine if they're allowed to use it.
         '''
-        # Check if the user is an admin and if the command is
-        # an admin command.
+        # Check if the user is an admin and
+        # if the command is an admin command.
         if command in self.admin_commands:
-            botrole = utilities.read_db('guild', 'botrole', id)
+            botrole = read_db('guild', 'botrole', id)
 
             # If botrole is not set, allow the command
             if not botrole:

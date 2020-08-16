@@ -1,3 +1,6 @@
 .vs
 __pycache__
 secret.py
+credentials.json
+Pipfile.lock
+Pipfile

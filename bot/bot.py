@@ -1,16 +1,17 @@
 import discord
-import os
 import json
+import os
 
+# Local imports
+from commands.utilities import (read_db, settings_exist)
 import interface
-from utilities import read_db,settings_exist
 from secret import token
 
 client = discord.Client()
 
 @client.event
 async def on_ready():
-    print('Logged in as {0.user}'.format(client))
+    print('\nLogged in as {0.user}'.format(client))
     print('-------------------------------')
     for guild in client.guilds:
         print('Joined guild %s' % guild)
@@ -35,13 +36,13 @@ async def on_message(message):
         return
 
     for command in client.commands.keys():
-        command = command.lower()
+        command = command.lower() # Lower the command for easier matching
         msg = message.content # The message
         user = message.author # The author
-        attempted_cmd = msg.split(' ')[0][1:].lower()
+        attempted_cmd = msg.split(' ')[0][1:].lower() # Get the attempted command from the beginning of the string
 
         # Check if the message begins with a command
-        if attempted_cmd and attempted_cmd in command.lower():
+        if attempted_cmd and attempted_cmd in command:
             # Remove the command from the start
             msg = msg[len(command)+1:].strip()
             
@@ -56,16 +57,21 @@ async def on_message(message):
 # Yaksha
 def main():
     # Pull in a seperate config
-    config = json.loads(open(os.path.join(os.path.dirname(__file__), './bots.json')).read())
+    config = json.loads(open(os.path.join(os.path.dirname(__file__), 'commands/bots.json')).read())
 
     # Grab our commands
     client.commands = config.get('common_commands', {}).copy()
     client.commands.update(config.get('admin_commands', {}))
 
+    client.admin_commands = config.get('admin_commands', {}).copy()
+
+    client.subcommands = config.get('challonge_subcommands', {}).copy()
+    client.subcommands.update(config.get('edit_subcommands', {}))
+
     client.config = config
 
     # Start our interface for our commands and Discord
-    client.interface = interface.Interface(config, client.commands)
+    client.interface = interface.Interface(client.admin_commands)
 
     # Start the bot
     client.run(token)

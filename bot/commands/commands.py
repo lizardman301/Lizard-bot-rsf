@@ -1,8 +1,15 @@
-from utilities import (register, bold, pings_b_gone, is_channel, read_db, save_db, settings_exist)
 import asyncio
+import json
+from pprint import pformat
 import random
+import re
+import requests
 
-# All @register() are a product of reviewing Yaksha
+# Local imports
+from secret import api_key
+from commands.utilities import (register, bold, get_users, is_channel, pings_b_gone, checkin, seeding, read_db, save_db, settings_exist)
+
+# All @register decorators are a product of reviewing Yaksha
 # See utilities.register for more information
 
 @register('bracket')
@@ -47,9 +54,65 @@ async def TOs(command, msg, user, channel, *args, **kwargs):
 
 @register('botrole')
 async def botrole(command, msg, user, channel, *args, **kwargs):
+    # Pull the role name from the user's roles
     for role in user.roles:
         if role.id == read_db('guild', command, kwargs['guild']):
             return "The bot role is {0}".format(bold(role.name))
+
+@register('challonge')
+async def challonge(command, msg, user, channel, *args, **kwargs):
+    async with channel.typing():
+        base_url = "https://api.challonge.com/v1/tournaments/" # Base url to access Challonge's API
+        subcommand = msg.split(' ')[0].lower() # The function trying to be accomplished
+        tour_url = msg.split(' ')[1] # Bracket to pull from
+        subdomain = read_db('guild', command, kwargs['guild']) # Server's subdomain with Challonge
+
+        # Properly add the subdomain to the bracket url
+        if subdomain:
+            tour_url = subdomain + '-' + tour_url
+
+        # Get the participants for the tournament
+        parts_get = requests.get(base_url + tour_url + "/participants.json", params={'api_key':api_key})
+        if '200' in str(parts_get.status_code):
+            parts = parts_get.json() # Convert response from json to Python Dictionary
+
+            # If Checkin
+            if subcommand in 'checkin':
+                not_checked_in_parts, not_discord_parts = checkin(parts, get_users(kwargs['full_msg']))
+
+                # Message showing who is not checked in and who is not in the Discord
+                return_msg = "**NOT CHECKED IN:** {0}\n**NOT IN DISCORD:** {1}".format(', '.join(not_checked_in_parts), ', '.join(not_discord_parts))
+
+            # If Seeding
+            elif subcommand in 'seeding':
+                # If msg has 3 params left 3rd one must be seed number
+                # Else, seed whole bracket
+                seed_num = int(msg.split(' ')[2]) if len(msg.split(' ')) > 2 else 0
+
+                # Get Google Sheets ID
+                sheet_id = read_db('channel', subcommand, channel.id)
+
+                # If seeding hasn't been set, inform user
+                if not sheet_id:
+                    return "There is no seeding sheet for this channel. Please view https://github.com/lizardman301/Lizard-bot-rsf/blob/master/doc/seeding_with_sheets.md for a walkthrough"
+
+                seeds = seeding(sheet_id, parts, base_url + '/' + tour_url,seed_num)
+                if isinstance(seeds, str):
+                    return seeds
+
+                # Seeding takes place in different method
+                await channel.send("**SEEDING:**\n {0}".format(',\n'.join(pformat(seeds)[1:-1].split(', '))))
+
+                # Final message that seeding is complete
+                return_msg = bold("SEEDING IS NOW COMPLETE!\nPLEASE REFRESH YOUR BRACKETS\nWAIT FOR THE ROUND 1 ANNOUNCEMENT TO START PLAYING")
+
+            # Bad command catching
+            else:
+                return_msg = "Invalid Challonge subcommand"
+
+            return return_msg # Return the final message
+        elif '404' in str(parts_get.status_code):
+            return "Lizard-BOT can not find tournament: " + tour_url
 
 @register('coin-flip')
 async def coin_flip(command, msg, user, channel, *args, **kwargs):
@@ -96,9 +159,13 @@ async def edit(command, msg, user, channel, *args, **kwargs):
         mentions = pings_b_gone(full_msg.mentions)
         db_message = ' '.join(mentions.values()) # Put mention values into the database
         channel_message = ' '.join(mentions.keys()) # Send usernames back to the channel
+    elif editable_command in ['seeding']:
+        reg = re.compile('[a-zA-Z0-9-_]+')
+        if not reg.fullmatch(params[0]):
+            return "Invalid Sheets spreadsheet ID. Please view https://github.com/lizardman301/Lizard-bot-rsf/blob/master/doc/seeding_with_sheets.md for a walkthrough"
 
     # Check for guild settings, channel settings, or multi channel settings
-    if editable_command in ['botrole','prefix-lizard']:
+    if editable_command in ['botrole', 'challonge','prefix-lizard']:
         save_db('guild', editable_command, db_message, kwargs['guild']) # Save the new message to the proper setting in a given guild
     elif command_channels:
         # For each channel, save the setting
