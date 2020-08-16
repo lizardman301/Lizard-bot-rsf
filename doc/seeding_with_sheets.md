@@ -10,14 +10,14 @@ This option is for those looking to copy r/StreetFighter's layout and formula to
 ### 1. Read about sniffulls process for updating the sheet
 
 You have to know what you are getting into
-1. Go to https://docs.google.com/document/d/13FWt1BgcHsiFCu06y_uWOh5tQXiu3GpZXp_hVbK7JQE/edit?usp=sharing
+1. Go to <https://docs.google.com/document/d/13FWt1BgcHsiFCu06y_uWOh5tQXiu3GpZXp_hVbK7JQE/edit?usp=sharing>
 2. Read the process
 3. Decide if you are going to continue
 
 ### 2. Copying Template
 
 Got to have a good base
-1. Go to https://docs.google.com/spreadsheets/d/1hbbFZLhe4avpH3DLNxcOy5owtG3YMgTXbNSODCcgPyU/edit?usp=sharing
+1. Go to <https://docs.google.com/spreadsheets/d/1hbbFZLhe4avpH3DLNxcOy5owtG3YMgTXbNSODCcgPyU/edit?usp=sharing>
 2. Under the File menu, choose 'Make a copy'
 Make sure you choose the appropriate name and destination folder
 
@@ -40,7 +40,7 @@ Give permissions to Lizard-BOT to view your sheet
 Now, that there is a spreadsheet with points that Lizard-BOT has access to. We need to know to use that spreadsheet
 1. Open up the Google Sheet that will be used
 2. Look at the URL
-	- It should look like: https://docs.google.com/spreadsheets/d/1Msq8pgWFj83DwLumVdgk84fSmBG_Uq3UcaJ7Ro_mk6Q/edit
+	- It should look like: <https://docs.google.com/spreadsheets/d/1Msq8pgWFj83DwLumVdgk84fSmBG_Uq3UcaJ7Ro_mk6Q/edit>
 3. Copy the spreadsheet ID from the URL
 	- The spreadsheet ID is between 'spreadsheet/d/' and '/edit'
 	- 1Msq8pgWFj83DwLumVdgk84fSmBG_Uq3UcaJ7Ro_mk6Q in this case
@@ -116,7 +116,7 @@ Give permissions to Lizard-BOT to view your sheet
 Now, that there is a spreadsheet with points that Lizard-BOT has access to. We need to know to use that spreadsheet
 1. Open up the Google Sheet that will be used
 2. Look at the URL
-	- It should look like: https://docs.google.com/spreadsheets/d/1Msq8pgWFj83DwLumVdgk84fSmBG_Uq3UcaJ7Ro_mk6Q/edit
+	- It should look like: <https://docs.google.com/spreadsheets/d/1Msq8pgWFj83DwLumVdgk84fSmBG_Uq3UcaJ7Ro_mk6Q/edit>
 3. Copy the spreadsheet ID from the URL
 	- The spreadsheet ID is between 'spreadsheet/d/' and '/edit'
 	- 1Msq8pgWFj83DwLumVdgk84fSmBG_Uq3UcaJ7Ro_mk6Q in this case
@@ -191,7 +191,7 @@ Give permissions to Lizard-BOT to view your sheet
 Now, that there is a spreadsheet with points that Lizard-BOT has access to. We need to know to use that spreadsheet
 1. Open up the Google Sheet that will be used
 2. Look at the URL
-	- It should look like: https://docs.google.com/spreadsheets/d/1Msq8pgWFj83DwLumVdgk84fSmBG_Uq3UcaJ7Ro_mk6Q/edit
+	- It should look like: <https://docs.google.com/spreadsheets/d/1Msq8pgWFj83DwLumVdgk84fSmBG_Uq3UcaJ7Ro_mk6Q/edit>
 3. Copy the spreadsheet ID from the URL
 	- The spreadsheet ID is between 'spreadsheet/d/' and '/edit'
 	- 1Msq8pgWFj83DwLumVdgk84fSmBG_Uq3UcaJ7Ro_mk6Q in this case

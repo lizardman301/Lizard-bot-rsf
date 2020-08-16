@@ -8,6 +8,14 @@ In order to get started, you need to invite Lizard-BOT to the discord server you
 
 Immediately after the bot joins the server use the command `!edit botrole <role>` with the role of your choice to make it so that only those with that role can access the commands meant for the Tournament Organizers. From there, feel free to use all the commands listed below to adjust the bot to your needs.
 
+### Note about Challonge
+
+If the Challonge community that organizes the tournaments does **NOT** have a dedicated subdomain, e.g. challonge.com/communities/1c9ef6d4805d8a3071631f4f, then **Challonge's API** will **ALWAYS** be unable to find the tournament.
+None of the Challonge integration will work until the community becomes a ["Pro" community](https://challonge.com/communities/about#pro-features) and sets a custom subdomain, e.g. redditfighting.challonge.com
+
+If the Challonge community tournament does not add the Lizard-BOT Challonge account as a collaborator or a tournament hosted by a Challonge user, the checkin command **WILL** work but the seeding command will **NOT** work.
+This is because tournaments are read-only by default. Any attempts by Lizard-BOT to updating seeding numbers will fail since Lizard-BOT doesn't have permissions.
+
 ## TO Commands
 
 These commands will only be available to be used by those with the role mentioned above.
@@ -15,8 +23,14 @@ These commands will only be available to be used by those with the role mentione
 `!botrole`
 Returns the role that allows access to the administrator commands.
 
-`!challonge <subcommand> <bracket url> [OPTIONALS]`
+`!challonge <subcommand> <bracket URL identifier> [OPTIONALS]`
 Uses Challonge's API to pull data into Discord
+
+Bracket URL identifier is what comes at the end of the URL
+For example
+	redditfighting.challonge.com/wwyi8jhk
+	Bracket URL identifier = wwyi8jhk
+
 
 ##### Subcommands
 **Subcommands are still actively being implemented**
@@ -55,7 +69,7 @@ If multiple channels are listed, the setting will be updated to the same value a
 	 * Default value: There is no bracket set for this channel
  * seeding
 	 * Allows you to set the Google Sheets spreadsheet ID to be used to check points
-	 * Please see: https://github.com/lizardman301/Lizard-bot-rsf/blob/master/doc/seeding_with_sheets.md for instructions on creating/adapting a spreadsheet
+	 * Please see: [Our Documentation](https://github.com/lizardman301/Lizard-bot-rsf/blob/master/doc/seeding_with_sheets.md) for instructions on creating/adapting a spreadsheet
 	 * Unique for each channel
 	 * Default value: 
  * status
@@ -98,7 +112,7 @@ Links back to this page.
 Ping! Pong!
 
 `!pingtest`
-Explains how to run a ping test using https://testmyspeed.onl/ and a common server.
+Explains how to run a ping test using <https://testmyspeed.onl/> and a common server.
 
 `!status`
 Returns the current round number in a message that can be customized.  Will let users know if a tournament has not begun.

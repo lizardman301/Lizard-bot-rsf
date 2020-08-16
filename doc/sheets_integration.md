@@ -37,7 +37,7 @@ Big Google gets a little complicated but still not super difficult
 
 Time to get started with Google
 1. Create Google account for the bot
-2. Go to https://console.developers.google.com/apis/dashboard and accept the Terms and Conditions
+2. Go to <https://console.developers.google.com/apis/dashboard> and accept the Terms and Conditions
 3. Create a new project and name it appropriately
 4. Create new Service Account credentials and name it appropriately. Do **NOT** add any permissions or user access
 5. Click Done
