@@ -39,8 +39,17 @@ Time to get started with Google
 1. Create Google account for the bot
 2. Go to <https://console.developers.google.com/apis/dashboard> and accept the Terms and Conditions
 3. Create a new project and name it appropriately
-4. Create new Service Account credentials and name it appropriately. Do **NOT** add any permissions or user access
-5. Click Done
+4. Click on 'Enable APIs and Services'
+5. Search for 'Google Sheets API'
+6. Click on it and then, enable the Google Sheets API
+
+### 2. Creating a Service account
+
+Time to make an account to use the API
+1. Go to APIs & Service > Credentials
+2. Click on Create Credentials > Service Account
+3. Name it appropriately. Do **NOT** add any permissions or user access
+4. Click Done
 
 ### 2. Adding Service Account to the program
 
