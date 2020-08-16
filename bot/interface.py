@@ -57,12 +57,12 @@ class Interface():
         # First check if the user is allowed to call this
         # function.
         if self.user_has_permission(user, command, kwargs['guild']):
-            #try:
-            return await self._func_mapping[command](command, msg, user, channel, *args, **kwargs)
-            #except Exception:
+            try:
+                return await self._func_mapping[command](command, msg, user, channel, *args, **kwargs)
+            except Exception:
                 # If we get this far and something breaks
                 # Something is very wrong
-            #    return "Sorry, that command didn't work. Ask LizardMan301 to fix it."
+                return "Sorry, that command didn't work. Ask LizardMan301 to fix it."
 
     def user_has_permission(self, user, command, id):
         '''

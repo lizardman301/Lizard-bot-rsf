@@ -1,5 +1,6 @@
 import asyncio
 import json
+from pprint import pformat
 import random
 import re
 import requests
@@ -94,9 +95,13 @@ async def challonge(command, msg, user, channel, *args, **kwargs):
                 # If seeding hasn't been set, inform user
                 if not sheet_id:
                     return "There is no seeding sheet for this channel. Please view https://github.com/lizardman301/Lizard-bot-rsf/blob/master/doc/seeding_with_sheets.md for a walkthrough"
-                
+
+                seeds = seeding(sheet_id, parts, base_url + '/' + tour_url,seed_num)
+                if isinstance(seeds, str):
+                    return seeds
+
                 # Seeding takes place in different method
-                await channel.send("**SEEDING:**\n {0}".format(',\n'.join(seeding(sheet_id, parts, base_url + '/' + tour_url,seed_num)[1:-1].split(', '))))
+                await channel.send("**SEEDING:**\n {0}".format(',\n'.join(pformat(seeds)[1:-1].split(', '))))
 
                 # Final message that seeding is complete
                 return_msg = bold("SEEDING IS NOW COMPLETE!\nPLEASE REFRESH YOUR BRACKETS\nWAIT FOR THE ROUND 1 ANNOUNCEMENT TO START PLAYING")
@@ -106,6 +111,8 @@ async def challonge(command, msg, user, channel, *args, **kwargs):
                 return_msg = "Invalid Challonge subcommand"
 
             return return_msg # Return the final message
+        elif '404' in str(parts_get.status_code):
+            return "Lizard-BOT can not find tournament: " + tour_url
 
 @register('coin-flip')
 async def coin_flip(command, msg, user, channel, *args, **kwargs):
@@ -158,7 +165,7 @@ async def edit(command, msg, user, channel, *args, **kwargs):
             return "Invalid Sheets spreadsheet ID. Please view https://github.com/lizardman301/Lizard-bot-rsf/blob/master/doc/seeding_with_sheets.md for a walkthrough"
 
     # Check for guild settings, channel settings, or multi channel settings
-    if editable_command in ['botrole','prefix-lizard']:
+    if editable_command in ['botrole', 'challonge','prefix-lizard']:
         save_db('guild', editable_command, db_message, kwargs['guild']) # Save the new message to the proper setting in a given guild
     elif command_channels:
         # For each channel, save the setting

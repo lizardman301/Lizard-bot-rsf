@@ -1,4 +1,3 @@
-from pprint import pformat # Dictionary String Formatter
 import pymysql.cursors # Use for DB connections
 import re # Process strings
 import requests # HTTP functions
@@ -79,7 +78,7 @@ def checkin(parts, users):
             not_checked_in_parts.append(p['name'])
 
         # If participant not in the Discord, add them to the bad list
-        if p['name'].lower() not in users.values():
+        if p['name'].lower() not in users.values() or p['challonge_username'].lower() not in users.values():
             not_discord_parts.append(p['name'])
 
     return not_checked_in_parts, not_discord_parts
@@ -89,6 +88,9 @@ def seeding(sheet_id, parts, url, seed_num):
 
     # Get dict of associated players and their points
     players_to_points = sheets(sheet_id)
+    
+    if isinstance(players_to_points, str):
+        return players_to_points
 
     # Check each participant and if they have points
     for p in parts:
@@ -117,10 +119,12 @@ def seeding(sheet_id, parts, url, seed_num):
             # If Challonge user equals the username we have for seeding
             # Then, update seed number with their index location
             if p['challonge_username'] == finished_seeding[player].split(' ')[0]:
-                requests.put(url + "/participants/" + str(p['id']) + ".json", params={'api_key':api_key, 'participant[seed]':player})
+                response = requests.put(url + "/participants/" + str(p['id']) + ".json", params={'api_key':api_key, 'participant[seed]':player})
+                if '401' in str(response.status_code):
+                    return "Lizard-BOT does not have access to that tournament"
 
     # Return seeding list
-    return pformat(finished_seeding)
+    return finished_seeding
 
 # Create a connection to the database
 def make_conn():
