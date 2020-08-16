@@ -13,8 +13,8 @@ Immediately after the bot joins the server use the command `!edit botrole <role>
 If the Challonge community that organizes the tournaments does **NOT** have a dedicated subdomain, e.g. challonge.com/communities/1c9ef6d4805d8a3071631f4f, then **Challonge's API** will **ALWAYS** be unable to find the tournament.
 None of the Challonge integration will work until the community becomes a ["Pro" community](https://challonge.com/communities/about#pro-features) and sets a custom subdomain, e.g. redditfighting.challonge.com
 
-If the Challonge community tournament does not add the Lizard-BOT Challonge account as a collaborator or a tournament hosted by a Challonge user, the checkin command **WILL** work but the seeding command will **NOT** work.
-This is because tournaments are read-only by default. Any attempts by Lizard-BOT to updating seeding numbers will fail since Lizard-BOT doesn't have permissions.
+If the Challonge community tournament does not add the ["LizardBOT" Challonge account](https://challonge.com/users/LizardBOT) as a collaborator or a tournament hosted by a Challonge user, the checkin command **WILL** work but the seeding command will **NOT** work.
+This is because tournaments are read-only by default. Any attempts by Lizard-BOT to updating seeding numbers will fail since "LizardBOT" doesn't have permissions.
 
 ## TO Commands
 
