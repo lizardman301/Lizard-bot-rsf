@@ -1,4 +1,5 @@
 import asyncio
+from discord.utils import escape_markdown # Regexing fun simplified
 import json
 from pprint import pformat
 import random
@@ -101,7 +102,7 @@ async def challonge(command, msg, user, channel, *args, **kwargs):
                     return seeds
 
                 # Seeding takes place in different method
-                await channel.send("**SEEDING:**\n {0}".format(',\n'.join(pformat(seeds)[1:-1].split(', '))))
+                await channel.send("**SEEDING:**\n {0}".format(',\n'.join(escape_markdown(pformat(seeds))[1:-1].split(', '))))
 
                 # Final message that seeding is complete
                 return_msg = bold("SEEDING IS NOW COMPLETE!\nPLEASE REFRESH YOUR BRACKETS\nWAIT FOR THE ROUND 1 ANNOUNCEMENT TO START PLAYING")
