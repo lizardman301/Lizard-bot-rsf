@@ -41,7 +41,7 @@ def get_users(msg):
 
     # Get their distinct name and their nickname
     for user in users:
-        userDict.update({user.name + '#' + str(user.discriminator): user.display_name.lower()})
+        userDict.update({user.name + '#' + str(user.discriminator): [user.display_name.lower(), user.mention]})
 
     return userDict
 
@@ -67,21 +67,42 @@ def pings_b_gone(mentions):
     return mention_list
 
 def checkin(parts, users):
+    users = list(users.values()) # Discord server usernames and mentions
     not_discord_parts = [] # Used for people missing from the server
     not_checked_in_parts = [] # Used for people not checked in
-    match_md = r'((([_*]).+?\3[^_*]*)*)([_*])'
+    usernames = [] # Discord server usernames
+    mentions = [] # Discord server mentions
+
+    for user in users:
+        usernames.append(user[0])
+        mentions.append(user[1])
 
     # Check each participant to see if they are in the server and checked in
     for p in parts:
         p = p['participant']
 
+        name_lower = p['name'].lower()# Participant name in lowercase
+        name_escaped = escape_markdown(p['name']) # Participant name with escaped markdown characters
+        challonge_name_lower = p['challonge_username'].lower() # Challonge user name in lowercase
+
         # If participant not checked in, add them to the bad list
         if not p['checked_in']:
-            not_checked_in_parts.append(escape_markdown(p['name']))
+            not_checked_in_parts.append(name_escaped)
 
         # If participant not in the Discord, add them to the bad list
-        if p['name'].lower() not in users.values() or p['challonge_username'].lower() not in users.values():
-            not_discord_parts.append(escape_markdown(p['name']))
+        if name_lower not in usernames and challonge_name_lower not in usernames:
+            not_discord_parts.append(name_escaped)
+
+        '''
+        (IF name is in Discord server
+        AND name is not checked_in)
+        AND
+        (IF name or challonge name is in Discord server)
+        Ping the user
+        '''
+        if (name_escaped not in not_discord_parts and name_escaped in not_checked_in_parts) and (name_lower in usernames or challonge_name_lower in usernames):
+            # Update the not_checked_in list  to use the user @mention instead of their name
+            not_checked_in_parts[not_checked_in_parts.index(name_escaped)] = mentions[usernames.index(name_lower if name_lower in usernames else challonge_name_lower)]
 
     return not_checked_in_parts, not_discord_parts
 
