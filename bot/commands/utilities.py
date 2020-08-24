@@ -83,7 +83,7 @@ def checkin(parts, users):
 
         name_lower = p['name'].lower()# Participant name in lowercase
         name_escaped = escape_markdown(p['name']) # Participant name with escaped markdown characters
-        challonge_name_lower = p['challonge_username'].lower() # Challonge user name in lowercase
+        challonge_name_lower = p['challonge_username'].lower() if p['challonge_username'] else p['name'].lower() # Challonge user name in lowercase
 
         # If participant not checked in, add them to the bad list
         if not p['checked_in']:
