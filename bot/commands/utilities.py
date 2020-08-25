@@ -145,6 +145,8 @@ def seeding(sheet_id, parts, url, seed_num):
                 response = requests.put(url + "/participants/" + str(p['id']) + ".json", params={'api_key':api_key, 'participant[seed]':player})
                 if '401' in str(response.status_code):
                     return "Lizard-BOT does not have access to that tournament"
+                else:
+                    print(response)
 
     # Return seeding list
     return finished_seeding
