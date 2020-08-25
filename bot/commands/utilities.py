@@ -135,16 +135,20 @@ def seeding(sheet_id, parts, url, seed_num):
         finished_seeding.update({x+1: player_points[x]})
 
     # Check if player is in sorted, truncated list and update their seed number
-    for p in parts:
-        p = p['participant']
+    for player in finished_seeding:
+        for p in parts:
+            p = p['participant']
 
-        for player in finished_seeding:
             # If Challonge user equals the username we have for seeding
             # Then, update seed number with their index location
             if p['challonge_username'] == finished_seeding[player].split(' ')[0]:
                 response = requests.put(url + "/participants/" + str(p['id']) + ".json", params={'api_key':api_key, 'participant[seed]':player})
-                if '401' in str(response.status_code):
+                if '200' in str(response.status_code):
+                    continue
+                elif '401' in str(response.status_code):
                     return "Lizard-BOT does not have access to that tournament"
+                else:
+                    print(response.text)
 
     # Return seeding list
     return finished_seeding

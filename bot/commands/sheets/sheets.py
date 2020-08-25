@@ -33,3 +33,5 @@ def sheets(sheet_id):
             return "Lizard-BOT does not have access to configured spreadsheet. Please share the spreadsheet with Lizard-BOT"
         elif status_code == '400':
             return "Configured spreadsheet does not contain a sheet named 'Seeding'. Please add a 'Seeding' sheet."
+        else:
+            print(str(err))

@@ -114,6 +114,8 @@ async def challonge(command, msg, user, channel, *args, **kwargs):
             return return_msg # Return the final message
         elif '404' in str(parts_get.status_code):
             return "Lizard-BOT can not find tournament: " + tour_url
+        else:
+            print(parts_get.text)
 
 @register('coin-flip')
 async def coin_flip(command, msg, user, channel, *args, **kwargs):
