@@ -114,6 +114,9 @@ Ping! Pong!
 `!pingtest`
 Explains how to run a ping test using <https://testmyspeed.onl/> and a common server.
 
+`!randomselect`
+Returns a randomly selected character from the current SFV cast. Useful if running a random select tourney.
+
 `!status`
 Returns the current round number in a message that can be customized.  Will let users know if a tournament has not begun.
 
