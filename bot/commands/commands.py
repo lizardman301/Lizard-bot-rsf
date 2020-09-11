@@ -225,3 +225,10 @@ async def reset(command, msg, user, channel, *args, **kwargs):
 async def round_lizard(command, msg, user, channel, *args, **kwargs):
     save_db('channel', command, msg, channel.id)
     return await status('status', msg, user, channel)
+
+@register('randomselect')
+async def randomselect(command, msg, user, channel, *args, **kwargs):
+    # Selects and returns a random character from the given list of sfv characters
+    # Accurate as of 9/11/2020, sfv version 5.04
+    sfvchars = ["Ryu","Chun-Li","Nash","M. Bison (Dictator)","Cammy","Birdie","Ken","Necalli","Vega (Claw)","R. Mika","Rashid","Karin","Zangief","Laura","Dhalsim","F.A.N.G","Alex","Guile","Ibuki","Balrog (Boxer)","Juri","Urien","Akuma","Kolin","Ed","Abigail","Menat","Zeku","Sakura","Blanka","Falke","Cody","G","Sagat","Kage","E. Honda","Lucia","Poison","Gill", "Seth"]
+    return "Your randomly selected character is: {0}".format(bold(random.choice(sfvchars)))
