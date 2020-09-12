@@ -30,6 +30,7 @@ async def ping(command, msg, user, channel, *args, **kwargs):
 async def pingtest(command, msg, user, channel, *args, **kwargs):
     return "To initiate a ping test, both players go to https://testmyspeed.onl/ and choose a common server between each players location. Send the results of both tests to the TO."
 
+@register('random')
 @register('randomselect')
 async def randomselect(command, msg, user, channel, *args, **kwargs):
     # Selects and returns a random character from the given list of sfv characters
