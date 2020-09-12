@@ -42,7 +42,7 @@ async def on_message(message):
         attempted_cmd = msg.split(' ')[0][1:].lower() # Get the attempted command from the beginning of the string
 
         # Check if the message begins with a command
-        if attempted_cmd and attempted_cmd in command:
+        if attempted_cmd and attempted_cmd == command:
             # Remove the command from the start
             msg = msg[len(command)+1:].strip()
             
