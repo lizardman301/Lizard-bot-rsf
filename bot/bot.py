@@ -32,10 +32,17 @@ async def on_message(message):
     # Get prefix for the guild
     prefix = read_db('guild', 'prefix-lizard', message.guild.id)
 
-    if not message.content.startswith(prefix):
+    # Hardcode prefix to be accessible via !
+    if message.content.startswith("!prefix-lizard") or message.content.startswith("!prefliz"):
+        response = await client.interface.call_command('prefix-lizard', 0, 0, 0, guild=message.guild.id)
+        if response:
+            await message.channel.send(response)
+        return
+    # If other commands don't start with the correct prefix, do nothing
+    elif not message.content.startswith(prefix):
         return
 
-    for command in client.commands.keys():
+    for command in client.commands:
         command = command.lower() # Lower the command for easier matching
         msg = message.content # The message
         user = message.author # The author
@@ -47,7 +54,7 @@ async def on_message(message):
             msg = msg[len(command)+1:].strip()
             
             # Await the interface calling the command
-            response = await client.interface.call_command(command, msg, user, message.channel, guild=message.guild.id, full_msg=message)
+            response = await client.interface.call_command(command, msg, user, message.channel, guild=message.guild.id, full_msg=message, edit_subs=client.edit_subcommands.keys())
             
             # If there is a response, send it
             if response:
@@ -56,17 +63,25 @@ async def on_message(message):
 
 # Yaksha
 def main():
-    # Pull in a seperate config
+    client.commands, client.admin_commands = [], []
+
+    # Pull in a separate config
     config = json.loads(open(os.path.join(os.path.dirname(__file__), 'commands/bots.json')).read())
 
     # Grab our commands
-    client.commands = config.get('common_commands', {}).copy()
-    client.commands.update(config.get('admin_commands', {}))
+    commands = list(config.get('common_commands', {}).copy().values())
+    commands.extend(config.get('admin_commands', {}).values())
+    for aliases in commands:
+        for alias in aliases:
+            client.commands.append(alias)
 
-    client.admin_commands = config.get('admin_commands', {}).copy()
-
-    client.subcommands = config.get('challonge_subcommands', {}).copy()
-    client.subcommands.update(config.get('edit_subcommands', {}))
+    commands = config.get('admin_commands', {}).copy().values()
+    for aliases in commands:
+        for alias in aliases:
+            client.admin_commands.append(alias)
+    
+    client.challonge_subcommands = config.get('challonge_subcommands', {}).copy()
+    client.edit_subcommands = config.get('edit_subcommands', {}).copy()
 
     client.config = config
 

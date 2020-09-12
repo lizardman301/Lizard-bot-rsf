@@ -1,39 +1,65 @@
 {
 	"admin_commands": {
-		"botrole":"",
-		"challonge":"",
-		"coin-flip":"",
-		"edit":"",
-		"prefix-lizard":"",
-		"refresh":"",
-		"remind":"",
-		"reset":"",
-		"round":""
+		"botrole": [
+			"botrole",
+			"role"
+		],
+		"challonge": [
+			"challonge",
+			"chal"
+		],
+		"coin-flip": [
+			"coin-flip",
+			"flip",
+			"cf"
+		],
+		"edit": ["edit"],
+		"refresh": ["refresh"],
+		"remind": ["remind"],
+		"reset": ["reset"],
+		"round": ["round"]
 	},
 	"common_commands": {
-		"bracket":"",
-		"help-lizard":"",
-		"lizardman":"",
-		"pingtest":"",
-		"random":"",
-		"randomselect":"",
-		"status":"",
-		"stream":"",
-		"TOs":""
+		"bracket": ["bracket"],
+		"help-lizard": [
+			"help-lizard",
+			"helpliz"
+		],
+		"lizardman": [
+			"lizardman",
+			"ping",
+			"liz"
+		],
+		"pingtest": [
+			"pingtest",
+			"pt"
+		],
+		"prefix-lizard": [
+			"prefix-lizard",
+			"prefliz"
+		],
+		"randomselect": [
+			"randomselect",
+			"random",
+			"rs"
+		],
+		"status": ["status"],
+		"stream": ["stream"],
+		"TOs": ["TOs"]
 	},
 	"challonge_subcommands": {
-		"checkin":"",
-		"seeding":""
+		"checkin":["checkin"],
+		"seeding":["seeding"]
 	},
 	"edit_subcommands": {
-		"botrole":"",
-		"brackets":"",
-		"challonge":"",
-		"prefix-lizard":"",
-		"seeding":"",
-		"status":"",
-		"stream":"",
-		"tos":""
+		"botrole": ["botrole"],
+		"bracket": ["bracket"],
+		"challonge": ["challonge"],
+		"prefix-lizard": ["prefix-lizard"],
+		"seeding": ["seeding"],
+		"status": ["status"],
+		"stream": ["stream"],
+		"tos": ["tos"]
 	}
 	
 }
