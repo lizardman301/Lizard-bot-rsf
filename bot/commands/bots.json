@@ -1,8 +1,8 @@
 {
 	"admin_commands": {
 		"botrole": [
-				"botrole",
-				"role"
+			"botrole",
+			"role"
 		],
 		"challonge": [
 			"challonge",
