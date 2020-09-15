@@ -45,17 +45,22 @@ async def on_message(message):
     for command in client.commands:
         command = command.lower() # Lower the command for easier matching
         msg = message.content # The message
-        user = message.author # The author
         attempted_cmd = msg.split(' ')[0][1:].lower() # Get the attempted command from the beginning of the string
 
         # Check if the message begins with a command
         if attempted_cmd and attempted_cmd == command:
+            user = message.author # The author
+            kwargs = {'guild':message.guild.id}
+
             # Remove the command from the start
             msg = msg[len(command)+1:].strip()
-            
+
+            if command in ['challonge', 'chal', 'edit']:
+                kwargs['full_msg'] = message
+
             # Await the interface calling the command
-            response = await client.interface.call_command(command, msg, user, message.channel, guild=message.guild.id, full_msg=message, edit_subs=client.edit_subcommands.keys())
-            
+            response = await client.interface.call_command(command, msg, user, message.channel, **kwargs)
+
             # If there is a response, send it
             if response:
                 await message.channel.send(response)
@@ -64,6 +69,7 @@ async def on_message(message):
 # Yaksha
 def main():
     client.commands, client.admin_commands = [], []
+    client.help = {}
 
     # Pull in a separate config
     config = json.loads(open(os.path.join(os.path.dirname(__file__), 'commands/bots.json')).read())
@@ -73,20 +79,34 @@ def main():
     commands.extend(config.get('admin_commands', {}).values())
     for aliases in commands:
         for alias in aliases:
+            if alias == aliases[-1]:
+                client.help.update({aliases[0]:alias})
+                break
             client.commands.append(alias)
 
     commands = config.get('admin_commands', {}).copy().values()
     for aliases in commands:
         for alias in aliases:
             client.admin_commands.append(alias)
-    
+
     client.challonge_subcommands = config.get('challonge_subcommands', {}).copy()
+    for subcmd in client.challonge_subcommands:
+        for info in client.challonge_subcommands[subcmd]:
+            if info == client.challonge_subcommands[subcmd][-1]:
+                client.help.update({"challonge " + subcmd:info})
+                break
+
     client.edit_subcommands = config.get('edit_subcommands', {}).copy()
+    for subcmd in client.edit_subcommands:
+        for info in client.edit_subcommands[subcmd]:
+            if info == client.edit_subcommands[subcmd][-1]:
+                client.help.update({"edit " + subcmd:info})
+                break
 
     client.config = config
 
     # Start our interface for our commands and Discord
-    client.interface = interface.Interface(client.admin_commands)
+    client.interface = interface.Interface(client.admin_commands, client.edit_subcommands,client.help)
 
     # Start the bot
     client.run(token)

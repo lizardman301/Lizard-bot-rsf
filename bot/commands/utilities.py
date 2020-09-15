@@ -180,7 +180,7 @@ def settings_exist(guild_id, chan_id):
                 if id not in ids:
                     sql = "INSERT INTO " + level + "s (" + level + "_id) VALUES (%s)"
                     cursor.execute(sql, (id,))
-                    
+
                     sql = "INSERT INTO " + level + "_settings (" + level + "_id) VALUES (%s)"
                     cursor.execute(sql, (id,))
     except Exception:
