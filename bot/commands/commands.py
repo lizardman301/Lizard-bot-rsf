@@ -20,7 +20,17 @@ async def bracket(command, msg, user, channel, *args, **kwargs):
 @register('help-lizard')
 @register('helpliz')
 async def help_lizard(command, msg, user, channel, *args, **kwargs):
-    return "For more information about the bot and its commands: <https://github.com/lizardman301/Lizard-bot-rsf>"
+    help_commands = kwargs.get('help', False)
+    split = msg.split(' ')
+    cmd = ' '.join(split[0:2]) if len(split) > 1 else split[0]
+    if len(split) < 1:
+        return ('Allows you to get help on a command. The avaliable'
+                ' commands are ```%s```' % list(help_commands.keys()))
+
+    if help_commands:
+        return help_commands[cmd]
+    else:
+        return "For more information about the bot and its commands: <https://github.com/lizardman301/Lizard-bot-rsf>"
 
 @register('lizardman')
 @register('ping')

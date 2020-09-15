@@ -66,12 +66,12 @@ If multiple channels are listed, the setting will be updated to the same value a
  * bracket
 	 * Allows you to add a link to a bracket for users to view
 	 * Unique for each channel
-	 * Default value: There is no bracket set for this channel
+	 * Default value: 'There is no bracket set for this channel'
  * seeding
 	 * Allows you to set the Google Sheets spreadsheet ID to be used to check points
 	 * Please see: [Our Documentation](https://github.com/lizardman301/Lizard-bot-rsf/blob/master/doc/seeding_with_sheets.md) for instructions on creating/adapting a spreadsheet
 	 * Unique for each channel
-	 * Default value: 
+	 * Default value:
  * status
 	 * Allows you to change the flavor text of the !round and !status commands for individual channels
 	 * Text uses {0} as a marker for where the round count will be added
@@ -87,14 +87,11 @@ If multiple channels are listed, the setting will be updated to the same value a
 	 * Unique for each channel
 	 * Default value:
 
-`!prefix-lizard`
-Prints the prefix currently in use for Lizard-BOT.
-
-`!remind <time in minutes> [reason]`
-Allows the user to set a timed reminder. When used it will ping the user, with the reason for the reminder if specified, after the alloted time. Useful if you are have to handle multiple situations at once.
-
 `!refresh`
 Sends a message to the chat to let people know to refresh the bracket page.
+
+`!remind <time in minutes> [reason]`
+Allows the admin to set a timed reminder. When used it will ping the user, with the reason for the reminder if specified, after the alloted time. Useful if you are have to handle multiple situations at once.
 
 `!reset`
 Resets the round count back to its default value when a tournament is finished.
@@ -105,6 +102,9 @@ Changes the current round number to the new value. Can be more than just numbers
 ## General commands
 Commands everyone can use
 
+`!bracket`
+Shows the current bracket set in the channel.
+
 `!help-lizard`
 Links back to this page.
 
@@ -114,6 +114,9 @@ Ping! Pong!
 `!pingtest`
 Explains how to run a ping test using <https://testmyspeed.onl/> and a common server.
 
+`!prefix-lizard`
+Prints the prefix currently in use for Lizard-BOT.
+
 `!randomselect`
 Returns a randomly selected character from the current SFV cast. Useful if running a random select tourney.
 
@@ -121,7 +124,7 @@ Returns a randomly selected character from the current SFV cast. Useful if runni
 Returns the current round number in a message that can be customized.  Will let users know if a tournament has not begun.
 
 `!stream`
-Returns the stream link, if one is set.
+Returns the stream link if one is set.
 
 `!TOs`
 Sends a message back with all the Tournament Organizers pinged, if set.
