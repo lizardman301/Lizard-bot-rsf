@@ -45,6 +45,27 @@ def get_users(msg):
 
     return userDict
 
+def get_challonge_identifier(string):
+    # designed to return the identifier if it exists in the database bracket text
+    # returns empty string otherwise
+    regex = r"[-a-zA-Z0-9@:%._\+~#=]{0,256}\.?challonge\.com\/[a-zA-Z0-9_]+" # regex for <community_url>.challonge.com/<identifier> or challonge.com/<identifier>
+    url = ""
+    identifier = ""
+
+    # find first match and make that the url to work off of
+    # if no match, return empty string immediately
+    matches = re.search(regex, string) 
+    if matches:
+        url = matches.group(0)
+    else:
+        return identifier
+    
+    # get the identifer from the back part of the url
+    # should only be one slash so we split on that
+    # get the last group in order to get the identifier
+    identifier = url.split("/", 1)[-1]
+    return identifier # return it
+
 # Perform regex to find out if a string is a Discord channel
 def is_channel(channel):
     reg = re.compile('<#\d*>')
