@@ -69,7 +69,7 @@ class Interface():
             except Exception:
                 # If we get this far and something breaks
                 # Something is very wrong
-                return "Sorry, that command didn't work. Ask LizardMan301 to fix it."
+                return "Sorry, that command didn't work. Ask Lizardman301 to fix it."
         else:
             return "Permission denied"
 
