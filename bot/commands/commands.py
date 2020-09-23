@@ -25,14 +25,13 @@ async def help_lizard(command, msg, user, channel, *args, **kwargs):
     split = msg.split(' ')
     cmd = ' '.join(split[0:2]) if len(split) > 1 else split[0]
 
-    if len(split) < 2:
+    if not help_commands:
+        return "For more information about the bot and its commands: <https://github.com/lizardman301/Lizard-bot-rsf>"
+    elif len(split) < 2:
         return ('Allows you to get help on a command. The avaliable'
                 ' commands are ```%s```' % list(help_commands.keys()))
-
-    if help_commands:
-        return help_commands[cmd]
     else:
-        return "For more information about the bot and its commands: <https://github.com/lizardman301/Lizard-bot-rsf>"
+        return help_commands[cmd]
 
 @register('lizardman')
 @register('ping')
@@ -94,12 +93,12 @@ async def botrole(command, msg, user, channel, *args, **kwargs):
 @register('challonge')
 @register('chal')
 async def challonge(command, msg, user, channel, *args, **kwargs):
-    if len(msg.split(' ')) < 2:
-        return "Lack of arguments. " + await help_lizard('','','','')
-
     async with channel.typing():
         base_url = "https://api.challonge.com/v1/tournaments/" # Base url to access Challonge's API
         subcommand = msg.split(' ')[0].lower() # The function trying to be accomplished
+        
+        if not subcommand:
+                return "Lack of arguments. " + await help_lizard('','','','')
 
         try:
             tour_url = msg.split(' ')[1] # Bracket to pull from
@@ -138,7 +137,7 @@ async def challonge(command, msg, user, channel, *args, **kwargs):
             elif subcommand == 'seeding':
                 # If msg has 3 params left 3rd one must be seed number
                 # Else, seed whole bracket
-                seed_num = int(msg.split(' ')[-1])
+                seed_num = int(msg.split(' ')[-1]) if msg.split(' ')[-1].isdigit() else 0
 
                 # Get Google Sheets ID
                 sheet_id = read_db('channel', 'seeding', channel.id)
