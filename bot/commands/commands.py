@@ -25,7 +25,7 @@ async def help_lizard(command, msg, user, channel, *args, **kwargs):
     split = msg.split(' ')
     cmd = ' '.join(split[0:2]) if len(split) > 1 else split[0]
 
-    if len(split) < 1:
+    if len(split) < 2:
         return ('Allows you to get help on a command. The avaliable'
                 ' commands are ```%s```' % list(help_commands.keys()))
 
