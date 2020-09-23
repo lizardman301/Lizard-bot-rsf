@@ -34,6 +34,27 @@ def get_callbacks():
 def bold(string):
     return "**" + string + "**"
 
+def get_chal_tour_id(bracket_msg):
+    # designed to return the tournament identifier if it exists in the database bracket text
+    # returns empty string otherwise
+    regex = r"[-a-zA-Z0-9@:%._\+~#=]{0,256}\.?challonge\.com\/[a-zA-Z0-9_]+" # regex for <community_url>.challonge.com/<tournament identifier> or challonge.com/<tournament identifier>
+    url = ""
+    tour_id = ""
+
+    # find first match and make that the url to work off of
+    # if no match, return empty string immediately
+    matches = re.search(regex, bracket_msg) 
+    if matches:
+        url = matches.group(0)
+    else:
+        return tour_id
+
+    # get the identifer from the back part of the url
+    # should only be one slash so we split on that
+    # get the last group in order to get the tournament identifier
+    tour_id = url.split("/", 1)[-1]
+    return tour_id # return it
+
 # Get all users in a Discord
 def get_users(msg):
     users = msg.guild.members
@@ -44,27 +65,6 @@ def get_users(msg):
         userDict.update({user.name + '#' + str(user.discriminator): [user.display_name.lower(), user.mention]})
 
     return userDict
-
-def get_challonge_identifier(string):
-    # designed to return the identifier if it exists in the database bracket text
-    # returns empty string otherwise
-    regex = r"[-a-zA-Z0-9@:%._\+~#=]{0,256}\.?challonge\.com\/[a-zA-Z0-9_]+" # regex for <community_url>.challonge.com/<identifier> or challonge.com/<identifier>
-    url = ""
-    identifier = ""
-
-    # find first match and make that the url to work off of
-    # if no match, return empty string immediately
-    matches = re.search(regex, string) 
-    if matches:
-        url = matches.group(0)
-    else:
-        return identifier
-    
-    # get the identifer from the back part of the url
-    # should only be one slash so we split on that
-    # get the last group in order to get the identifier
-    identifier = url.split("/", 1)[-1]
-    return identifier # return it
 
 # Perform regex to find out if a string is a Discord channel
 def is_channel(channel):
