@@ -17,7 +17,7 @@
 			"A coin is flipped and the result is returned, either heads or tails."
 		],
 		"edit": ["edit","There are multiple settings that can be edited to allow customization. If multiple channels are listed, the setting will be updated to the same value across all listed channels."],
-		"refresh": ["refresh"],
+		"refresh": ["refresh", "Sends a \"REFRESH THE BRACKET\" reminder into the chat."],
 		"remind": ["remind", "Allows the admin to set a timed reminder"],
 		"reset": ["reset", "Resets the round count back to its default value"],
 		"round": ["round", "Changes the current round number to the new value. Immediately sends a status update in the chat."]

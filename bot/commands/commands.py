@@ -8,7 +8,7 @@ import requests
 
 # Local imports
 from secret import api_key
-from commands.utilities import (register, bold, get_users, is_channel, pings_b_gone, checkin, seeding, read_db, save_db, settings_exist)
+from commands.utilities import (register, bold, get_chal_tour_id, get_users, is_channel, pings_b_gone, checkin, seeding, read_db, save_db, settings_exist)
 
 # All @register decorators are a product of reviewing Yaksha
 # See utilities.register for more information
@@ -21,16 +21,17 @@ async def bracket(command, msg, user, channel, *args, **kwargs):
 @register('helpliz')
 async def help_lizard(command, msg, user, channel, *args, **kwargs):
     help_commands = kwargs.get('help', False)
+
     split = msg.split(' ')
     cmd = ' '.join(split[0:2]) if len(split) > 1 else split[0]
-    if len(split) < 1:
+
+    if not help_commands:
+        return "For more information about the bot and its commands: <https://github.com/lizardman301/Lizard-bot-rsf>"
+    elif len(split) < 2:
         return ('Allows you to get help on a command. The avaliable'
                 ' commands are ```%s```' % list(help_commands.keys()))
-
-    if help_commands:
-        return help_commands[cmd]
     else:
-        return "For more information about the bot and its commands: <https://github.com/lizardman301/Lizard-bot-rsf>"
+        return help_commands[cmd]
 
 @register('lizardman')
 @register('ping')
@@ -92,13 +93,28 @@ async def botrole(command, msg, user, channel, *args, **kwargs):
 @register('challonge')
 @register('chal')
 async def challonge(command, msg, user, channel, *args, **kwargs):
-    if len(msg.split(' ')) < 2:
-        return "Lack of arguments. " + await help_lizard(0,0,0,0)
-
     async with channel.typing():
         base_url = "https://api.challonge.com/v1/tournaments/" # Base url to access Challonge's API
         subcommand = msg.split(' ')[0].lower() # The function trying to be accomplished
-        tour_url = msg.split(' ')[1] # Bracket to pull from
+        
+        if not subcommand:
+                return "Lack of arguments. " + await help_lizard('','','','')
+
+        try:
+            tour_url = msg.split(' ')[1] # Bracket to pull from
+        except:
+            tour_url = get_chal_tour_id(read_db('channel', 'bracket', channel.id)) # no bracket provided, give it one from DB
+            if not tour_url: # no bracket found still, return so we dont have issues
+                return "Lack of arguments. " + await help_lizard('','','','')
+
+        # for the seeding command !challonge seeding <num> if you dont provide a bracket, it will think <num> is the bracket
+        # if the tour_url is equal to the last item AND it is seeding, assume something went wrong and pull tour_url from DB
+        if tour_url == msg.split(' ')[-1] and subcommand == "seeding":
+            tour_url = get_chal_tour_id(read_db('channel', 'bracket', channel.id)) # no bracket provided, give it one from DB
+            if not tour_url: # no bracket found still, return so we dont have issues
+                return "Lack of arguments. " + await help_lizard('','','','')
+
+
         subdomain = read_db('guild', 'challonge', kwargs['guild']) # Server's subdomain with Challonge
 
         # Properly add the subdomain to the bracket url
@@ -121,7 +137,7 @@ async def challonge(command, msg, user, channel, *args, **kwargs):
             elif subcommand == 'seeding':
                 # If msg has 3 params left 3rd one must be seed number
                 # Else, seed whole bracket
-                seed_num = int(msg.split(' ')[2]) if len(msg.split(' ')) > 2 else 0
+                seed_num = int(msg.split(' ')[-1]) if msg.split(' ')[-1].isdigit() else 0
 
                 # Get Google Sheets ID
                 sheet_id = read_db('channel', 'seeding', channel.id)

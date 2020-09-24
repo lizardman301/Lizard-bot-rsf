@@ -64,12 +64,12 @@ class Interface():
                 kwargs['help'] = self.help
             elif command == 'edit':
                 kwargs['edit_subs'] = self.edit_subcommands.keys()
-            try:
-                return await self._func_mapping[command](command, msg, user, channel, *args, **kwargs)
-            except Exception:
+            #try:
+            return await self._func_mapping[command](command, msg, user, channel, *args, **kwargs)
+            #except Exception:
                 # If we get this far and something breaks
                 # Something is very wrong
-                return "Sorry, that command didn't work. Ask LizardMan301 to fix it."
+            #    return "Sorry, that command didn't work. Ask Lizardman301 to fix it."
         else:
             return "Permission denied"
 
