@@ -33,6 +33,11 @@ async def help_lizard(command, msg, user, channel, *args, **kwargs):
     else:
         return help_commands[cmd]
 
+@register('not-in-discord')
+@register('nid')
+async def not_in_discord(command, msg, user, channel, *args, **kwargs):
+    return bold("Your Discord nickname must match your challonge. If it does *NOT*, you will show as *NOT IN DISCORD*")
+
 @register('lizardman')
 @register('ping')
 @register('liz')
@@ -131,7 +136,7 @@ async def challonge(command, msg, user, channel, *args, **kwargs):
                 not_checked_in_parts, not_discord_parts = checkin(parts, get_users(kwargs['full_msg']))
 
                 # Message showing who is not checked in and who is not in the Discord
-                return_msg = "**NOT CHECKED IN:** {0}\n**NOT IN DISCORD:** {1}".format(', '.join(not_checked_in_parts), ', '.join(not_discord_parts))
+                return_msg = "**NOT CHECKED IN:** {0}\n**NOT IN DISCORD:** {1}\n".format(', '.join(not_checked_in_parts), ', '.join(not_discord_parts)) + await not_in_discord(0,0,0,0)
 
             # If Seeding
             elif subcommand == 'seeding':
