@@ -119,7 +119,6 @@ async def challonge(command, msg, user, channel, *args, **kwargs):
             if not tour_url: # no bracket found still, return so we dont have issues
                 return "Lack of arguments. " + await help_lizard('','','','')
 
-
         subdomain = read_db('guild', 'challonge', kwargs['guild']) # Server's subdomain with Challonge
 
         # Properly add the subdomain to the bracket url

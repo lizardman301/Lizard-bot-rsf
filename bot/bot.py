@@ -13,9 +13,18 @@ client = discord.Client()
 async def on_ready():
     print('\nLogged in as {0.user}'.format(client))
     print('-------------------------------')
+    await change_status(len(client.guilds))
     for guild in client.guilds:
         print('Joined guild %s' % guild)
 
+# Yaksha
+async def change_status(sum):
+    """
+    Update the "Playing x" status to display bot
+    commands.
+    """
+    game = discord.Game(name="Now in {} server!".format(sum))
+    await client.change_presence(activity=game)
 
 # Yaksha
 @client.event
