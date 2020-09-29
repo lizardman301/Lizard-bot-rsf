@@ -23,7 +23,12 @@ async def change_status(sum):
     Update the "Playing x" status to display bot
     commands.
     """
-    game = discord.Game(name="Now in {} server!".format(sum))
+    status = "Now in {} servers!"
+    
+    if sum == 1:
+        status = status[:-2] + "!"
+    
+    game = discord.Game(name=status.format(sum))
     await client.change_presence(activity=game)
 
 # Yaksha
