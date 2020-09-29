@@ -1,3 +1,4 @@
+import asyncio
 import discord
 import json
 import os
@@ -13,23 +14,33 @@ client = discord.Client()
 async def on_ready():
     print('\nLogged in as {0.user}'.format(client))
     print('-------------------------------')
-    await change_status(len(client.guilds))
     for guild in client.guilds:
         print('Joined guild %s' % guild)
 
 # Yaksha
-async def change_status(sum):
+async def change_status():
     """
     Update the "Playing x" status to display bot
     commands.
     """
-    status = "Now in {} servers!"
-    
-    if sum == 1:
-        status = status[:-2] + "!"
-    
-    game = discord.Game(name=status.format(sum))
-    await client.change_presence(activity=game)
+    await client.wait_until_ready()
+    while True:
+        sum = len(client.guilds)
+        status = "Now in {} servers!"
+
+        if sum == 1:
+            status = status[:-2] + "!"
+
+        game = discord.Game(name=status.format(sum))
+
+        try:
+            await client.change_presence(activity=game)
+        except discord.HTTPException:
+            # Might've gotten ratelimited so just sleep for the
+            # interval and try later.
+            print('Exception when trying to change status. Trying again in 4 hours')
+            pass
+        await asyncio.sleep(14400)
 
 # Yaksha
 @client.event
@@ -121,6 +132,8 @@ def main():
 
     # Start our interface for our commands and Discord
     client.interface = interface.Interface(client.admin_commands, client.edit_subcommands,client.help)
+
+    client.loop.create_task(change_status())
 
     # Start the bot
     client.run(token)
