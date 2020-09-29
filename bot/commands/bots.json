@@ -35,6 +35,7 @@
 			"liz",
 			"Ping! Pong! with some zest"
 		],
+		"not-in-discord": ["not-in-discord", "nid", "Explains why somebody's name appears on the NOT IN DISCORD list"],
 		"pingtest": [
 			"pingtest",
 			"pt",
