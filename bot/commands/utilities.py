@@ -141,7 +141,6 @@ def seeding(sheet_id, parts, url, seed_num):
         p = p['participant']
 
         # If player has points and is active (checked in), add to list for later sorting
-        # if checked in thats good
         if (p['challonge_username'] in players_to_points) and p['checked_in']:
             player_points.append(p['challonge_username'] + ' ' + players_to_points[p['challonge_username']])
 
