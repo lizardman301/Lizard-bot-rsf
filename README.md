@@ -1,6 +1,6 @@
 # Lizard-BOT
 
-Simple discord bot originally built for the r/StreetFighter East Coast online weekly tournament to help players see current round and with some commands for TOs. Support for multiple channels to run multiple tournaments at once and allows for custom prefixes, round flavor text, and more. Requires discord.py and pymysql.
+Simple discord bot originally built for the Online Local (formerly r/Streetfighter) East Coast sfv weekly tournament to help players see current round and with some commands for TOs. Support for multiple channels to run multiple tournaments at once and allows for custom prefixes, round flavor text, and more. Requires discord.py and pymysql.
 
 # How to Use
 
