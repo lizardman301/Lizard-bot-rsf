@@ -140,8 +140,8 @@ def seeding(sheet_id, parts, url, seed_num):
     for p in parts:
         p = p['participant']
 
-        # If player has points, add to list for later sorting
-        if p['challonge_username'] in players_to_points:
+        # If player has points and is active (checked in), add to list for later sorting
+        if (p['challonge_username'] in players_to_points) and p['active']:
             player_points.append(p['challonge_username'] + ' ' + players_to_points[p['challonge_username']])
 
     # Players are listed by highest points and then alphabetically
