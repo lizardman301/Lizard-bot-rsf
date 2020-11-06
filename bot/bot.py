@@ -3,12 +3,16 @@ import discord
 import json
 import os
 
+# New intents feature (needed to count members)
+intents = discord.Intents.default()
+intents.members = True
+
 # Local imports
 from commands.utilities import (read_db, settings_exist)
 import interface
 from secret import token
 
-client = discord.Client()
+client = discord.Client(intents=intents)
 
 @client.event
 async def on_ready():
