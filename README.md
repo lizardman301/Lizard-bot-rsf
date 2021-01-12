@@ -106,10 +106,13 @@ Commands everyone can use
 Shows the current bracket set in the channel.
 
 `!help-lizard`
-Links back to this page.
+Displays a list of all commands.
 
 `!lizardman`
 Ping! Pong!
+
+`!not-in-discord`
+Repeats last part of challonge checkin command. Tells people discord nick must match challonge name.
 
 `!pingtest`
 Explains how to run a ping test using <https://testmyspeed.onl/> and a common server.

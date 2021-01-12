@@ -129,6 +129,10 @@ def checkin(parts, users):
             # Update the not_checked_in list  to use the user @mention instead of their name
             not_checked_in_parts[not_checked_in_parts.index(name_escaped)] = mentions[usernames.index(match[0])]
 
+    # Sort alphabetically
+    not_checked_in_parts.sort()
+    not_discord_parts.sort()
+
     return not_checked_in_parts, not_discord_parts
 
 def seeding(sheet_id, parts, url, seed_num):
