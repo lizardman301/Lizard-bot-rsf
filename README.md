@@ -1,6 +1,6 @@
 # Lizard-BOT
 
-Simple discord bot originally built for the [Online Local](https://twitter.com/theonlinelocal) (formerly r/Streetfighter) East Coast SFV weekly tournament to help players see current round and with some commands for TOs. Support for multiple channels to run multiple tournaments at once and allows for custom prefixes, round flavor text, and more. Requires discord.py and pymysql.
+Simple discord bot originally built for the [Online Local](https://twitter.com/theonlinelocal) (formerly r/StreetFighter) East Coast SFV weekly tournament to help players see current round and with some commands for TOs. Support for multiple channels to run multiple tournaments at once and allows for custom prefixes, round flavor text, and more. Requires discord.py and pymysql.
 
 # How to Use
 
@@ -8,10 +8,13 @@ In order to get started, you need to invite Lizard-BOT to the discord server you
 
 Immediately after the bot joins the server use the command `!edit botrole <role>` with the role of your choice to make it so that only those with that role can access the commands meant for the Tournament Organizers. From there, feel free to use all the commands listed below to adjust the bot to your needs.
 
+For more information on setting up the bot for use in a Discord server, please see our documentation [here](https://github.com/lizardman301/Lizard-bot-rsf/blob/master/doc/setting_up_bot_in_discord.md)
+
 ### Note about Challonge
 
-If the Challonge community that organizes the tournaments does **NOT** have a dedicated subdomain, e.g. challonge.com/communities/1c9ef6d4805d8a3071631f4f, then **Challonge's API** will **ALWAYS** be unable to find the tournament.
-None of the Challonge integration will work until the community becomes a ["Pro" community](https://challonge.com/communities/about#pro-features) and sets a custom subdomain, e.g. redditfighting.challonge.com
+If you have a pro-community, use your custom subdomain e.g., **redditfighting** of redditfighting.challonge.com.
+
+If you are **not** a pro-community in Challonge, you will have to find and copy the jumble of symbols that is your community's subdomain. Go to your Challonge community page, and go to community settings. Look for the part that says *Subdomain PRO* and look for the box beneath it. This is your community subdomain.
 
 If the Challonge community tournament does not add the ["LizardBOT" Challonge account](https://challonge.com/users/LizardBOT) as a collaborator or a tournament hosted by a Challonge user, the checkin command **WILL** work but the seeding command will **NOT** work.
 This is because tournaments are read-only by default. Any attempts by Lizard-BOT to updating seeding numbers will fail since "LizardBOT" doesn't have permissions.
@@ -100,6 +103,7 @@ Resets the round count back to its default value when a tournament is finished.
 Changes the current round number to the new value. Can be more than just numbers if you wish to do something different. Immediately sends a status update in the chat.
 
 ## General commands
+
 Commands everyone can use
 
 `!bracket`
@@ -131,6 +135,10 @@ Returns the stream link if one is set.
 
 `!TOs`
 Sends a message back with all the Tournament Organizers pinged, if set.
+
+## How to set up your own instance of Lizard-BOT
+
+Please see our documentation [here](https://github.com/lizardman301/Lizard-bot-rsf/blob/master/doc/new_bot_setup.md) for more information about initial configuration
 
 ## Contributers
 * **Lizardman** - *Initial work, owner of bot, bug hunting* - [Twitter](https://twitter.com/lizardman301)
