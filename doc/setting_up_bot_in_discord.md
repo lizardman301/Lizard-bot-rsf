@@ -93,29 +93,45 @@ If you want to setup seeding, read the [seeding_with_sheets.md](https://github.c
 With the bot setup, you can now use it to help your tournaments. Below will be an example of the bot in use during one of the weekly [Online Local](https://twitter.com/theonlinelocal) Tournaments with explanations for what is happening.
 
 ![Start of Checkin and bracket command](/doc/assets/images/onlinelocal1.png)
+
+
 The use of another bot, Carl-Bot, announces the start of checkin. The `!bracket` command is used so that players can access the bracket page.  The Challonge link in !bracket also allows the TO to use Challonge commands.
 
 ![Using !challonge checkin](/doc/assets/images/onlinelocal2.png)
+
+
 Checkin lasts for an hour and the `!challonge checkin` command is used multiple times to let people know to check in. If players have listened and are using the same nickname in both Challonge and Discord, they will be pinged if they are not checked in. If the bot can not find them, they are marked as not in Discord. Players are often confused by not being marked not in Discord. Many times the players in this list will speak up to let the TOs know they are in fact in the Discord. This is the perfect opportunity to ask them to change their nickname in order to match their Challonge info.
 
 ![Using !challonge seeding](/doc/assets/images/onlinelocal3.png)
+
+
 The Online Local uses a point system for all the tournaments throughout the year. This allows them a perfect opportunity to seed based off these points. They have already linked the Google sheets document and Lizard-BOT has permissions in the Challonge community, so all they need to do is use `!challonge seeding 32` to seed the top 32 people. If they had a smaller event, they can easily change the number of people to be seeded.  The bot seeds in Challonge and then lists the people who were seeded in Discord.
 
 For information to set up a Google Sheets to store points, please review [this](https://github.com/lizardman301/Lizard-bot-rsf/blob/master/doc/seeding_with_sheets.md)
 
 ![Using !refresh](/doc/assets/images/onlinelocal4.png)
+
+
 After the bracket is seeded and the everything is finalized, the bracket must be refreshed on the players' end so they can see the finalized bracket. The `!refresh` command easily lets people know to do this.
 
 ![Using !round](/doc/assets/images/onlinelocal5.png)
+
+
 With the bracket started in Challonge, it's time to let the players know to start the matches.  The TO picks one or two matches to be played on stream and then tells the rest of the players to play the first two rounds of the bracket with the `!round` command.  This command will accept any string, not just single numbers, so it easily allows one to designate multiple rounds to play.  If a TO wanted to change the instructions in the command, they can use `!edit status <new status>` to have different instructions appear.  Use `{0}` in the new status to mark where the round count should be displayed.
 
 ![Using !status](/doc/assets/images/onlinelocal6.png)
+
+
 Throughout the tournament, players can use the `!status` command in order to see if they are able to play their next match. The format of the message is the same as the `!round` command, but it is unable to modify the current round count.
 
 ![Using !remind](/doc/assets/images/onlinelocal7.png)
+
+
 A lot of things need to be remembered for a tournament, so TOs can use the `!remind <minutes> <reason>` command in order to have the bot remind them about anything.  Usually this is used to give a timer to players who haven't showed up in order to DQ them, but there are plenty of other uses for it.
 
 ![Using !round again](/doc/assets/images/onlinelocal8.png)
+
+
 The `!round` command is used throughout the tournament to let players know when to play their next matches. For the Online Local, once it reaches top 8, it is no longer needed since the rest of the event is ran on stream. After this event finishes, `!reset` is used to reset the round count, and then the `!bracket` command is changed to have the URL for the next week's event.
 
 If you have any questions for setting up Lizard-BOT or questions about the bot in general, contact lizardman via [twitter](https://twitter.com/lizardman301) or on Discord via DM (lizardman301#0301).
