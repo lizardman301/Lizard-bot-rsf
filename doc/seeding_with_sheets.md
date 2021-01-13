@@ -1,8 +1,8 @@
 # Hosting a Google Sheet for Challonge seeding
 
-Written below are steps for 3 different options: creating a new Google Sheet, adapting an existing Google Sheet, or information about how r/StreetFighter
+Written below are steps for 3 different options: creating a new Google Sheet, adapting an existing Google Sheet, or information about how The Online Local (previously r/StreetFighter)
 
-NOTE: This bot was designed with r/StreetFighter in mind. As such, decisions about how a sheet needs to be formatted is based on how their ranking sheets look. For information about how [sniffulls](https://twitter.com/Sniffulls) manages FOUR(!) different weekly's points, please view [his documentation](https://drive.google.com/drive/folders/14VqkUtccASi6BuPPpak0Hl0eBYcF0HsP?usp=sharing)
+NOTE: This bot was designed with r/StreetFighter in mind. As such, decisions about how a sheet needs to be formatted is based on how their ranking sheets look. For information about how [sniffulls](https://twitter.com/Sniffulls) manages FOUR(!) different weeklies' points, please view [his documentation](https://drive.google.com/drive/folders/14VqkUtccASi6BuPPpak0Hl0eBYcF0HsP?usp=sharing)
 
 ## Using r/StreetFighter Template
 
