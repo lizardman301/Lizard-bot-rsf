@@ -28,7 +28,7 @@ async def help_lizard(command, msg, user, channel, *args, **kwargs):
     if not help_commands:
         return "For more information about the bot and its commands: <https://github.com/lizardman301/Lizard-bot-rsf>"
     elif len(split) < 2:
-        return ('Allows you to get help on a command. The avaliable'
+        return ('Allows you to get help on a command. The available'
                 ' commands are ```%s```' % list(help_commands.keys()))
     else:
         return help_commands[cmd]
@@ -200,7 +200,7 @@ async def edit(command, msg, user, channel, *args, **kwargs):
 
     editable_command = params[0].lower() # Lower the command we are editing
     if editable_command not in kwargs['edit_subs']:
-        return "Invalid Subcommand. " + await help_lizard(0,0,0,0)
+        return "Invalid Subcommand. " + await help_lizard('','','','')
 
     params.remove(editable_command) # Remove the command from the params
 

@@ -14,6 +14,7 @@ from secret import token
 
 client = discord.Client(intents=intents)
 
+# Once bot is fully logged in, print the guilds it is in
 @client.event
 async def on_ready():
     print('\nLogged in as {0.user}'.format(client))
@@ -22,33 +23,36 @@ async def on_ready():
         print('Joined guild %s' % guild)
 
 # Yaksha
+# Change the status displayed under the bot's name
 async def change_status():
     """
     Update the "Playing x" status to display bot
     commands.
     """
     await client.wait_until_ready()
+    # Every 8 hours update the status to display the number of Discord servers the bot is in
     while True:
-        sum = len(client.guilds)
+        total = len(client.guilds)
         status = "Now in {} servers!"
 
-        if sum == 1:
+        if total == 1:
             status = status[:-2] + "!"
 
-        game = discord.Game(name=status.format(sum))
+        game = discord.Game(name=status.format(total))
 
         try:
             await client.change_presence(activity=game)
         except discord.HTTPException:
-            # Might've gotten ratelimited so just sleep for the
-            # interval and try later.
-            print('Exception when trying to change status. Trying again in 4 hours')
+            # Might've gotten ratelimited so just sleep for the interval and try later.
+            print('Exception when trying to change status. Trying again in 8 hours')
             pass
-        await asyncio.sleep(14400)
+        await asyncio.sleep(28800)
 
 # Yaksha
+# When message is typed in any channel the bot has access to, check to see if the bot needs to respond
 @client.event
 async def on_message(message):
+    # If the bot is the user, do not respond
     if message.author == client.user:
         return
 
@@ -56,12 +60,12 @@ async def on_message(message):
     # Add it if it isn't
     if not settings_exist(message.guild.id, message.channel.id):
         await chan.send("Oops, I'm broken")
-        print("Oops, I'm broken")
+        print("Lizard-BOT failed to create DB entry for: " + message.guild.name + ". Guild ID: " + message.guild.id)
 
     # Get prefix for the guild
     prefix = read_db('guild', 'prefix-lizard', message.guild.id)
 
-    # Hardcode prefix to be accessible via !
+    # Hardcode prefix command to be accessible via !
     if message.content.startswith("!prefix-lizard") or message.content.startswith("!prefliz"):
         response = await client.interface.call_command('prefix-lizard', 0, 0, 0, guild=message.guild.id)
         if response:
@@ -75,6 +79,10 @@ async def on_message(message):
         command = command.lower() # Lower the command for easier matching
         msg = message.content # The message
         attempted_cmd = msg.split(' ')[0][1:].lower() # Get the attempted command from the beginning of the string
+
+        if attempted_cmd in client.no_arg_cmds and len(msg.split()) > 1:
+            await message.channel.send("Too many arguments. Check help-lizard for more info")
+            return
 
         # Check if the message begins with a command
         if attempted_cmd and attempted_cmd == command:
@@ -96,26 +104,41 @@ async def on_message(message):
             break
 
 # Yaksha
+# Main thread the kicks off the initial setup and starts the bot
 def main():
-    client.commands, client.admin_commands = [], []
+    client.commands, client.admin_commands, client.no_arg_cmds = [], [], []
     client.help = {}
 
     # Pull in a separate config
     config = json.loads(open(os.path.join(os.path.dirname(__file__), 'commands/bots.json')).read())
 
-    # Grab our commands
+    # Grab our commands from the json
     commands = list(config.get('common_commands', {}).copy().values())
     commands.extend(config.get('admin_commands', {}).values())
+    no_arg_cmds = list(config.get('no_arg_commands', {}).copy().keys())
+    
+    # Sort the raw json into the appropriate variables
+    # For every entry in commands loop over the child array
     for aliases in commands:
+        # For every child in the child array, sort it to the appropriate variable for later
         for alias in aliases:
+            # If the child item is the last item, put it in the help section
             if alias == aliases[-1]:
                 client.help.update({aliases[0]:alias})
                 break
+            # Elif the full command doesn't take args, have the aliases not accept args
+            elif aliases[0] in no_arg_cmds:
+                client.no_arg_cmds.append(alias)
+            # Add the command and aliases as valid commands
             client.commands.append(alias)
 
     commands = config.get('admin_commands', {}).copy().values()
+    
+    # For every admin command in commands loop over the child array
     for aliases in commands:
+        # For every child in the child array, sort it to the appropriate variable for later
         for alias in aliases:
+            # Add the command and aliases as admin commands
             client.admin_commands.append(alias)
 
     client.challonge_subcommands = config.get('challonge_subcommands', {}).copy()
@@ -132,11 +155,10 @@ def main():
                 client.help.update({"edit " + subcmd:info})
                 break
 
-    client.config = config
-
     # Start our interface for our commands and Discord
     client.interface = interface.Interface(client.admin_commands, client.edit_subcommands,client.help)
 
+    # Start loop for status change
     client.loop.create_task(change_status())
 
     # Start the bot
