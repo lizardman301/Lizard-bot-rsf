@@ -69,6 +69,19 @@
 		"status": ["status", "Allows you to change the flavor text of the !round and !status commands for individual channels\nText uses {0} as a marker for where the round count will be added\nUnique for each channel\nDefault value: Winner's Round {0} can play! Losers can play till top 8 losers side. If you have a bye Round {0}, Please Wait!"],
 		"stream": ["stream", "Allows you to add a stream link that users can ping to get a link of\nUnique for each channel\nDefault value: There are no streams set for this channel"],
 		"tos": ["tos", "Allows you to list all Tournament Organizers involved\nRecommended to make it ping each individual TO\nUnique for each channel\nDefault value:"]
+	},
+	"no_arg_commands": {
+		"bracket":"",
+		"coin-flip":"",
+		"refresh":"",
+		"reset":"",
+		"pingtest":"",
+		"status":"",
+		"stream":"",
+		"TOs":"",
+		"randomselect":"",
+		"not-in-discord":"",
+		"prefix-lizard":"",
+		"lizardman":""
 	}
-	
 }
