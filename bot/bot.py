@@ -122,13 +122,14 @@ def main():
     for aliases in commands:
         # For every child in the child array, sort it to the appropriate variable for later
         for alias in aliases:
-            # If the child item is the last item, put it in the help section
+            # If the child item is the last item(the help message), move on to the next command
             if alias == aliases[-1]:
-                client.help.update({aliases[0]:alias})
                 break
             # Elif the full command doesn't take args, have the aliases not accept args
             elif aliases[0] in no_arg_cmds:
                 client.no_arg_cmds.append(alias)
+            # Add the help message for each alias
+            client.help.update({alias:aliases[-1]})
             # Add the command and aliases as valid commands
             client.commands.append(alias)
 
