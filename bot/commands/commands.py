@@ -27,7 +27,7 @@ async def help_lizard(command, msg, user, channel, *args, **kwargs):
 
     if not help_commands:
         return "For more information about the bot and its commands: <https://github.com/lizardman301/Lizard-bot-rsf>"
-    elif len(split) < 2:
+    elif not split[0]:
         return ('Allows you to get help on a command. The available'
                 ' commands are ```%s```' % list(help_commands.keys()))
     else:
