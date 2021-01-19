@@ -27,11 +27,14 @@ async def help_lizard(command, msg, user, channel, *args, **kwargs):
 
     if not help_commands:
         return "For more information about the bot and its commands: <https://github.com/lizardman301/Lizard-bot-rsf>"
-    elif len(split) < 2:
-        return ('Allows you to get help on a command. The available'
-                ' commands are ```%s```' % list(help_commands.keys()))
-    else:
+    elif not split[0]:
+        return ('Allows you to get help on a command. '
+                '\nThe available commands are ```%s```' % ', '.join(list(help_commands.keys())))
+    elif cmd in help_commands.keys():
         return help_commands[cmd]
+    else:
+        return ('Invalid command: ' + bold(cmd) + '. Ensure you are using the full command name.'
+                '\nThe available commands are ```%s```' % ', '.join(list(help_commands.keys())))
 
 @register('not-in-discord')
 @register('nid')
