@@ -2,6 +2,7 @@ import asyncio
 import discord
 import json
 import os
+import random
 
 # New intents feature (needed to count members)
 intents = discord.Intents.default()
@@ -55,6 +56,12 @@ async def on_message(message):
     # If the bot is the user, do not respond
     if message.author == client.user:
         return
+
+    # If the bot is mentioned in a message, respond with a message informing it of being a bot
+    if client.user.mentioned_in(message):
+        # Choose from a random response, then follow with a Bot message
+        responses = ["Ok", "Thanks", "Sounds good to me", "Buff Rashid", "Beep Boop", "Yes", "No", "Good to know", "Glad to hear it", "I'll keep that in mind"]
+        await message.channel.send("{0} \n**I am a Bot and cannot respond to mentions**".format(random.choice(responses)))
 
     # Check if the channel is in the DB
     # Add it if it isn't
