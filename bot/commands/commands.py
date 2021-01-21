@@ -47,7 +47,7 @@ async def not_in_discord(command, msg, user, channel, *args, **kwargs):
 @register('liz')
 async def ping(command, msg, user, channel, *args, **kwargs):
     print("Pinged by {0}".format(user))
-    return "Fuck you, Lizardman!"
+    return "Fuck you, Lizardman"
 
 @register('pingtest')
 @register('pt')
