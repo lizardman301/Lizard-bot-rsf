@@ -1,6 +1,7 @@
 import asyncio
 from discord.utils import escape_markdown # Regexing fun simplified
 import json
+import os
 from pprint import pformat
 import random
 import re
@@ -46,7 +47,7 @@ async def not_in_discord(command, msg, user, channel, *args, **kwargs):
 @register('liz')
 async def ping(command, msg, user, channel, *args, **kwargs):
     print("Pinged by {0}".format(user))
-    return "Fuck you, Lizardman"
+    return "Fuck you, Lizardman!"
 
 @register('pingtest')
 @register('pt')
@@ -62,10 +63,16 @@ async def prefix(command, msg, user, channel, *args, **kwargs):
 @register('random')
 @register('rs')
 async def randomselect(command, msg, user, channel, *args, **kwargs):
-    # Selects and returns a random character from the given list of sfv characters
-    # Accurate as of 9/11/2020, sfv version 5.031
-    sfvchars = ["Ryu","Chun-Li","Nash","M. Bison (Dictator)","Cammy","Birdie","Ken","Necalli","Vega (Claw)","R. Mika","Rashid","Karin","Zangief","Laura","Dhalsim","F.A.N.G","Alex","Guile","Ibuki","Balrog (Boxer)","Juri","Urien","Akuma","Kolin","Ed","Abigail","Menat","Zeku","Sakura","Blanka","Falke","Cody","G","Sagat","Kage","E. Honda","Lucia","Poison","Gill", "Seth"]
-    return "{0} Your randomly selected character is: {1}".format(user.mention, bold(random.choice(sfvchars)))
+    game = kwargs.get('game', False)
+    rs_info = json.loads(open(os.path.join(os.path.dirname(__file__), 'rs.json')).read())
+    games = list(rs_info.copy().keys())
+
+    if game in games:
+        chars = rs_info.get(game, []).copy()[0:-1]
+    else:
+        return "Invalid game: {0}. Valid games are: {1}".format(bold(game), bold(', '.join(games)))
+
+    return "{0} Your randomly selected character is: {1}".format(user.mention, bold(random.choice(chars)))
 
 @register('status')
 async def status(command, msg, user, channel, *args, **kwargs):
@@ -104,7 +111,7 @@ async def challonge(command, msg, user, channel, *args, **kwargs):
     async with channel.typing():
         base_url = "https://api.challonge.com/v1/tournaments/" # Base url to access Challonge's API
         subcommand = msg.split(' ')[0].lower() # The function trying to be accomplished
-        
+
         if not subcommand:
                 return "Lack of arguments. " + await help_lizard('','','','')
 

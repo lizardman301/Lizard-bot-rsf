@@ -101,6 +101,8 @@ async def on_message(message):
 
             if command in ['challonge', 'chal', 'edit']:
                 kwargs['full_msg'] = message
+            elif command in ['randomselect', 'random', 'rs']:
+                kwargs['game'] = msg.split(' ')[0].lower() if msg.split(' ')[0] else 'sfv'
 
             # Await the interface calling the command
             response = await client.interface.call_command(command, msg, user, message.channel, **kwargs)
@@ -122,8 +124,8 @@ def main():
     # Grab our commands from the json
     commands = list(config.get('common_commands', {}).copy().values())
     commands.extend(config.get('admin_commands', {}).values())
-    no_arg_cmds = list(config.get('no_arg_commands', {}).copy().keys())
-    
+    no_arg_cmds = config.get('no_arg_commands', []).copy()
+
     # Sort the raw json into the appropriate variables
     # For every entry in commands loop over the child array
     for aliases in commands:
@@ -141,7 +143,7 @@ def main():
             client.commands.append(alias)
 
     commands = config.get('admin_commands', {}).copy().values()
-    
+
     # For every admin command in commands loop over the child array
     for aliases in commands:
         # For every child in the child array, sort it to the appropriate variable for later
