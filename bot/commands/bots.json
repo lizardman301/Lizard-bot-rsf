@@ -70,18 +70,17 @@
 		"stream": ["stream", "Allows you to add a stream link that users can ping to get a link of\nUnique for each channel\nDefault value: There are no streams set for this channel"],
 		"tos": ["tos", "Allows you to list all Tournament Organizers involved\nRecommended to make it ping each individual TO\nUnique for each channel\nDefault value:"]
 	},
-	"no_arg_commands": {
-		"bracket":"",
-		"coin-flip":"",
-		"refresh":"",
-		"reset":"",
-		"pingtest":"",
-		"status":"",
-		"stream":"",
-		"TOs":"",
-		"randomselect":"",
-		"not-in-discord":"",
-		"prefix-lizard":"",
-		"lizardman":""
-	}
+	"no_arg_commands": [
+		"bracket",
+		"coin-flip",
+		"refresh",
+		"reset",
+		"pingtest",
+		"status",
+		"stream",
+		"TOs",
+		"not-in-discord",
+		"prefix-lizard",
+		"lizardman"
+	]
 }

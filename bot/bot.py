@@ -59,8 +59,11 @@ async def on_message(message):
 
     # If the bot is mentioned in a message, respond with a message informing it of being a bot
     if client.user.mentioned_in(message):
+        # If @everyone or @here is used, ignore
+        if "@everyone" in message.content or "@here" in message.content:
+            return
         # Choose from a random response, then follow with a Bot message
-        responses = ["Ok", "Thanks", "Sounds good to me", "Buff Rashid", "Beep Boop", "Yes", "No", "Good to know", "Glad to hear it", "I'll keep that in mind"]
+        responses = ["Ok", "Thanks", "Sounds good to me", "Buff Rashid", "Beep Boop", "Yes", "No", "Good to know", "Glad to hear it", "I'll keep that in mind", "The answer lies in the heart of battle", "Go home and be a family man"]
         await message.channel.send("{0} \n**I am a Bot and cannot respond to mentions**".format(random.choice(responses)))
 
     # Check if the channel is in the DB
@@ -101,6 +104,8 @@ async def on_message(message):
 
             if command in ['challonge', 'chal', 'edit']:
                 kwargs['full_msg'] = message
+            elif command in ['randomselect', 'random', 'rs']:
+                kwargs['game'] = msg.split(' ')[0].lower() if msg.split(' ')[0] else 'sfv'
 
             # Await the interface calling the command
             response = await client.interface.call_command(command, msg, user, message.channel, **kwargs)
@@ -122,8 +127,8 @@ def main():
     # Grab our commands from the json
     commands = list(config.get('common_commands', {}).copy().values())
     commands.extend(config.get('admin_commands', {}).values())
-    no_arg_cmds = list(config.get('no_arg_commands', {}).copy().keys())
-    
+    no_arg_cmds = config.get('no_arg_commands', []).copy()
+
     # Sort the raw json into the appropriate variables
     # For every entry in commands loop over the child array
     for aliases in commands:
@@ -141,7 +146,7 @@ def main():
             client.commands.append(alias)
 
     commands = config.get('admin_commands', {}).copy().values()
-    
+
     # For every admin command in commands loop over the child array
     for aliases in commands:
         # For every child in the child array, sort it to the appropriate variable for later
