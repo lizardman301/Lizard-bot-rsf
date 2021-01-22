@@ -1,4 +1,5 @@
 import asyncio
+from discord import Embed
 from discord.utils import escape_markdown # Regexing fun simplified
 import json
 import os
@@ -78,9 +79,15 @@ async def randomselect(command, msg, user, channel, *args, **kwargs):
 async def stats(command, msg, user, channel, *args, **kwargs):
     cmd = msg.split(' ')[0].lower() if msg.split(' ')[0] else ''
     func_map = kwargs['func_map'] if cmd else []
-    
+    stats = read_stat(cmd,func_map)
 
-    return bold('Stats:\n') +'{}'.format(',\n'.join(pformat(read_stat(cmd,func_map))[1:-1].split(', ')).replace('\'',''))
+    embed = Embed(title="Stats!")
+    embed.set_author(name="Lizard-BOT", url="https://github.com/lizardman301/Lizard-bot-rsf")
+    embed.set_footer(text="People use this bot? Wild.")
+    for stat in stats:
+        embed.add_field(name=stat, value=stats[stat])
+
+    return embed
 
 @register('status')
 async def status(command, msg, user, channel, *args, **kwargs):

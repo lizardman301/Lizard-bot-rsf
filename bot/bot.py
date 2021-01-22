@@ -107,9 +107,11 @@ async def on_message(message):
 
             # Await the interface calling the command
             response = await client.interface.call_command(command, msg, user, message.channel, **kwargs)
-
             # If there is a response, send it
             if response:
+                if type(discord.Embed()) == type(response):
+                    await message.channel.send(embed=response)
+                    break
                 await message.channel.send(response)
             break
 
