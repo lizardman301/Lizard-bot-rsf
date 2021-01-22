@@ -1,4 +1,5 @@
 import asyncio
+from discord import Embed
 from discord.utils import escape_markdown # Regexing fun simplified
 import json
 import os
@@ -9,7 +10,7 @@ import requests
 
 # Local imports
 from secret import api_key
-from commands.utilities import (register, bold, get_chal_tour_id, get_users, is_channel, pings_b_gone, checkin, seeding, read_db, save_db, settings_exist)
+from commands.utilities import (register, bold, get_chal_tour_id, get_users, is_channel, pings_b_gone, checkin, seeding, read_db, read_stat, save_db, settings_exist)
 
 # All @register decorators are a product of reviewing Yaksha
 # See utilities.register for more information
@@ -63,7 +64,7 @@ async def prefix(command, msg, user, channel, *args, **kwargs):
 @register('random')
 @register('rs')
 async def randomselect(command, msg, user, channel, *args, **kwargs):
-    game = kwargs.get('game', False)
+    game = msg.split(' ')[0].lower() if msg.split(' ')[0] else 'sfv'
     rs_info = json.loads(open(os.path.join(os.path.dirname(__file__), 'rs.json')).read())
     games = list(rs_info.copy().keys())
 
@@ -73,6 +74,20 @@ async def randomselect(command, msg, user, channel, *args, **kwargs):
         return "Invalid game: {0}. Valid games are: {1}".format(bold(game), bold(', '.join(games)))
 
     return "{0} Your randomly selected character is: {1}".format(user.mention, bold(random.choice(chars)))
+
+@register('stats')
+async def stats(command, msg, user, channel, *args, **kwargs):
+    cmd = msg.split(' ')[0].lower() if msg.split(' ')[0] else ''
+    func_map = kwargs['func_map'] if cmd else []
+    stats = read_stat(cmd,func_map)
+
+    embed = Embed(title="Stats!")
+    embed.set_author(name="Lizard-BOT", url="https://github.com/lizardman301/Lizard-bot-rsf", icon_url="https://raw.githubusercontent.com/lizardman301/Lizard-bot-rsf/master/doc/assets/images/cmface.png")
+    embed.set_footer(text="People use this bot? Wild.")
+    for stat in stats:
+        embed.add_field(name=stat, value=stats[stat])
+
+    return embed
 
 @register('status')
 async def status(command, msg, user, channel, *args, **kwargs):

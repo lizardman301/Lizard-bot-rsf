@@ -4,14 +4,14 @@ import json
 import os
 import random
 
-# New intents feature (needed to count members)
-intents = discord.Intents.default()
-intents.members = True
-
 # Local imports
 from commands.utilities import (read_db, settings_exist)
 import interface
 from secret import token
+
+# New intents feature (needed to count members)
+intents = discord.Intents.default()
+intents.members = True
 
 client = discord.Client(intents=intents)
 
@@ -104,14 +104,15 @@ async def on_message(message):
 
             if command in ['challonge', 'chal', 'edit']:
                 kwargs['full_msg'] = message
-            elif command in ['randomselect', 'random', 'rs']:
-                kwargs['game'] = msg.split(' ')[0].lower() if msg.split(' ')[0] else 'sfv'
 
             # Await the interface calling the command
             response = await client.interface.call_command(command, msg, user, message.channel, **kwargs)
-
             # If there is a response, send it
             if response:
+                if type(discord.Embed()) == type(response):
+                    response.colour=discord.Colour(0x0fa1dc)
+                    await message.channel.send(embed=response)
+                    break
                 await message.channel.send(response)
             break
 
@@ -169,7 +170,7 @@ def main():
                 break
 
     # Start our interface for our commands and Discord
-    client.interface = interface.Interface(client.admin_commands, client.edit_subcommands,client.help)
+    client.interface = interface.Interface(client.admin_commands, client.edit_subcommands, client.help)
 
     # Start loop for status change
     client.loop.create_task(change_status())
