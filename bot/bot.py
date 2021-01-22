@@ -110,6 +110,7 @@ async def on_message(message):
             # If there is a response, send it
             if response:
                 if type(discord.Embed()) == type(response):
+                    response.colour=discord.Colour(0x0fa1dc)
                     await message.channel.send(embed=response)
                     break
                 await message.channel.send(response)

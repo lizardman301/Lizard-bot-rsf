@@ -82,7 +82,7 @@ async def stats(command, msg, user, channel, *args, **kwargs):
     stats = read_stat(cmd,func_map)
 
     embed = Embed(title="Stats!")
-    embed.set_author(name="Lizard-BOT", url="https://github.com/lizardman301/Lizard-bot-rsf")
+    embed.set_author(name="Lizard-BOT", url="https://github.com/lizardman301/Lizard-bot-rsf", icon_url="https://raw.githubusercontent.com/lizardman301/Lizard-bot-rsf/blob/master/doc/assets/images/cmface.png")
     embed.set_footer(text="People use this bot? Wild.")
     for stat in stats:
         embed.add_field(name=stat, value=stats[stat])
