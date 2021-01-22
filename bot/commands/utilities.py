@@ -245,3 +245,55 @@ def save_db(level, setting, data, id, **kwargs):
             cursor.execute(sql, (data, id))
     finally:
         conn.close() # Close the connection
+
+# Increment a command usage in the database
+def stat_up(command):
+    conn = make_conn() # Make DB Connection
+
+    try:
+        with conn.cursor() as cursor:
+            # Check to see if the command already has been used
+            sql = "SELECT used FROM stats WHERE command = %s"
+            cursor.execute(sql, (command))
+            result = cursor.fetchone()
+
+            # Check the result for how many times a command was used
+            if result:
+                # Add another use for an existing command
+                sql = "UPDATE stats SET used = %s WHERE command = %s"
+                cursor.execute(sql, (result['used']+1,command))
+            else:
+                # Add a command into the database
+                sql = "INSERT INTO stats (command) VALUES (%s)"
+                cursor.execute(sql, (command))
+    finally:
+        conn.close() # Close the connection
+
+# Read a stat from database for a given command
+def read_stat(command, func_map):
+    conn = make_conn() # Make DB Connection
+    stats = {}
+
+    try:
+        with conn.cursor() as cursor:
+            # Update the desired setting in the DB for the given guild/channel
+            if command:
+                sql = "SELECT command, used FROM stats WHERE command = %s"
+                cursor.execute(sql, (func_map[command].__name__))
+            else:
+                sql = "SELECT command, used FROM stats"
+                cursor.execute(sql)
+            for row in cursor:
+                row_command = row['command']
+                if row_command in ['ping']:
+                    row_command = 'lizardman'
+                elif row_command in ['round_lizard']:
+                    row_command = 'round'
+                elif row_command in ['prefix']:
+                    row_command = 'prefix-lizard'
+                elif row_command in ['stats']:
+                    row['used'] += 1
+                stats.update({row_command.replace('_', '-'):row['used']})
+    finally:
+        conn.close() # Close the connection
+    return stats

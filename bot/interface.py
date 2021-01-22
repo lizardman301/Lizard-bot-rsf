@@ -2,7 +2,7 @@ import traceback
 
 # Local imports
 from commands import commands
-from commands.utilities import (get_callbacks, read_db)
+from commands.utilities import (get_callbacks, read_db, stat_up)
 
 # Yaksha
 class Interface():
@@ -55,19 +55,21 @@ class Interface():
         '''
         Determines which function to call from the func_mapping
         dict using the command arg as the key.
-        Also allows you to 'refresh' the cache by passing '--nocache' in
-        the message.
         '''
 
         # First check if the user is allowed to call this
         # function.
         if self.user_has_permission(user, command, kwargs['guild']):
-            if command in ['help-lizard', 'helpliz']:
+            if self._func_mapping[command].__name__ in ['help_lizard']:
                 kwargs['help'] = self.help
-            elif command == 'edit':
+            elif self._func_mapping[command].__name__ == 'edit':
                 kwargs['edit_subs'] = self.edit_subcommands.keys()
+            elif self._func_mapping[command].__name__ == 'stats':
+                kwargs['func_map'] = self._func_mapping
             try:
-                return await self._func_mapping[command](command, msg, user, channel, *args, **kwargs)
+                result = await self._func_mapping[command](command, msg, user, channel, *args, **kwargs)
+                stat_up(self._func_mapping[command].__name__)
+                return result
             except Exception:
                 # If we get this far and something breaks
                 # Something is very wrong

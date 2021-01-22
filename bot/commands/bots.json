@@ -52,6 +52,7 @@
 			"rs",
 			"Returns a randomly selected character from the current SFV cast"
 		],
+		"stats": ["stats", "Returns the usage for Lizard-BOT commands"],
 		"status": ["status", "Returns the current round number in a message that can be customized"],
 		"stream": ["stream", "Returns the stream link if one is set"],
 		"TOs": ["TOs", "Sends a message back with all the Tournament Organizers pinged once set"]

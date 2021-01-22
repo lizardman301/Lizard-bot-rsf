@@ -9,7 +9,7 @@ import requests
 
 # Local imports
 from secret import api_key
-from commands.utilities import (register, bold, get_chal_tour_id, get_users, is_channel, pings_b_gone, checkin, seeding, read_db, save_db, settings_exist)
+from commands.utilities import (register, bold, get_chal_tour_id, get_users, is_channel, pings_b_gone, checkin, seeding, read_db, read_stat, save_db, settings_exist)
 
 # All @register decorators are a product of reviewing Yaksha
 # See utilities.register for more information
@@ -63,7 +63,7 @@ async def prefix(command, msg, user, channel, *args, **kwargs):
 @register('random')
 @register('rs')
 async def randomselect(command, msg, user, channel, *args, **kwargs):
-    game = kwargs.get('game', False)
+    game = msg.split(' ')[0].lower() if msg.split(' ')[0] else 'sfv'
     rs_info = json.loads(open(os.path.join(os.path.dirname(__file__), 'rs.json')).read())
     games = list(rs_info.copy().keys())
 
@@ -73,6 +73,14 @@ async def randomselect(command, msg, user, channel, *args, **kwargs):
         return "Invalid game: {0}. Valid games are: {1}".format(bold(game), bold(', '.join(games)))
 
     return "{0} Your randomly selected character is: {1}".format(user.mention, bold(random.choice(chars)))
+
+@register('stats')
+async def stats(command, msg, user, channel, *args, **kwargs):
+    cmd = msg.split(' ')[0].lower() if msg.split(' ')[0] else ''
+    func_map = kwargs['func_map'] if cmd else []
+    
+
+    return bold('Stats:\n') +'{}'.format(',\n'.join(pformat(read_stat(cmd,func_map))[1:-1].split(', ')).replace('\'',''))
 
 @register('status')
 async def status(command, msg, user, channel, *args, **kwargs):

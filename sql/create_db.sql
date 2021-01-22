@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS `guild_settings` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
--- Dumping structure for table lizardbot.settings
+-- Dumping structure for table lizardbot.channel_settings
 CREATE TABLE IF NOT EXISTS `channel_settings` (
   `setting_id` BIGINT(20) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT,
   `channel_id` BIGINT(20) UNSIGNED NOT NULL,
@@ -52,6 +52,15 @@ CREATE TABLE IF NOT EXISTS `channel_settings` (
   PRIMARY KEY (`setting_id`),
   INDEX `channel_id` (`channel_id`),
   CONSTRAINT `channel_id_fk` FOREIGN KEY (`channel_id`) REFERENCES `channels` (`channel_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- Data exporting was unselected.
+-- Dumping structure for table lizardbot.stats
+CREATE TABLE IF NOT EXISTS `stats` (
+  `stat_id` INT(3) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT,
+  `command` VARCHAR(20) NOT NULL DEFAULT '',
+  `used` INT(20) NOT NULL DEFAULT 1,
+  PRIMARY KEY (`stat_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Data exporting was unselected.
