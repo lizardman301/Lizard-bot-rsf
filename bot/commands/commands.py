@@ -79,6 +79,8 @@ async def randomselect(command, msg, user, channel, *args, **kwargs):
 async def stats(command, msg, user, channel, *args, **kwargs):
     cmd = msg.split(' ')[0].lower() if msg.split(' ')[0] else ''
     func_map = kwargs['func_map'] if cmd else []
+    if cmd not in func_map:
+        return "Invalid Subcommand. " + await help_lizard('','','','')
     stats = read_stat(cmd,func_map)
 
     embed = Embed(title="Stats!")
