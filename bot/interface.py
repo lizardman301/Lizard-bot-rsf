@@ -77,7 +77,7 @@ class Interface():
                 #print error to console
                 traceback.print_exc()
                 #Return friendly user message
-                return "Sorry, that command didn't work. Ask Lizardman301 to fix it."
+                return "I is broken.\nBuff Rashid and submit an issue via https://github.com/lizardman301/Lizard-bot-rsf/issues\nOr just tell Lizardman301. That's what I do"
         else:
             return "Permission denied"
 
