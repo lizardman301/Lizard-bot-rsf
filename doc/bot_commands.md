@@ -127,7 +127,7 @@ Shortcuts: `!ping` `!liz`
 
 Ping! Pong! with some zest.  Used to check if Lizard-BOT is currently running and to leave feedback for Lizardman.
 
-## `!lizardman`
+## `!not-in-discord`
 ![!not-in-discord example](/doc/assets/images/not-in-discord.png)
 
 Restricted: No
