@@ -6,21 +6,21 @@ Shorter names for commands will be listed with shortcuts.
 All commands will assume the prefix of `!` is used.
 
 ## `!botrole`
-[!botrole example](/doc/assets/images/botrole.png)
+![!botrole example](/doc/assets/images/botrole.png)
 Restricted: Yes
 Shortcuts: `!role`
 
 When used the botrole will return the name of the role that currently is used to restrict access to certain commands.
 
 ## `!bracket`
-[!botrole example](/doc/assets/images/bracket.png)
+![!botrole example](/doc/assets/images/bracket.png)
 Restricted: no
 Shortcuts: none
 
 Shows the current bracket set in the channel. Can include text also besides just bracket link.  If a challonge link is in the text, the `!challonge` commands can automatically use the links.
 
 ## `!challonge <subcommand> [bracket URL identifier] [OPTIONALS] `
-[!challonge example](/doc/assets/images/challonge.png)
+![!challonge example](/doc/assets/images/challonge.png)
 Restricted: Yes
 Shortcuts: `!chal`
 
@@ -43,7 +43,7 @@ If the Challonge community tournament does not add the ["LizardBOT" Challonge ac
 This is because tournaments are read-only by default. Any attempts by Lizard-BOT to updating seeding numbers will fail since "LizardBOT" doesn't have permissions.	
 
 ## `!coin-flip`
-[!coin-flip example](/doc/assets/images/coin-flip.png)
+![!coin-flip example](/doc/assets/images/coin-flip.png)
 Restricted: Yes
 Shortcuts: `!flip` `!cf`
 
@@ -51,7 +51,7 @@ The bot will flip a coin (metaphorically speaking) and return either heads or ta
 Fun fact: If 4 heads show up in a row, a Gief player just won a round by spding 4 times.
 
 ## `!edit [channel(s)] <setting> <value>`
-[!edit example](/doc/assets/images/edit_example1.png)
+![!edit example](/doc/assets/images/edit_example1.png)
 Restricted: Yes
 Shortcuts: none
 Allows you to edit responses/settings for Lizard-BOT.
@@ -99,42 +99,42 @@ Server-wide edit commands do not require a channel to be specified.
 	 * Default value:
 
 ## `!help-lizard [command]`
-[!help-lizard example](/doc/assets/images/help-lizard.png)
+![!help-lizard example](/doc/assets/images/help-lizard.png)
 Restricted: No
 Shortcuts: `!helpliz`
 
 Returns the list of commands for Lizard-BOT. Providing a command in the argument will return a short description for that command.
 
 ## `!lizardman`
-[!lizardman example](/doc/assets/images/lizardman.png)
+![!lizardman example](/doc/assets/images/lizardman.png)
 Restricted: No
 Shortcuts: `!ping` `!liz`
 
 Ping! Pong! with some zest.  Used to check if Lizard-BOT is currently running and to leave feedback for Lizardman.
 
 ## `!lizardman`
-[!not-in-discord example](/doc/assets/images/not-in-discord.png)
+![!not-in-discord example](/doc/assets/images/not-in-discord.png)
 Restricted: No
 Shortcuts: `!nid`
 
 Repeats the same message at the end of `!challonge checkin` to let users know their Discord nickname must match their Challonge nickname.
 
 ## `!pingtest`
-[!pingtest example](/doc/assets/images/pingtest.png)
+![!pingtest example](/doc/assets/images/pingtest.png)
 Restricted: No
 Shortcuts: `!pt`
 
 Explains how to run a ping test using https://testmyspeed.onl/ and a common server. Useful really just for the link.
 
 ## `!prefix-lizard`
-[!prefix-lizard example](/doc/assets/images/prefix-lizard.png)
+![!prefix-lizard example](/doc/assets/images/prefix-lizard.png)
 Restricted: No
 Shortcuts: `!prefliz`
 
 Prints the prefix currently in use for Lizard-BOT. Will always respond to the "!" prefix.
 
 ## `!randomselect [game]`
-[!randomselect example](/doc/assets/images/randomselect.png)
+![!randomselect example](/doc/assets/images/randomselect.png)
 Restricted: No
 Shortcuts: `!random` `!rs`
 
@@ -142,21 +142,21 @@ Returns a randomly selected character from the game in the arguments. Will retur
 If a game that does not exist is provided as an argument, it will return the list of acceptable games.
 
 ## `!refresh`
-[!refresh example](/doc/assets/images/refresh.png)
+![!refresh example](/doc/assets/images/refresh.png)
 Restricted: Yes
 Shortcuts: none
 
 Lizard-BOT will spam the channel with a message telling players to refresh their bracket pages.  Use this after seeding is finished or when the tournament has started.
 
 ## `!remind <time in minutes> [reason]`
-[!remind example](/doc/assets/images/remind.png)
+![!remind example](/doc/assets/images/remind.png)
 Restricted: Yes
 Shortcuts: none
 
 Lizard-BOT will set a timer and remind the user who sent the command after the timer is done (with a specified reason if provided).
 
 ## `!reset`
-[!reset example](/doc/assets/images/reset.png)
+![!reset example](/doc/assets/images/reset.png)
 Restricted: Yes
 Shortcuts: none
 
@@ -164,7 +164,7 @@ This will reset the round count for the current channel back to 0. Using stats a
 Use after each tourney, so that the round count from the last tourney does not carry over.
 
 ## `!round <round number>`
-[!round example](/doc/assets/images/round.png)
+![!round example](/doc/assets/images/round.png)
 Restricted: Yes
 Shortcuts: none
 
@@ -172,7 +172,7 @@ Changes the current round number to the new value. Can be more than just numbers
 You can change the specific flavor text with `!edit status`
 
 ## `!stats [command]`
-[!stats example](/doc/assets/images/stats.png)
+![!stats example](/doc/assets/images/stats.png)
 Restricted: No
 Shortcuts: none
 
@@ -180,21 +180,21 @@ Returns the usage for Lizard-BOT commands. If you provide a command as an argume
 Usage is across all servers.
 
 ## `!status`
-[!status example](/doc/assets/images/status.png)
+![!status example](/doc/assets/images/status.png)
 Restricted: No
 Shortcuts: none
 
 Returns the current round number in a message that can be customized. Round count is set by the `!round` command and uses flavor text from the `status` setting.
 
 ## `!stream`
-[!stream example](/doc/assets/images/stream.png)
+![!stream example](/doc/assets/images/stream.png)
 Restricted: No
 Shortcuts: none
 
 Returns the stream link if one is set. Can be more than just a link, add flavor text if you wish!
 
 ## `!TOs`
-[!TOs example](/doc/assets/images/TOs.png)
+![!TOs example](/doc/assets/images/TOs.png)
 Restricted: No
 Shortcuts: none
 

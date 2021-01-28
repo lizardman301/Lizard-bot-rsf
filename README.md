@@ -10,7 +10,7 @@ Immediately after the bot joins the server use the command `!edit botrole <role>
 
 For more information on setting up the bot for use in a Discord server, please see our documentation [here](https://github.com/lizardman301/Lizard-bot-rsf/blob/master/doc/setting_up_bot_in_discord.md)
 
-For a more indepth guide to what each command does, please see our documentation [here](insert documentation link boop)
+For a more indepth guide to what each command does, please see our documentation [here](https://github.com/lizardman301/Lizard-bot-rsf/blob/master/doc/bot_commands.md)
 
 ### Note about Challonge
 
