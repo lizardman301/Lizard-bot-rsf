@@ -10,6 +10,8 @@ Immediately after the bot joins the server use the command `!edit botrole <role>
 
 For more information on setting up the bot for use in a Discord server, please see our documentation [here](https://github.com/lizardman301/Lizard-bot-rsf/blob/master/doc/setting_up_bot_in_discord.md)
 
+For a more indepth guide to what each command does, please see our documentation [here](insert documentation link boop)
+
 ### Note about Challonge
 
 If you have a pro-community, use your custom subdomain e.g., **redditfighting** of redditfighting.challonge.com.
@@ -26,7 +28,7 @@ These commands will only be available to be used by those with the role mentione
 `!botrole`
 Returns the role that allows access to the administrator commands.
 
-`!challonge <subcommand> <bracket URL identifier> [OPTIONALS]`
+`!challonge <subcommand> [bracket URL identifier] [OPTIONALS]`
 Uses Challonge's API to pull data into Discord
 
 Bracket URL identifier is what comes at the end of the URL
@@ -34,13 +36,13 @@ For example
 	redditfighting.challonge.com/wwyi8jhk
 	Bracket URL identifier = wwyi8jhk
 
-
+If you have a valid challonge link in your `!bracket` command, Lizard-BOT does not need the bracket URL identifier and will grab the first challonge link that exists in `!bracket`
 ##### Subcommands
 **Subcommands are still actively being implemented**
 
  * checkin
 	 * Checks the given bracket for users that are not checked in and users whose Challonge names are not in the server
- * seeding <bracket url> [number of players to seed(Must be integer greater than or equal to 1)]
+ * seeding [bracket url] [number of players to seed(Must be integer greater than or equal to 1)]
 	 * Seeds the tournament based on points in the spreadsheet and the number of players to seed
 
 `!coin-flip`
@@ -124,8 +126,13 @@ Explains how to run a ping test using <https://testmyspeed.onl/> and a common se
 `!prefix-lizard`
 Prints the prefix currently in use for Lizard-BOT.
 
-`!randomselect`
-Returns a randomly selected character from the current SFV cast. Useful if running a random select tourney.
+`!randomselect [game]`
+Returns a randomly selected character from the current the specified game. Assumes sfv if no game is given.
+Current games are **sfv, t7, uni, xrd**
+
+`!stats [command]`
+Returns the list of all commands and the amount of times they have been used across all servers.  Add a command in the argument to return the count for only that command.
+The stats database was started on January 22, 2021. Any past uses of commands were not counted.
 
 `!status`
 Returns the current round number in a message that can be customized.  Will let users know if a tournament has not begun.
