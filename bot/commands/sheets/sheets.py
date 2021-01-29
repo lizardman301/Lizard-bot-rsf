@@ -29,9 +29,11 @@ def sheets(sheet_id):
     except HttpError as err:
         status_code = str(err)[11:14]
 
-        if status_code == '403':
-            return "Lizard-BOT does not have access to configured spreadsheet. Please share the spreadsheet with Lizard-BOT"
+        if status_code == '404':
+            raise Exception("**Challonge**: **Sheets**: Specified Google Sheets does not exist. Please ensure you pulled the Sheets ID properly.")
+        elif status_code == '403':
+            raise Exception("**Challonge**: **Sheets**: Lizard-BOT does not have access to configured spreadsheet. Please share the spreadsheet with Lizard-BOT")
         elif status_code == '400':
-            return "Configured spreadsheet does not contain a sheet named 'Seeding'. Please add a 'Seeding' sheet."
+            raise Exception("**Challonge**: **Sheets**: Configured spreadsheet does not contain a sheet named 'Seeding'. Please add a 'Seeding' sheet.")
         else:
-            print(str(err))
+            raise Exception(str(err))

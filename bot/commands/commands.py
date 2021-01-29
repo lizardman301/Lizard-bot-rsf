@@ -1,5 +1,5 @@
 import asyncio
-from discord import Embed
+from discord import Embed, Colour
 from discord.utils import escape_markdown # Regexing fun simplified
 import json
 import os
@@ -35,7 +35,7 @@ async def help_lizard(command, msg, user, channel, *args, **kwargs):
     elif cmd in help_commands.keys():
         return help_commands[cmd]
     else:
-        return ('Invalid command: ' + bold(cmd) + '. Ensure you are using the full command name.'
+        raise Exception(bold("Help_Lizard") + ": Invalid command: " + bold(cmd) + ". Ensure you are using the full command name."
                 '\nThe available commands are ```%s```' % ', '.join(list(help_commands.keys())))
 
 @register('not-in-discord')
@@ -71,7 +71,7 @@ async def randomselect(command, msg, user, channel, *args, **kwargs):
     if game in games:
         chars = rs_info.get(game, []).copy()[0:-1]
     else:
-        return "Invalid game: {0}. Valid games are: {1}".format(bold(game), bold(', '.join(games)))
+        raise Exception(bold("RandomSelect") + ": Invalid game: {0}. Valid games are: {1}".format(bold(game), bold(', '.join(games))))
 
     return "{0} Your randomly selected character is: {1}".format(user.mention, bold(random.choice(chars)))
 
@@ -80,16 +80,21 @@ async def stats(command, msg, user, channel, *args, **kwargs):
     cmd = msg.split(' ')[0].lower() if msg.split(' ')[0] else ''
     func_map = kwargs['func_map'] if cmd else []
     if cmd and cmd not in func_map:
-        return "Invalid Subcommand. " + await help_lizard('','','','')
+        raise Exception(bold("Stats") + ": Invalid Subcommand. " + await help_lizard('','','',''))
     stats = read_stat(cmd,func_map)
 
-    embed = Embed(title="Stats!")
+    embed = Embed(title="Stats!", colour=Colour(0x0fa1dc))
     embed.set_author(name="Lizard-BOT", url="https://github.com/lizardman301/Lizard-bot-rsf", icon_url="https://raw.githubusercontent.com/lizardman301/Lizard-bot-rsf/master/doc/assets/images/cmface.png")
     embed.set_footer(text="People use this bot? Wild.")
     for stat in stats:
         embed.add_field(name=stat, value=stats[stat])
 
-    return embed
+    try:
+        await channel.send(embed=embed)
+    except:
+        raise Exception(bold("Stats") + ": Error sending embed to chat. Give Lizard-BOT the permission: " + bold("Embed Links"))
+
+    return ''
 
 @register('status')
 async def status(command, msg, user, channel, *args, **kwargs):
@@ -130,21 +135,16 @@ async def challonge(command, msg, user, channel, *args, **kwargs):
         subcommand = msg.split(' ')[0].lower() # The function trying to be accomplished
 
         if not subcommand:
-                return "Lack of arguments. " + await help_lizard('','','','')
+                raise Exception(bold("Challonge") + ": Lack of arguments. " + await help_lizard('','','',''))
 
         try:
+            if msg.split(' ')[1].isdigit():
+                raise Exception("Bracket link is only digits.")
             tour_url = msg.split(' ')[1] # Bracket to pull from
         except:
             tour_url = get_chal_tour_id(read_db('channel', 'bracket', channel.id)) # no bracket provided, give it one from DB
             if not tour_url: # no bracket found still, return so we dont have issues
-                return "Lack of arguments. " + await help_lizard('','','','')
-
-        # for the seeding command !challonge seeding <num> if you dont provide a bracket, it will think <num> is the bracket
-        # if the tour_url is equal to the last item AND it is seeding, assume something went wrong and pull tour_url from DB
-        if tour_url == msg.split(' ')[-1] and subcommand == "seeding":
-            tour_url = get_chal_tour_id(read_db('channel', 'bracket', channel.id)) # no bracket provided, give it one from DB
-            if not tour_url: # no bracket found still, return so we dont have issues
-                return "Lack of arguments. " + await help_lizard('','','','')
+                raise Exception(bold("Challonge") + ": Bracket link is missing. Try setting the bracket command or including it in the command")
 
         subdomain = read_db('guild', 'challonge', kwargs['guild']) # Server's subdomain with Challonge
 
@@ -175,11 +175,9 @@ async def challonge(command, msg, user, channel, *args, **kwargs):
 
                 # If seeding hasn't been set, inform user
                 if not sheet_id:
-                    return "There is no seeding sheet for this channel. Please view <https://github.com/lizardman301/Lizard-bot-rsf/blob/master/doc/seeding_with_sheets.md> for a walkthrough"
+                    raise Exception(bold("Challonge") + ": There is no seeding sheet for this channel. Please view <https://github.com/lizardman301/Lizard-bot-rsf/blob/master/doc/seeding_with_sheets.md> for a walkthrough")
 
                 seeds = seeding(sheet_id, parts, base_url + '/' + tour_url,seed_num)
-                if isinstance(seeds, str):
-                    return seeds
 
                 # Seeding takes place in different method
                 await channel.send("**SEEDING:**\n {0}".format(',\n'.join(escape_markdown(pformat(seeds))[1:-1].split(', '))))
@@ -189,13 +187,14 @@ async def challonge(command, msg, user, channel, *args, **kwargs):
 
             # Bad command catching
             else:
-                return_msg = "Invalid Challonge subcommand"
+                raise Exception(bold("Challonge") + ": Invalid Challonge subcommand. " + await help_lizard('','','',''))
 
             return return_msg # Return the final message
         elif '404' in str(parts_get.status_code):
-            return "Lizard-BOT can not find tournament: " + tour_url
+            raise Exception(bold("Challonge") + ": Lizard-BOT can not find tournament: " + tour_url)
         else:
             print(parts_get.text)
+            raise Exception(bold("Challonge") + ": Unknown Challonge error for " + tour_url)
 
 @register('coin-flip')
 @register('flip')
@@ -224,10 +223,11 @@ async def edit(command, msg, user, channel, *args, **kwargs):
                 break
         for chnl in command_channels:
             params.remove(command_channels[chnl]) # Remove the channel from the params
-
-    editable_command = params[0].lower() # Lower the command we are editing
+            
+    params[0] = params[0].lower() # Make sure the command we are editing is in lowercase
+    editable_command = params[0] # The command we are editing
     if editable_command not in kwargs['edit_subs']:
-        return "Invalid Subcommand. " + await help_lizard('','','','')
+        raise Exception(bold("Edit") + ": Invalid Subcommand. " + await help_lizard('','','',''))
 
     params.remove(editable_command) # Remove the command from the params
 
@@ -241,7 +241,11 @@ async def edit(command, msg, user, channel, *args, **kwargs):
         if '@everyone' in params:
             db_message = str(full_msg.guild.default_role.id)
         else:
+            if not full_msg.role_mentions or len(full_msg.role_mentions) > 2:
+                raise Exception(bold("Edit") + " : Too few/many role mentions for botrole. Try again with only one role mentioned")
             db_message = str(full_msg.role_mentions[0].id)
+    elif editable_command in ['tos'] and (not full_msg.mentions and params):
+            raise Exception(bold("Edit") + ": Invalid user mention. Try @'ing somebody")
     # Remove the bot pinging TOs on the confirmation message
     elif editable_command in ['tos']:
         mentions = pings_b_gone(full_msg.mentions)
@@ -249,8 +253,12 @@ async def edit(command, msg, user, channel, *args, **kwargs):
         channel_message = ' '.join(mentions.keys()) # Send usernames back to the channel
     elif editable_command in ['seeding']:
         reg = re.compile('[a-zA-Z0-9-_]+')
-        if not reg.fullmatch(params[0]):
-            return "Invalid Sheets spreadsheet ID. Please view <https://github.com/lizardman301/Lizard-bot-rsf/blob/master/doc/seeding_with_sheets.md> for a walkthrough"
+        if not reg.fullmatch(params[0]) or len(params[0]) > 80:
+            raise Exception(bold("Edit") + ": Invalid Sheets spreadsheet ID. Please view <https://github.com/lizardman301/Lizard-bot-rsf/blob/master/doc/seeding_with_sheets.md> for a walkthrough")
+    elif editable_command in ['prefix-lizard'] and len(params[0]) > 1:
+        raise Exception(bold("Edit") + ": Lizard-BOT prefix must be a singular character.")
+    elif editable_command in ['bracket','status','stream'] and len(db_message) > 1945:
+        raise Exception(bold("Edit") + ": Message is too long to be stored. Shorten you statement to 1945 characters or less")
 
     # Check for guild settings, channel settings, or multi channel settings
     if editable_command in ['botrole', 'challonge','prefix-lizard']:
@@ -287,7 +295,6 @@ async def remind(command, msg, user, channel, *args, **kwargs):
 
     # sends message back to confirm reminder
     await channel.send(formatted_msg)
-    print("Reminding {0} in {1} minutes for {2}...".format(user,time,reason))
 
     # wait message time
     await asyncio.sleep(60 * time)
@@ -297,7 +304,6 @@ async def remind(command, msg, user, channel, *args, **kwargs):
         formatted_msg = bold("{0}: It has been {1} minutes, you have been reminded!".format(user.mention,time))
 
     await channel.send(formatted_msg)
-    print("{0} has been reminded after {1} minutes.".format(user,time))
 
 @register('reset')
 async def reset(command, msg, user, channel, *args, **kwargs):
@@ -306,5 +312,7 @@ async def reset(command, msg, user, channel, *args, **kwargs):
 
 @register('round')
 async def round_lizard(command, msg, user, channel, *args, **kwargs):
+    if len(msg) > 50:
+        raise Exception(bold("Round_Lizard") + ": Custom round number must be less then 50 characters")
     save_db('channel', 'round', msg, channel.id)
     return await status('status', msg, user, channel)
