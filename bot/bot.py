@@ -3,6 +3,8 @@ import discord
 import json
 import os
 import random
+import traceback
+import sys
 
 # Local imports
 from commands.utilities import (read_db, settings_exist)
@@ -53,6 +55,7 @@ async def change_status():
 # When message is typed in any channel the bot has access to, check to see if the bot needs to respond
 @client.event
 async def on_message(message):
+    cmd = 'bracket'
     # If the bot is the user, do not respond
     if message.author == client.user:
         return
@@ -66,55 +69,64 @@ async def on_message(message):
         responses = ["Ok", "Thanks", "Sounds good to me", "Buff Rashid", "Beep Boop", "Yes", "No", "Good to know", "Glad to hear it", "I'll keep that in mind", "The answer lies in the heart of battle", "Go home and be a family man"]
         await message.channel.send("{0} \n**I am a Bot and cannot respond to mentions**".format(random.choice(responses)))
 
-    # Check if the channel is in the DB
-    # Add it if it isn't
-    if not settings_exist(message.guild.id, message.channel.id):
-        await chan.send("Oops, I'm broken")
-        print("Lizard-BOT failed to create DB entry for: " + message.guild.name + ". Guild ID: " + message.guild.id)
+    try:
+        # Check if the channel is in the DB
+        # Add it if it isn't
+        if not settings_exist(message.guild.id, message.channel.id):
+            await chan.send("Oops, I'm broken")
+            print("Lizard-BOT failed to create DB entry for: " + message.guild.name + ". Guild ID: " + message.guild.id)
 
-    # Get prefix for the guild
-    prefix = read_db('guild', 'prefix-lizard', message.guild.id)
+        # Get prefix for the guild
+        prefix = read_db('guild', 'prefix-lizard', message.guild.id)
 
-    # Hardcode prefix command to be accessible via !
-    if message.content.startswith("!prefix-lizard") or message.content.startswith("!prefliz"):
-        response = await client.interface.call_command('prefix-lizard', 0, 0, 0, guild=message.guild.id)
-        if response:
-            await message.channel.send(response)
-        return
-    # If other commands don't start with the correct prefix, do nothing
-    elif not message.content.startswith(prefix):
-        return
-
-    for command in client.commands:
-        command = command.lower() # Lower the command for easier matching
-        msg = message.content # The message
-        attempted_cmd = msg.split(' ')[0][1:].lower() # Get the attempted command from the beginning of the string
-
-        if attempted_cmd in client.no_arg_cmds and len(msg.split()) > 1:
-            await message.channel.send("Too many arguments. Check help-lizard for more info")
+        # Hardcode prefix command to be accessible via !
+        if message.content.startswith("!prefix-lizard") or message.content.startswith("!prefliz"):
+            response = await client.interface.call_command('prefix-lizard', 0, 0, 0, guild=message.guild.id)
+            if response:
+                await message.channel.send(response)
+            return
+        # If other commands don't start with the correct prefix, do nothing
+        elif not message.content.startswith(prefix):
             return
 
-        # Check if the message begins with a command
-        if attempted_cmd and attempted_cmd == command:
-            user = message.author # The author
-            kwargs = {'guild':message.guild.id}
+        for command in client.commands:
+            command = command.lower() # Lower the command for easier matching
+            cmd = command
+            msg = message.content # The message
+            attempted_cmd = msg.split(' ')[0][1:].lower() # Get the attempted command from the beginning of the string
 
-            # Remove the command from the start
-            msg = msg[len(command)+1:].strip()
+            if attempted_cmd in client.no_arg_cmds and len(msg.split()) > 1:
+                await message.channel.send("Too many arguments. Check help-lizard for more info")
+                return
 
-            if command in ['challonge', 'chal', 'edit']:
-                kwargs['full_msg'] = message
+            # Check if the message begins with a command
+            if attempted_cmd and attempted_cmd == command:
+                user = message.author # The author
+                kwargs = {'guild':message.guild.id}
 
-            # Await the interface calling the command
-            response = await client.interface.call_command(command, msg, user, message.channel, **kwargs)
-            # If there is a response, send it
-            if response:
-                if type(discord.Embed()) == type(response):
-                    response.colour=discord.Colour(0x0fa1dc)
-                    await message.channel.send(embed=response)
-                    break
-                await message.channel.send(response)
-            break
+                # Remove the command from the start
+                msg = msg[len(command)+1:].strip()
+
+                if command in ['challonge', 'chal', 'edit']:
+                    kwargs['full_msg'] = message
+
+                # Await the interface calling the command
+                response = await client.interface.call_command(command, msg, user, message.channel, **kwargs)
+                # If there is a response, send it
+                if response:
+                    await message.channel.send(response)
+                break
+    except Exception:
+        # Print error to console
+        traceback.print_exc()
+
+        # Return friendly user message
+        if client.interface._func_mapping[cmd].__name__ in str(sys.exc_info()[1]).split(':')[0].strip("*").lower():
+            await message.channel.send(str(sys.exc_info()[1]).replace('_', '-'))
+        else:
+            # If we get this far and something breaks
+            # Something is very wrong
+            await message.channel.send("I is broken.\nBuff Rashid and submit an issue via <https://github.com/lizardman301/Lizard-bot-rsf/issues>\nOr just tell Lizardman301. That's what I do.")
 
 # Yaksha
 # Main thread the kicks off the initial setup and starts the bot

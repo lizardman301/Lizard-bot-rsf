@@ -1,5 +1,3 @@
-import traceback
-
 # Local imports
 from commands import commands
 from commands.utilities import (get_callbacks, read_db, stat_up)
@@ -70,16 +68,10 @@ class Interface():
                 result = await self._func_mapping[command](command, msg, user, channel, *args, **kwargs)
                 stat_up(self._func_mapping[command].__name__)
                 return result
-            except Exception:
-                # If we get this far and something breaks
-                # Something is very wrong
-
-                #print error to console
-                traceback.print_exc()
-                #Return friendly user message
-                return "I is broken.\nBuff Rashid and submit an issue via https://github.com/lizardman301/Lizard-bot-rsf/issues\nOr just tell Lizardman301. That's what I do"
+            except:
+                raise
         else:
-            return "Permission denied"
+            return "You do not have permissions to access the command: " + command
 
     def user_has_permission(self, user, command, id):
         '''
