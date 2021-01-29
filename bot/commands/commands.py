@@ -228,7 +228,6 @@ async def edit(command, msg, user, channel, *args, **kwargs):
         raise Exception(bold("Edit") + ": Invalid Subcommand. " + await help_lizard('','','',''))
 
     params.remove(editable_command) # Remove the command from the params
-    print(params)
     # Rejoin the rest of the parameters with spaces
     db_message = ' '.join(params) # The message we send to the Database
     channel_message = ' '.join(params) # The message that gets sent
@@ -243,15 +242,11 @@ async def edit(command, msg, user, channel, *args, **kwargs):
             db_message = str(full_msg.guild.default_role.id)
             channel_message = full_msg.guild.default_role.name
         else:
-<<<<<<< HEAD
             if not full_msg.role_mentions or len(full_msg.role_mentions) > 2:
                 raise Exception(bold("Edit") + " : Too few/many role mentions for botrole. Try again with only one role mentioned")
             db_message = str(full_msg.role_mentions[0].id)
     elif editable_command in ['tos'] and (not full_msg.mentions and params):
             raise Exception(bold("Edit") + ": Invalid user mention. Try @'ing somebody")
-=======
-            return "Invalid Mention when trying to edit the botrole"
->>>>>>> 64ef017 (Botrole decriminalized)
     # Remove the bot pinging TOs on the confirmation message
     elif editable_command in ['tos']:
         mentions = pings_b_gone(full_msg.mentions)
