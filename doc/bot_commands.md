@@ -1,4 +1,4 @@
-# Indepth Guide to botcommands
+# In-depth Guide to Lizard-BOT commands
 This is an extension of the original short list on the [main Github page](https://github.com/lizardman301/Lizard-bot-rsf). The purpose of this extension is to go more in depth on how each command can be used.
 If a command is followed by arguments, `<argument>` will indicated a mandatory argument while `[argument]` will indicate an optional argument.
 If a command is restricted, it can only be used by people who have the assigned botrole.
@@ -8,7 +8,7 @@ All commands will assume the prefix of `!` is used.
 ## `!botrole`
 ![!botrole example](/doc/assets/images/botrole.png)
 
-Restricted: Yes
+Restricted: No
 
 Shortcuts: `!role`
 

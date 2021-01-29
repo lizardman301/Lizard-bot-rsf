@@ -15,6 +15,12 @@ from commands.utilities import (register, bold, get_chal_tour_id, get_users, is_
 # All @register decorators are a product of reviewing Yaksha
 # See utilities.register for more information
 
+@register('botrole')
+@register('role')
+async def botrole(command, msg, user, channel, *args, **kwargs):
+    # Pull the role name from the guild's roles
+    return "The bot role is {0}".format(bold(channel.guild.get_role(read_db('guild', 'botrole', kwargs['guild'])).name))
+
 @register('bracket')
 async def bracket(command, msg, user, channel, *args, **kwargs):
     return read_db('channel', 'bracket', channel.id)
@@ -119,14 +125,6 @@ async def TOs(command, msg, user, channel, *args, **kwargs):
 
 # Admin Commands
 
-@register('botrole')
-@register('role')
-async def botrole(command, msg, user, channel, *args, **kwargs):
-    # Pull the role name from the user's roles
-    for role in user.roles:
-        if role.id == read_db('guild', 'botrole', kwargs['guild']):
-            return "The bot role is {0}".format(bold(role.name))
-
 @register('challonge')
 @register('chal')
 async def challonge(command, msg, user, channel, *args, **kwargs):
@@ -230,20 +228,21 @@ async def edit(command, msg, user, channel, *args, **kwargs):
         raise Exception(bold("Edit") + ": Invalid Subcommand. " + await help_lizard('','','',''))
 
     params.remove(editable_command) # Remove the command from the params
-
     # Rejoin the rest of the parameters with spaces
     db_message = ' '.join(params) # The message we send to the Database
     channel_message = ' '.join(params) # The message that gets sent
 
     # Grab just the BigInt part of bot_role
     if editable_command in ['botrole']:
-        # Allow @everyone to be a botrole
-        if '@everyone' in params:
-            db_message = str(full_msg.guild.default_role.id)
-        else:
-            if not full_msg.role_mentions or len(full_msg.role_mentions) > 2:
-                raise Exception(bold("Edit") + " : Too few/many role mentions for botrole. Try again with only one role mentioned")
+        if not full_msg.role_mentions or len(full_msg.role_mentions) > 1:
+            raise Exception(bold("Edit") + " : Too few/many role mentions for botrole. Try again with only one role mentioned")
+        elif full_msg.role_mentions:
             db_message = str(full_msg.role_mentions[0].id)
+            channel_message = full_msg.role_mentions[0].name
+        # Allow @everyone to be a botrole
+        elif not params:
+            db_message = str(full_msg.guild.default_role.id)
+            channel_message = full_msg.guild.default_role.name
     elif editable_command in ['tos'] and (not full_msg.mentions and params):
             raise Exception(bold("Edit") + ": Invalid user mention. Try @'ing somebody")
     # Remove the bot pinging TOs on the confirmation message
