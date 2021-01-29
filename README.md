@@ -25,9 +25,6 @@ This is because tournaments are read-only by default. Any attempts by Lizard-BOT
 
 These commands will only be available to be used by those with the role mentioned above.
 
-`!botrole`
-Returns the role that allows access to the administrator commands.
-
 `!challonge <subcommand> [bracket URL identifier] [OPTIONALS]`
 Uses Challonge's API to pull data into Discord
 
@@ -107,6 +104,9 @@ Changes the current round number to the new value. Can be more than just numbers
 ## General commands
 
 Commands everyone can use
+
+`!botrole`
+Returns the role that allows access to the administrator commands.
 
 `!bracket`
 Shows the current bracket set in the channel.
