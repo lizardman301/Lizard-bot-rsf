@@ -1,6 +1,6 @@
 # Indepth Guide to botcommands
-This is an extension of the original short list on the [main Github page](https://github.com/lizardman301/Lizard-bot-rsf), to go more in depth on how each command is functioned.
-If a command is followed by arguments, `<argument>` will indicated a mandatory argument while `[argument]` will indicate an optional argumetn.
+This is an extension of the original short list on the [main Github page](https://github.com/lizardman301/Lizard-bot-rsf). The purpose of this extension is to go more in depth on how each command can be used.
+If a command is followed by arguments, `<argument>` will indicated a mandatory argument while `[argument]` will indicate an optional argument.
 If a command is restricted, it can only be used by people who have the assigned botrole.
 Shorter names for commands will be listed with shortcuts.
 All commands will assume the prefix of `!` is used.
@@ -21,7 +21,7 @@ Restricted: No
 
 Shortcuts: none
 
-Shows the current bracket set in the channel. Can include text also besides just bracket link.  If a challonge link is in the text, the `!challonge` commands can automatically use the links.
+Shows the current bracket set in the channel. Can include text also besides just bracket link.  If a Challonge link is in the text, the `!challonge` commands can automatically use the links.
 
 ## `!challonge <subcommand> [bracket URL identifier] [OPTIONALS] `
 ![!challonge example](/doc/assets/images/challonge.png)
@@ -30,23 +30,23 @@ Restricted: Yes
 
 Shortcuts: `!chal`
 
-This is the main command to interface with challonge. 
-If a valid challonge link in the `!bracket` command, no bracket URL identifier is needed. It will look for the first possible link in that command.
+This is the main command to interface with Challonge via their API. 
+If a valid Challonge link in the `!bracket` command, no bracket URL identifier is needed. It will look for the first possible link in that command.
 
 If you are a community you must set a subdomain using `!edit challonge <subdomain>`.
 If you have a pro-community, use your custom subdomain e.g., redditfighting of redditfighting.challonge.com.
 If you are not a pro-community in Challonge, you will have to find and copy the jumble of symbols that is your community's subdomain. Go to your Challonge community page, and go to community settings. Look for the part that says Subdomain PRO and look for the box beneath it. This is your community subdomain.
 
 There are two possible subcommands.
-* `checkin`
-	 * Checks the given bracket for users that are not checked in and users whose Challonge names are not in the server
-	 * Players will be found based on their challonge nickname existing as a discord nickname
-	 * Tell players to change their discord Nick to match their Challonge nick for best usage
+* `checkin [bracket url]`
+	 * Checks the given bracket for users that are not checked in and users whose Challonge names are not in the Discord server
+	 * Players will be found based on their Challonge nickname existing as a Discord nickname
+	 * Tells players to change their Discord nickname to match their Challonge nick for best usage
 * `seeding [bracket url] <number of players to seed(Must be integer greater than or equal to 1)>`
 	 * Seeds the tournament based on points in the spreadsheet and the number of players to seed
 	 * Read more about setting up seeding [here]((https://github.com/lizardman301/Lizard-bot-rsf/blob/master/doc/seeding_with_sheets.md)
 If the Challonge community tournament does not add the ["LizardBOT" Challonge account](https://challonge.com/users/LizardBOT) as a collaborator or a tournament hosted by a Challonge user, the checkin command **WILL** work but the seeding command will **NOT** work.
-This is because tournaments are read-only by default. Any attempts by Lizard-BOT to updating seeding numbers will fail since "LizardBOT" doesn't have permissions.	
+This is because tournaments are read-only by default. Any attempts by Lizard-BOT to updating seeding numbers will fail since "LizardBOT" doesn't have permissions.
 
 ## `!coin-flip`
 ![!coin-flip example](/doc/assets/images/coin-flip.png)
@@ -56,7 +56,7 @@ Restricted: Yes
 Shortcuts: `!flip` `!cf`
 
 The bot will flip a coin (metaphorically speaking) and return either heads or tails.
-Fun fact: If 4 heads show up in a row, a Gief player just won a round by spding 4 times.
+Fun fact: If 4 heads show up in a row, a Gief player just won a round by SPD'ing 4 times.
 
 ## `!edit [channel(s)] <setting> <value>`
 ![!edit example](/doc/assets/images/edit_example1.png)
@@ -67,7 +67,7 @@ Shortcuts: None
 
 Allows you to edit responses/settings for Lizard-BOT.
 There are multiple settings that can be edited to allow customization.
-If no channel is specified, changes for channel specific edits will affect only the current channel.
+If no channel is specified, changes for channel specific edits will affect only the channel the command is sent in.
 If multiple channels are listed, the setting will be updated to the same value across all listed channels.
 Server-wide edit commands do not require a channel to be specified.
 ##### Server-wide
@@ -76,7 +76,7 @@ Server-wide edit commands do not require a channel to be specified.
 	 * New value must be a ping to the role desired
 	 * Default value: @everyone
  * challonge
-	 * Specifies the challonge subdomain to check for tournaments
+	 * Specifies the Challonge subdomain to check for tournaments
 	 * Necessary for Challonge integration
 	 * Default Value:
  * prefix-lizard
@@ -100,10 +100,10 @@ Server-wide edit commands do not require a channel to be specified.
 	 * Unique for each channel
 	 * Default value: Winner's Round {0} can play! Losers can play till top 8 losers side. If you have a bye Round {0}, Please Wait!
  * stream
-	 * Allows you to add a stream link that users can ping to get a link of
+	 * Allows you to add a stream link for users to easily access without prior knowledge or pinging an admin
 	 * Unique for each channel
 	 * Default value: There are no streams set for this channel
- * tos
+ * TOs
 	 * Allows you to list all Tournament Organizers involved
 	 * Recommended to make it ping each individual TO
 	 * Unique for each channel

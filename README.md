@@ -127,8 +127,8 @@ Explains how to run a ping test using <https://testmyspeed.onl/> and a common se
 Prints the prefix currently in use for Lizard-BOT.
 
 `!randomselect [game]`
-Returns a randomly selected character from the current the specified game. Assumes sfv if no game is given.
-Current games are **sfv, t7, uni, xrd**
+Returns a randomly selected character from the current the specified game. Assumes SFV if no game is given.
+Current games are **3s, footsies, gbvs, samsho, sfv, t7, uni, xrd, +r**
 
 `!stats [command]`
 Returns the list of all commands and the amount of times they have been used across all servers.  Add a command in the argument to return the count for only that command.
@@ -150,7 +150,7 @@ Please see our documentation [here](https://github.com/lizardman301/Lizard-bot-r
 ## Contributers
 * **Lizardman** - *Initial work, owner of bot, bug hunting* - [Twitter](https://twitter.com/lizardman301)
 * **Axio** - *Initial Idea and general help*
-* **Nogarremi** - *Database implentation, primary developer* - [Twitter](https://twitter.com/Nogarremi)
+* **Nogarremi** - *Database implementation, primary developer* - [Twitter](https://twitter.com/Nogarremi)
 
 ## Other Resources
 * **[Yaksha Bot](https://github.com/ellipses/Yaksha)** - *Created by ellipses. We used this for additional ideas about proper structuring of code for ease of expandability and readability. Yaksha Bot was released under an MIT license and this bot(Lizard-bot-rsf) is released as Mozilla Public License 2.0 but to ensure ellipses is credited, the functions copied and then edited by the contributors are commented with "# Yaksha" to give credit*
