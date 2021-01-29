@@ -40,9 +40,9 @@ If you have a valid challonge link in your `!bracket` command, Lizard-BOT does n
 ##### Subcommands
 **Subcommands are still actively being implemented**
 
- * checkin
+ * checkin [bracket url ID]
 	 * Checks the given bracket for users that are not checked in and users whose Challonge names are not in the server
- * seeding [bracket url] [number of players to seed(Must be integer greater than or equal to 1)]
+ * seeding [bracket url ID] [number of players to seed(Must be integer greater than or equal to 1)]
 	 * Seeds the tournament based on points in the spreadsheet and the number of players to seed
 
 `!coin-flip`
@@ -54,39 +54,39 @@ There are multiple settings that can be edited to allow customization.
 If multiple channels are listed, the setting will be updated to the same value across all listed channels.
 
 ##### Server-wide
- * botrole
+ * botrole <@role>
 	 * This role determines what role is needed to access the TO Commands
 	 * New value must be a ping to the role desired
 	 * Default value: @everyone
- * challonge
-	 * Specifies the challonge subdomain to check for tournaments
+ * challonge <subdomain>
+	 * Specifies the Challonge subdomain to check for tournaments
 	 * Necessary for Challonge integration
 	 * Default Value:
- * prefix-lizard
+ * prefix-lizard <single character to use as a prefix>
 	 * Allows you to change the prefix for commands
 	 * Useful if you use multiple bots that may have similar commands and prefixes
 	 * Default Value: !
 
 ##### Channel-Specific
- * bracket
+ * bracket <string>
 	 * Allows you to add a link to a bracket for users to view
 	 * Unique for each channel
 	 * Default value: 'There is no bracket set for this channel'
- * seeding
+ * seeding <Sheets ID>
 	 * Allows you to set the Google Sheets spreadsheet ID to be used to check points
 	 * Please see: [Our Documentation](https://github.com/lizardman301/Lizard-bot-rsf/blob/master/doc/seeding_with_sheets.md) for instructions on creating/adapting a spreadsheet
 	 * Unique for each channel
 	 * Default value:
- * status
+ * status <string>
 	 * Allows you to change the flavor text of the !round and !status commands for individual channels
 	 * Text uses {0} as a marker for where the round count will be added
 	 * Unique for each channel
 	 * Default value: Winner's Round {0} can play! Losers can play till top 8 losers side. If you have a bye Round {0}, Please Wait!
- * stream
-	 * Allows you to add a stream link that users can ping to get a link of
+ * stream <string>
+	 * Allows you to add a stream link for users to easily access without prior knowledge or pinging an admin
 	 * Unique for each channel
 	 * Default value: There are no streams set for this channel
- * tos
+ * TOs <@user>
 	 * Allows you to list all Tournament Organizers involved
 	 * Recommended to make it ping each individual TO
 	 * Unique for each channel
