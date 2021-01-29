@@ -1,10 +1,5 @@
 {
 	"admin_commands": {
-		"botrole": [
-			"botrole",
-			"role",
-			"Returns the role that allows access to the administrator commands"
-		],
 		"challonge": [
 			"challonge",
 			"chal",
@@ -23,6 +18,11 @@
 		"round": ["round", "Changes the current round number to the new value. Immediately sends a status update in the chat."]
 	},
 	"common_commands": {
+		"botrole": [
+			"botrole",
+			"role",
+			"Returns the role that allows access to the administrator commands"
+		],
 		"bracket": ["bracket", "Shows the current bracket set in the channel"],
 		"help-lizard": [
 			"help-lizard",
@@ -72,16 +72,17 @@
 		"tos": ["tos", "Allows you to list all Tournament Organizers involved\nRecommended to make it ping each individual TO\nUnique for each channel\nDefault value:"]
 	},
 	"no_arg_commands": [
+		"botrole",
 		"bracket",
 		"coin-flip",
+		"lizardman",
+		"not-in-discord",
+		"pingtest",
+		"prefix-lizard",
 		"refresh",
 		"reset",
-		"pingtest",
 		"status",
 		"stream",
-		"TOs",
-		"not-in-discord",
-		"prefix-lizard",
-		"lizardman"
+		"TOs"
 	]
 }
