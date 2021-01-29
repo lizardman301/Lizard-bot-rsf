@@ -234,17 +234,15 @@ async def edit(command, msg, user, channel, *args, **kwargs):
 
     # Grab just the BigInt part of bot_role
     if editable_command in ['botrole']:
-        # Allow @everyone to be a botrole
-        if full_msg.role_mentions:
+        if not full_msg.role_mentions or len(full_msg.role_mentions) > 1:
+            raise Exception(bold("Edit") + " : Too few/many role mentions for botrole. Try again with only one role mentioned")
+        elif full_msg.role_mentions:
             db_message = str(full_msg.role_mentions[0].id)
             channel_message = full_msg.role_mentions[0].name
+        # Allow @everyone to be a botrole
         elif not params:
             db_message = str(full_msg.guild.default_role.id)
             channel_message = full_msg.guild.default_role.name
-        else:
-            if not full_msg.role_mentions or len(full_msg.role_mentions) > 2:
-                raise Exception(bold("Edit") + " : Too few/many role mentions for botrole. Try again with only one role mentioned")
-            db_message = str(full_msg.role_mentions[0].id)
     elif editable_command in ['tos'] and (not full_msg.mentions and params):
             raise Exception(bold("Edit") + ": Invalid user mention. Try @'ing somebody")
     # Remove the bot pinging TOs on the confirmation message
