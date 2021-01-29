@@ -223,8 +223,9 @@ async def edit(command, msg, user, channel, *args, **kwargs):
                 break
         for chnl in command_channels:
             params.remove(command_channels[chnl]) # Remove the channel from the params
-
-    editable_command = params[0].lower() # Lower the command we are editing
+            
+    params[0] = params[0].lower() # Make sure the command we are editing is in lowercase
+    editable_command = params[0] # The command we are editing
     if editable_command not in kwargs['edit_subs']:
         raise Exception(bold("Edit") + ": Invalid Subcommand. " + await help_lizard('','','',''))
 
@@ -243,6 +244,8 @@ async def edit(command, msg, user, channel, *args, **kwargs):
             if not full_msg.role_mentions or len(full_msg.role_mentions) > 2:
                 raise Exception(bold("Edit") + " : Too few/many role mentions for botrole. Try again with only one role mentioned")
             db_message = str(full_msg.role_mentions[0].id)
+    elif editable_command in ['tos'] and (not full_msg.mentions and params):
+            raise Exception(bold("Edit") + ": Invalid user mention. Try @'ing somebody")
     # Remove the bot pinging TOs on the confirmation message
     elif editable_command in ['tos']:
         mentions = pings_b_gone(full_msg.mentions)
