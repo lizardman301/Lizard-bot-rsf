@@ -7,13 +7,14 @@ class Interface():
 
     # Yaksha
     # Initialize Interface with all our nice defaults
-    def __init__(self, admin_commands, edit_subcommands, help):
+    def __init__(self, admin_commands, edit_subcommands, chal_subcommands, help):
         self._func_mapping = {} # Map for future reference
         self._modules = [commands] # Stores the reference to each .py we have command functions in
         self.remap_functions() # Map functions for reference by command name
         self.admin_commands = admin_commands # Bring over the admin commands
         self.help = help # Bring over help info
         self.edit_subcommands = edit_subcommands # Bring over the edit subcommands
+        self.chal_subcommands = chal_subcommands # Bring over the challonge subcommands
 
     # Yaksha
     def remap_functions(self):
@@ -58,10 +59,12 @@ class Interface():
         # First check if the user is allowed to call this
         # function.
         if self.user_has_permission(user, command, kwargs['guild']):
-            if self._func_mapping[command].__name__ in ['help_lizard']:
+            if self._func_mapping[command].__name__ == 'help_lizard':
                 kwargs['help'] = self.help
             elif self._func_mapping[command].__name__ == 'edit':
                 kwargs['edit_subs'] = self.edit_subcommands.keys()
+            elif self._func_mapping[command].__name__ == 'challonge':
+                kwargs['edit_subs'] = self.chal_subcommands.keys()
             elif self._func_mapping[command].__name__ == 'stats':
                 kwargs['func_map'] = self._func_mapping
             try:

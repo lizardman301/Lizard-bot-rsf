@@ -167,10 +167,10 @@ def main():
             # Add the command and aliases as admin commands
             client.admin_commands.append(alias)
 
-    client.challonge_subcommands = config.get('challonge_subcommands', {}).copy()
-    for subcmd in client.challonge_subcommands:
-        for info in client.challonge_subcommands[subcmd]:
-            if info == client.challonge_subcommands[subcmd][-1]:
+    client.chal_subcommands = config.get('challonge_subcommands', {}).copy()
+    for subcmd in client.chal_subcommands:
+        for info in client.chal_subcommands[subcmd]:
+            if info == client.chal_subcommands[subcmd][-1]:
                 client.help.update({"challonge " + subcmd:info})
                 break
 
@@ -182,7 +182,7 @@ def main():
                 break
 
     # Start our interface for our commands and Discord
-    client.interface = interface.Interface(client.admin_commands, client.edit_subcommands, client.help)
+    client.interface = interface.Interface(client.admin_commands, client.edit_subcommands, client.chal_subcommands, client.help)
 
     # Start loop for status change
     client.loop.create_task(change_status())

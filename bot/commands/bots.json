@@ -59,7 +59,8 @@
 	},
 	"challonge_subcommands": {
 		"checkin":["checkin", "Checks the given bracket for users that are not checked in and users whose Challonge names are not in the server"],
-		"seeding":["seeding", "Seeds the tournament based on points in the spreadsheet and the number of players to seed"]
+		"seeding":["seeding", "Seeds the tournament based on points in the spreadsheet and the number of players to seed"],
+		"signup":["signup", "Allows users to sign up for the configured tournament"]
 	},
 	"edit_subcommands": {
 		"botrole": ["botrole", "This role determines what role is needed to access the TO Commands\nNew value must be a ping to the role desired\nDefault value: @everyone"],

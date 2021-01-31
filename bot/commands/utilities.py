@@ -140,9 +140,6 @@ def seeding(sheet_id, parts, url, seed_num):
 
     # Get dict of associated players and their points
     players_to_points = sheets(sheet_id)
-    
-    if isinstance(players_to_points, str):
-        return players_to_points
 
     # Check each participant and if they have points
     for p in parts:
@@ -182,6 +179,16 @@ def seeding(sheet_id, parts, url, seed_num):
 
     # Return seeding list
     return finished_seeding
+
+def signup (url, chal_user, *args):
+    params={'api_key':api_key, 'participant[challonge_username]': chal_user}
+    if args[0]:
+        params.update({'participant[name]':args[0]})
+
+    response = requests.post(url + "/participants.json", params=params)
+    print(response.status_code)
+    print(response.text)
+    
 
 # Create a connection to the database
 def make_conn():

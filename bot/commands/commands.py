@@ -10,7 +10,7 @@ import requests
 
 # Local imports
 from secret import api_key
-from commands.utilities import (register, bold, get_chal_tour_id, get_users, is_channel, pings_b_gone, checkin, seeding, read_db, read_stat, save_db, settings_exist)
+from commands.utilities import (register, bold, get_chal_tour_id, get_users, is_channel, pings_b_gone, checkin, seeding, signup, read_db, read_stat, save_db, settings_exist)
 
 # All @register decorators are a product of reviewing Yaksha
 # See utilities.register for more information
@@ -175,7 +175,7 @@ async def challonge(command, msg, user, channel, *args, **kwargs):
                 if not sheet_id:
                     raise Exception(bold("Challonge") + ": There is no seeding sheet for this channel. Please view <https://github.com/lizardman301/Lizard-bot-rsf/blob/master/doc/seeding_with_sheets.md> for a walkthrough")
 
-                seeds = seeding(sheet_id, parts, base_url + '/' + tour_url,seed_num)
+                seeds = seeding(sheet_id, parts, base_url + '/' + tour_url, seed_num)
 
                 # Seeding takes place in different method
                 await channel.send("**SEEDING:**\n {0}".format(',\n'.join(escape_markdown(pformat(seeds))[1:-1].split(', '))))
@@ -183,6 +183,14 @@ async def challonge(command, msg, user, channel, *args, **kwargs):
                 # Final message that seeding is complete
                 return_msg = bold("SEEDING IS NOW COMPLETE!\nPLEASE REFRESH YOUR BRACKETS\nWAIT FOR THE ROUND 1 ANNOUNCEMENT TO START PLAYING")
 
+            elif subcommand == 'signup':
+                chal_user = msg.split(' ')[2]
+                chal_nick = msg.split(' ')[3] if len(msg.split(' ')) > 3 else ''
+
+                signup(base_url + '/' + tour_url, chal_user, chal_nick)
+
+                #print(parts_get.json())
+                return_msg = 'Hi'
             # Bad command catching
             else:
                 raise Exception(bold("Challonge") + ": Invalid Challonge subcommand. " + await help_lizard('','','',''))
