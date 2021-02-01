@@ -24,6 +24,7 @@
 			"Returns the role that allows access to the administrator commands"
 		],
 		"bracket": ["bracket", "Shows the current bracket set in the channel"],
+		"github": ["github", "lizardbot", "Links to the GitHub repository for Lizard-BOT"],
 		"help-lizard": [
 			"help-lizard",
 			"helpliz",
@@ -75,6 +76,7 @@
 		"botrole",
 		"bracket",
 		"coin-flip",
+		"github",
 		"lizardman",
 		"not-in-discord",
 		"pingtest",
