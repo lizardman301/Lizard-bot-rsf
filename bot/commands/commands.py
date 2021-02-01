@@ -25,6 +25,11 @@ async def botrole(command, msg, user, channel, *args, **kwargs):
 async def bracket(command, msg, user, channel, *args, **kwargs):
     return read_db('channel', 'bracket', channel.id)
 
+@register('github')
+@register('lizardbot')
+async def github(command, msg, user, channel, *args, **kwargs):
+    return await help_lizard('', '', '', '')
+
 @register('help-lizard')
 @register('helpliz')
 async def help_lizard(command, msg, user, channel, *args, **kwargs):

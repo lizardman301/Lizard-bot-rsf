@@ -109,6 +109,15 @@ Server-wide edit commands do not require a channel to be specified.
 	 * Unique for each channel
 	 * Default value:
 
+## `!github`
+![!github example](/doc/assets/images/github.png)
+
+Restricted: No
+
+Shortcuts: `!lizardbot`
+
+Returns the link to the Lizard-BOT repository on GitHub
+
 ## `!help-lizard [command]`
 ![!help-lizard example](/doc/assets/images/help-lizard.png)
 

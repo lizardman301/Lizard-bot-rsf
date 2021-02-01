@@ -111,6 +111,9 @@ Returns the role that allows access to the administrator commands.
 `!bracket`
 Shows the current bracket set in the channel.
 
+`!github`
+Displays the link to the GitHub repository for Lizard-BOT
+
 `!help-lizard`
 Displays a list of all commands.
 
