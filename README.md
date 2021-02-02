@@ -69,7 +69,7 @@ If multiple channels are listed, the setting will be updated to the same value a
 	 * Allows you to add a link to a bracket for users to view
 	 * Unique for each channel
 	 * Default value: 'There is no bracket set for this channel'
- * bracket <string>
+ * pingtest <string>
 	 * Allows you to add a link to a speedtest and instructions for how to prefer a speedtest
 	 * Unique for each channel
 	 * Default value: Use <https://testmyspeed.onl/> for ping tests.

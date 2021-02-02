@@ -89,7 +89,7 @@ Server-wide edit commands do not require a channel to be specified.
 	 * Allows you to add a link to a bracket for users to view
 	 * Unique for each channel
 	 * Default value: 'There is no bracket set for this channel'
- * bracket <string>
+ * pingtest <string>
 	 * Allows you to add a link to a speedtest and instructions for how to prefer a speedtest
 	 * Unique for each channel
 	 * Default value: Use <https://testmyspeed.onl/> for ping tests.
