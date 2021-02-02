@@ -66,6 +66,7 @@
 		"botrole": ["botrole", "This role determines what role is needed to access the TO Commands\nNew value must be a ping to the role desired\nDefault value: @everyone"],
 		"bracket": ["bracket", "Allows you to add a link to a bracket for users to view\nUnique for each channel\nDefault value: 'There is no bracket set for this channel'"],
 		"challonge": ["challonge", "Specifies the challonge subdomain to check for tournaments\nNecessary for Challonge integration\nDefault Value:"],
+		"pingtest": ["pingtest", "Allows you to set a message for players to do a ping test\nDefault Value: Use <https://testmyspeed.onl/> for ping tests."],
 		"prefix-lizard": ["prefix-lizard", "Allows you to change the prefix for commands\nUseful if you use multiple bots that may have similar commands and prefixes\nDefault Value: !"],
 		"seeding": ["seeding", "Allows you to set the Google Sheets spreadsheet ID to be used to check points\nPlease see: [Our Documentation](https://github.com/lizardman301/Lizard-bot-rsf/blob/master/doc/seeding_with_sheets.md) for instructions on creating/adapting a spreadsheet\nUnique for each channel\nDefault value:"],
 		"status": ["status", "Allows you to change the flavor text of the !round and !status commands for individual channels\nText uses {0} as a marker for where the round count will be added\nUnique for each channel\nDefault value: Winner's Round {0} can play! Losers can play till top 8 losers side. If you have a bye Round {0}, Please Wait!"],

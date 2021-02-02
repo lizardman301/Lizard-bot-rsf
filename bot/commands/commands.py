@@ -64,7 +64,7 @@ async def ping(command, msg, user, channel, *args, **kwargs):
 @register('pingtest')
 @register('pt')
 async def pingtest(command, msg, user, channel, *args, **kwargs):
-    return "Use <https://testmyspeed.onl/> for ping tests."
+    return read_db('channel', 'pingtest', channel.id)
 
 @register('prefix-lizard')
 @register('prefliz')
@@ -255,14 +255,17 @@ async def edit(command, msg, user, channel, *args, **kwargs):
         mentions = pings_b_gone(full_msg.mentions)
         db_message = ' '.join(mentions.values()) # Put mention values into the database
         channel_message = ' '.join(mentions.keys()) # Send usernames back to the channel
+    # Check if the Sheets ID matches what Google specified
     elif editable_command in ['seeding']:
         reg = re.compile('[a-zA-Z0-9-_]+')
         if not reg.fullmatch(params[0]) or len(params[0]) > 80:
             raise Exception(bold("Edit") + ": Invalid Sheets spreadsheet ID. Please view <https://github.com/lizardman301/Lizard-bot-rsf/blob/master/doc/seeding_with_sheets.md> for a walkthrough")
+    # Check if prefix is a singular character
     elif editable_command in ['prefix-lizard'] and len(params[0]) > 1:
         raise Exception(bold("Edit") + ": Lizard-BOT prefix must be a singular character.")
-    elif editable_command in ['bracket','status','stream'] and len(db_message) > 1945:
-        raise Exception(bold("Edit") + ": Message is too long to be stored. Shorten you statement to 1945 characters or less")
+    # Check if bracket, pingtest, status, and stream are small enough to store and send into Discord channels
+    elif editable_command in ['bracket','pingtest','status','stream'] and len(db_message) > 1945:
+        raise Exception(bold("Edit") + ": Message is too long to be stored. Shorten your message to 1945 characters or less")
 
     # Check for guild settings, channel settings, or multi channel settings
     if editable_command in ['botrole', 'challonge','prefix-lizard']:
