@@ -233,6 +233,8 @@ def read_db(level, setting, id):
             sql = "SELECT `" + setting + "` FROM " + level + "_settings WHERE " + level + "_id = %s"
             cursor.execute(sql, (id))
             return cursor.fetchone()[setting] # Return the value for the setting
+    except:
+        raise Exception("Column likely doesn't exist. Did you set up/update the database tables?")
     finally:
         conn.close() # Close the connection
 
@@ -247,6 +249,8 @@ def save_db(level, setting, data, id, **kwargs):
                 id = kwargs['commandChannel']
             sql = "UPDATE " + level + "_settings SET `" + setting + "` = %s WHERE " + level + "_id = %s"
             cursor.execute(sql, (data, id))
+    except:
+        raise Exception("Column likely doesn't exist. Did you set up/update the database tables?")
     finally:
         conn.close() # Close the connection
 

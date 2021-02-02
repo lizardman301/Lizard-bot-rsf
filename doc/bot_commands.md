@@ -89,6 +89,10 @@ Server-wide edit commands do not require a channel to be specified.
 	 * Allows you to add a link to a bracket for users to view
 	 * Unique for each channel
 	 * Default value: 'There is no bracket set for this channel'
+ * pingtest <string>
+	 * Allows you to add a link to a speedtest and instructions for how to prefer a speedtest
+	 * Unique for each channel
+	 * Default value: Use <https://testmyspeed.onl/> for ping tests.
  * seeding <Sheets ID>
 	 * Allows you to set the Google Sheets spreadsheet ID to be used to check points
 	 * Please see: [Our Documentation](https://github.com/lizardman301/Lizard-bot-rsf/blob/master/doc/seeding_with_sheets.md) for instructions on creating/adapting a spreadsheet
@@ -152,7 +156,7 @@ Restricted: No
 
 Shortcuts: `!pt`
 
-Explains how to run a ping test using https://testmyspeed.onl/ and a common server. Useful really just for the link.
+Explains how to run a ping test using <https://testmyspeed.onl/>. Can be edited to match the rules for any tournament's specific ping test rules.  Recommended to include short instructions to specificy exactly how to conduct the ping test with your opponent.
 
 ## `!prefix-lizard`
 ![!prefix-lizard example](/doc/assets/images/prefix-lizard.png)
