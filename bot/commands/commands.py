@@ -64,7 +64,7 @@ async def ping(command, msg, user, channel, *args, **kwargs):
 @register('pingtest')
 @register('pt')
 async def pingtest(command, msg, user, channel, *args, **kwargs):
-    return "To initiate a ping test, both players go to <https://testmyspeed.onl/> and choose a common server between each players location. Send the results of both tests to the TO."
+    return "Use <https://testmyspeed.onl/> for ping tests."
 
 @register('prefix-lizard')
 @register('prefliz')
