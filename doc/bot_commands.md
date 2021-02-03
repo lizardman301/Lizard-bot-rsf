@@ -131,6 +131,15 @@ Shortcuts: `!helpliz`
 
 Returns the list of commands for Lizard-BOT. Providing a command in the argument will return a short description for that command.
 
+## `!lizardbot-discord`
+![!lizardbot-discord example](/doc/assets/images/lizardbot-discord.png)
+
+Restricted: No
+
+Shortcuts: `!lizdiscord`
+
+Displays the invite link to join the Lizard-BOT Discord Server for additional help.
+
 ## `!lizardman`
 ![!lizardman example](/doc/assets/images/lizardman.png)
 

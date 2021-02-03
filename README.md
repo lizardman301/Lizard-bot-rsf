@@ -121,6 +121,9 @@ Displays the link to the GitHub repository for Lizard-BOT
 `!help-lizard`
 Displays a list of all commands.
 
+`!lizardbot-discord`
+Displays the invite link to join the Lizard-BOT Discord Server for additional help.
+
 `!lizardman`
 Ping! Pong!
 

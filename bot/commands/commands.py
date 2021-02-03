@@ -49,6 +49,11 @@ async def help_lizard(command, msg, user, channel, *args, **kwargs):
         raise Exception(bold("Help_Lizard") + ": Invalid command: " + bold(cmd) + ". Ensure you are using the full command name."
                 '\nThe available commands are ```%s```' % ', '.join(list(help_commands.keys())))
 
+@register('lizardbot-discord')
+@register('lizdiscord')
+async def lizdiscord(command, msg, user, channel, *args, **kwargs):
+    return "To reach out and ask questions about the bot, join https://discord.gg/94Pyh6KZTw"
+
 @register('not-in-discord')
 @register('nid')
 async def not_in_discord(command, msg, user, channel, *args, **kwargs):
