@@ -25,6 +25,165 @@ async def botrole(command, msg, user, channel, *args, **kwargs):
 async def bracket(command, msg, user, channel, *args, **kwargs):
     return read_db('channel', 'bracket', channel.id)
 
+@register('draw')
+async def draw(command, msg, user, channel, *args, **kwargs):
+    full_msg = kwargs['full_msg']
+    player1 = user
+    try:
+        player2 = full_msg.mentions[0]
+    except IndexError:
+        # No mention, return error
+        raise Exception(bold("draw")+ ": You must mention another user to draw against.")
+    if player1 == player2:
+        raise Exception(bold("draw")+ ": You are not allowed to draw against yourself.")
+    char_num = 7
+    client = kwargs['client']
+
+    unicode_reactions = ["1⃣","2⃣","3⃣","4⃣","5⃣","6⃣","7⃣"]
+    # Start with randomselect basis to get characters
+    try:
+        game = msg.split(' ')[1].lower()
+    except IndexError:
+        # No game to be found so default to sfv
+        game = 'sfv'
+    rs_info = json.loads(open(os.path.join(os.path.dirname(__file__), 'rs.json')).read())
+    games = list(rs_info.copy().keys())
+
+    if game in games:
+        chars = rs_info.get(game, []).copy()[0:-1]
+        if len(chars) < char_num:
+            # If we have a game with an amount of characters less than the num of cards drawn, it will never create a list
+            raise Exception(bold("draw")+ ": Invalid game: {0}. The game selected has too few characters to function with this command.".format(bold(game)))
+    else:
+        raise Exception(bold("draw") + ": Invalid game: {0}. Valid games are: {1}".format(bold(game), bold(', '.join(games))))
+    
+    # Initial accept embed
+    accept_embed = Embed(title="Card Draw", colour=Colour(0x0fa1dc))
+    accept_embed.set_footer(text="Do you agree to a draw, {0}?".format(player2.name))
+    try:
+        sent = await channel.send(embed=accept_embed)
+    except:
+        raise Exception(bold("draw") + ": Error sending embed to chat. Give Lizard-BOT the permission: " + bold("Embed Links"))
+    
+    await sent.add_reaction('✅')
+
+    def accept_check(reaction, user):
+        return user == player2 and str(reaction.emoji) == '✅'
+
+    try:
+        reaction, user = await client.wait_for('reaction_add', timeout=60.0, check=accept_check)
+    except asyncio.TimeoutError:
+        await sent.delete()
+        return "Draw was not accepted."
+    
+    # if we got here, draw was accepted
+
+    # randomly choose player order
+    order_options = [[player1,player2,player2,player1,player1,player2],[player2,player1,player1,player2,player2,player1]]
+    order = random.choice(order_options)
+    # declare an Array of 0s to mark all cards as not picked
+    # -1 means a card ban, 1 means a card draw
+    picks = [0] * char_num
+
+    #create new embed
+    card_embed = Embed(title="Card Draw", colour=Colour(0x0fa1dc))
+
+    # Declare list and fill with the amount of random characters
+    # Make it so that it has to be all different characters
+    characters_list = []
+    while len(characters_list) < char_num:
+        new_char = random.choice(chars)
+        # Only add to the list if it is a new character
+        if not new_char in characters_list:
+            characters_list.append(new_char)
+    # Add characters to ban
+    for i, c in enumerate(characters_list):
+        card_embed.add_field(name="Char {0}".format(i+1), value=c, inline=True)
+
+    await sent.delete()
+    try:
+        sentv2 = await channel.send(embed=card_embed)
+    except:
+        raise Exception(bold("draw") + ": Error sending embed to chat. Give Lizard-BOT the permission: " + bold("Embed Links"))
+
+    # Add reactions for pick/ban purposes
+    for reaction in unicode_reactions:
+        await sentv2.add_reaction(reaction)
+
+    # Create lists for the picked characters
+    p1_chars = []
+    p2_chars = []
+
+    for it, player in enumerate(order):
+        user_to_check = None
+        reaction_read = None
+        reaction_read_emoji = None
+        number = None
+        # first two are bans
+        if it < 2:
+            card_embed.set_footer(text="{0}, select a character to ban.".format(player.name))
+            await sentv2.edit(embed = card_embed)
+
+            while not (user_to_check == player) or reaction_read_emoji not in unicode_reactions:
+                try:
+                    reaction_read, user_to_check  = await client.wait_for('reaction_add', timeout=60.0)
+                    reaction_read_emoji = reaction_read.emoji
+                    number = unicode_reactions.index(reaction_read_emoji)
+                    if picks[number] != 0:
+                        # already banned, set as random emoji to make it fail
+                        reaction_read_emoji = '✅'
+                        card_embed.set_footer(text="{0}, that character is already banned, please choose another.".format(player.name))
+                        await sentv2.edit(embed = card_embed)
+                except asyncio.TimeoutError:
+                    await sentv2.delete()
+                    return "{0} failed to ban a character.".format(player.name)
+            # mark character as banned
+            picks[number] = -1
+            # remove char from embed and edit
+            card_embed.set_field_at(number, name="Char {0}".format(number+1), value = "~~{0}~~".format(characters_list[number]))
+
+        else:
+            card_embed.set_footer(text="{0}, select a character to pick.".format(player.name))
+            if it == 4:
+                # Remind them gently they get to pick another character in a row if they are the 2nd player
+                card_embed.set_footer(text="{0}, select another character to pick.".format(player.name))
+            await sentv2.edit(embed = card_embed)
+
+            while not(user_to_check == player) or reaction_read_emoji not in unicode_reactions:
+                try:
+                    reaction_read, user_to_check  = await client.wait_for('reaction_add', timeout=60.0)
+                    reaction_read_emoji = reaction_read.emoji
+                    number = unicode_reactions.index(reaction_read_emoji)
+                    if picks[number] == -1:
+                        # already banned, set as random emoji to make it fail
+                        reaction_read_emoji = '✅'
+                        card_embed.set_footer(text="{0}, that character is already banned, please choose another.".format(player.name))
+                        await sentv2.edit(embed = card_embed)
+                    elif picks[number] == 1:
+                        # already banned, set as random emoji to make it fail
+                        reaction_read_emoji = '✅'
+                        card_embed.set_footer(text="{0}, that character is already chosen, please choose another.".format(player.name))
+                        await sentv2.edit(embed = card_embed)
+                except asyncio.TimeoutError:
+                    await sentv2.delete()
+                    return "{0} failed to choose a character.".format(player.name)
+            # mark character as picked
+            picks[number] = 1
+            # edit embed to bold character
+            card_embed.set_field_at(number, name="Char {0}".format(number+1), value = bold(characters_list[number]))
+            # assign character chosen to 
+            if player == player1:
+                p1_chars.append(characters_list[number])
+            else:
+                p2_chars.append(characters_list[number])
+    # create new embed
+    chosen_embed = Embed(title="Final Picks", colour=Colour(0x0fa1dc))
+    chosen_embed.add_field(name=player1.name, value=", ".join(p1_chars))
+    chosen_embed.add_field(name=player2.name, value=", ".join(p2_chars))
+    await sentv2.delete()
+    await channel.send(embed=chosen_embed)
+    return "Card draw finished"
+
 @register('github')
 @register('lizardbot')
 async def github(command, msg, user, channel, *args, **kwargs):

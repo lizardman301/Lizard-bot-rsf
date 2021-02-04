@@ -107,8 +107,12 @@ async def on_message(message):
                 # Remove the command from the start
                 msg = msg[len(command)+1:].strip()
 
-                if command in ['challonge', 'chal', 'edit']:
+                if command in ['challonge', 'chal', 'draw', 'edit']:
                     kwargs['full_msg'] = message
+
+                # Give draw client perms for adding reactions
+                if command in ['draw']:
+                    kwargs['client'] = client
 
                 # Await the interface calling the command
                 response = await client.interface.call_command(command, msg, user, message.channel, **kwargs)
