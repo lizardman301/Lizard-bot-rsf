@@ -30,6 +30,11 @@
 			"helpliz",
 			"For more information about the bot and its commands: <https://github.com/lizardman301/Lizard-bot-rsf>"
 		],
+		"lizardbot-discord": [
+			"lizardbot-discord",
+			"lizdiscord",
+			"Displays the invite link to join the Lizard-BOT Discord Server for additional help"
+		],
 		"lizardman": [
 			"lizardman",
 			"ping",
@@ -78,6 +83,7 @@
 		"bracket",
 		"coin-flip",
 		"github",
+		"lizardbot-discord",
 		"lizardman",
 		"not-in-discord",
 		"pingtest",

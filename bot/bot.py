@@ -36,7 +36,7 @@ async def change_status():
     # Every 8 hours update the status to display the number of Discord servers the bot is in
     while True:
         total = len(client.guilds)
-        status = "Now in {} servers!"
+        status = "lizard-bot.com | In {} servers!"
 
         if total == 1:
             status = status[:-2] + "!"
