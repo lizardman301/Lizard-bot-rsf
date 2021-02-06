@@ -67,7 +67,7 @@ async def on_message(message):
             return
         # Choose from a random response, then follow with a Bot message
         responses = ["Ok", "Thanks", "Sounds good to me", "Buff Rashid", "Beep Boop", "Yes", "No", "Good to know", "Glad to hear it", "I'll keep that in mind", "The answer lies in the heart of battle", "Go home and be a family man"]
-        await message.channel.send("{0} \n**I am a Bot that plays Rashid. Mentions cause my little Rashid to short circuit. Did you have an ~~eagle spi~~ command?**".format(random.choice(responses)))
+        await message.channel.send("{0} \n**I am a Bot that plays Rashid. Mentions cause my little Rashid brain to short circuit. Did you have ~~an eagle spi~~ a command?**".format(random.choice(responses)))
         return
 
     try:
