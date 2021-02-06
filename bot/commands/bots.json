@@ -24,6 +24,7 @@
 			"Returns the role that allows access to the administrator commands"
 		],
 		"bracket": ["bracket", "Shows the current bracket set in the channel"],
+		"draw": ["draw", "Draws 7 random characters and conducts a ban pick system. Must mention a user. Will use SFV characters if no game is specified."],
 		"github": ["github", "lizardbot", "Links to the GitHub repository for Lizard-BOT"],
 		"help-lizard": [
 			"help-lizard",

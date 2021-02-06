@@ -115,6 +115,10 @@ Returns the role that allows access to the administrator commands.
 `!bracket`
 Shows the current bracket set in the channel.
 
+`!draw [mention] <game>`
+Conducts a card draw with the message sender and the user mentioned. Game will default to SFV if no game is given.
+7 random characters are drawn, 2 are banned and 4 are picked.  Everything is controlled by reactions.
+
 `!github`
 Displays the link to the GitHub repository for Lizard-BOT
 

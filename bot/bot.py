@@ -67,7 +67,8 @@ async def on_message(message):
             return
         # Choose from a random response, then follow with a Bot message
         responses = ["Ok", "Thanks", "Sounds good to me", "Buff Rashid", "Beep Boop", "Yes", "No", "Good to know", "Glad to hear it", "I'll keep that in mind", "The answer lies in the heart of battle", "Go home and be a family man"]
-        await message.channel.send("{0} \n**I am a Bot and cannot respond to mentions**".format(random.choice(responses)))
+        await message.channel.send("{0} \n**I am a Bot that plays Rashid. Mentions cause my little Rashid brain to short circuit. Did you have ~~an eagle spi~~ a command?**".format(random.choice(responses)))
+        return
 
     try:
         # Check if the channel is in the DB
@@ -107,8 +108,12 @@ async def on_message(message):
                 # Remove the command from the start
                 msg = msg[len(command)+1:].strip()
 
-                if command in ['challonge', 'chal', 'edit']:
+                if command in ['challonge', 'chal', 'draw', 'edit']:
                     kwargs['full_msg'] = message
+
+                    # Give draw client perms for adding reactions
+                    if command in ['draw']:
+                        kwargs['client'] = client
 
                 # Await the interface calling the command
                 response = await client.interface.call_command(command, msg, user, message.channel, **kwargs)
