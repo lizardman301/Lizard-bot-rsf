@@ -25,6 +25,16 @@ async def botrole(command, msg, user, channel, *args, **kwargs):
 async def bracket(command, msg, user, channel, *args, **kwargs):
     return read_db('channel', 'bracket', channel.id)
 
+@register('coin-flip')
+@register('flip')
+@register('cf')
+async def coin_flip(command, msg, user, channel, *args, **kwargs):
+    flip = "The coin landed on: {0}"
+    # Flip a coin
+    if int(round(random.random()*10*2)) % 2 == 0:
+        return flip.format(bold("Heads"))
+    return flip.format(bold("Tails"))
+
 @register('draw')
 async def draw(command, msg, user, channel, *args, **kwargs):
     full_msg = kwargs['full_msg']
@@ -370,16 +380,6 @@ async def challonge(command, msg, user, channel, *args, **kwargs):
         else:
             print(parts_get.text)
             raise Exception(bold("Challonge") + ": Unknown Challonge error for " + tour_url)
-
-@register('coin-flip')
-@register('flip')
-@register('cf')
-async def coin_flip(command, msg, user, channel, *args, **kwargs):
-    flip = "The coin landed on: {0}"
-    # Flip a coin
-    if int(round(random.random()*10*2)) % 2 == 0:
-        return flip.format(bold("Heads"))
-    return flip.format(bold("Tails"))
 
 @register('edit')
 async def edit(command, msg, user, channel, *args, **kwargs):

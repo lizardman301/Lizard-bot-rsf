@@ -42,9 +42,6 @@ If you have a valid challonge link in your `!bracket` command, Lizard-BOT does n
  * seeding [bracket url ID] [number of players to seed(Must be integer greater than or equal to 1)]
 	 * Seeds the tournament based on points in the spreadsheet and the number of players to seed
 
-`!coin-flip`
-A coin is flipped and the result is returned. Either heads or tails.
-
 `!edit [channel(s)] <setting> <value>`
 There are multiple settings that can be edited to allow customization.
 
@@ -114,6 +111,9 @@ Returns the role that allows access to the administrator commands.
 
 `!bracket`
 Shows the current bracket set in the channel.
+
+`!coin-flip`
+A coin is flipped and the result is returned. Either heads or tails.
 
 `!draw [mention] <game>`
 Conducts a card draw with the message sender and the user mentioned. Game will default to SFV if no game is given.
