@@ -23,17 +23,6 @@ Shortcuts: None
 
 Shows the current bracket set in the channel. Can include text also besides just bracket link.  If a Challonge link is in the text, the `!challonge` commands can automatically use the links.
 
-## `!draw [mention] <game>`
-![!draw example](/doc/assets/images/draw.png)
-
-Restricted: No
-
-Shortcuts: None
-
-Conducts a card draw with the message sender and the user mentioned. Game will default to SFV if no game is given.
-First the other user must accept the draw. The player that goes first is randomly chosen by the bot.
-Then 7 random characters are drawn, 2 are banned and 4 are picked.  Everything is controlled by reactions with the order given by the bot.
-
 ## `!challonge <subcommand> [bracket URL identifier] [OPTIONALS] `
 ![!challonge example](/doc/assets/images/challonge.png)
 
@@ -62,12 +51,23 @@ This is because tournaments are read-only by default. Any attempts by Lizard-BOT
 ## `!coin-flip`
 ![!coin-flip example](/doc/assets/images/coin-flip.png)
 
-Restricted: Yes
+Restricted: No
 
 Shortcuts: `!flip` `!cf`
 
 The bot will flip a coin (metaphorically speaking) and return either heads or tails.
 Fun fact: If 4 heads show up in a row, a Gief player just won a round by SPD'ing 4 times.
+
+## `!draw [mention] <game>`
+![!draw example](/doc/assets/images/draw.png)
+
+Restricted: No
+
+Shortcuts: None
+
+Conducts a card draw with the message sender and the user mentioned. Game will default to SFV if no game is given.
+First the other user must accept the draw. The player that goes first is randomly chosen by the bot.
+Then 7 random characters are drawn, 2 are banned and 4 are picked.  Everything is controlled by reactions with the order given by the bot.
 
 ## `!edit [channel(s)] <setting> <value>`
 ![!edit example](/doc/assets/images/edit_example1.png)

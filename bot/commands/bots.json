@@ -5,12 +5,6 @@
 			"chal",
 			"Uses Challonge's API to pull data into Discord"
 		],
-		"coin-flip": [
-			"coin-flip",
-			"flip",
-			"cf",
-			"A coin is flipped and the result is returned, either heads or tails."
-		],
 		"edit": ["edit","There are multiple settings that can be edited to allow customization. If multiple channels are listed, the setting will be updated to the same value across all listed channels."],
 		"refresh": ["refresh", "Sends a \"REFRESH THE BRACKET\" reminder into the chat."],
 		"remind": ["remind", "Allows the admin to set a timed reminder"],
@@ -24,6 +18,12 @@
 			"Returns the role that allows access to the administrator commands"
 		],
 		"bracket": ["bracket", "Shows the current bracket set in the channel"],
+		"coin-flip": [
+			"coin-flip",
+			"flip",
+			"cf",
+			"A coin is flipped and the result is returned, either heads or tails."
+		],
 		"draw": ["draw", "Draws 7 random characters and conducts a ban pick system. Must mention a user. Will use SFV characters if no game is specified."],
 		"github": ["github", "lizardbot", "Links to the GitHub repository for Lizard-BOT"],
 		"help-lizard": [
