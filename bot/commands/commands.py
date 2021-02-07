@@ -1,16 +1,14 @@
-import asyncio
+from asyncio import sleep as asyncio_sleep
 from discord import Embed, Colour
 from discord.utils import escape_markdown # Regexing fun simplified
-import json
-import os
 from pprint import pformat
-import random
-import re
-import requests
+from random import random as random_random, choice as random_choice
+from re import compile as re_compile
+from requests import get as requests_get
 
 # Local imports
 from secret import api_key
-from commands.utilities import (register, bold, get_chal_tour_id, get_users, is_channel, pings_b_gone, checkin, seeding, read_db, read_stat, save_db, settings_exist)
+from commands.utilities import (register, bold, get_chal_tour_id, get_random_chars, get_users, is_channel, pings_b_gone, checkin, seeding, read_db, read_stat, save_db, settings_exist)
 
 # All @register decorators are a product of reviewing Yaksha
 # See utilities.register for more information
@@ -31,22 +29,22 @@ async def bracket(command, msg, user, channel, *args, **kwargs):
 async def coin_flip(command, msg, user, channel, *args, **kwargs):
     flip = "The coin landed on: {0}"
     # Flip a coin
-    if int(round(random.random()*10*2)) % 2 == 0:
+    if int(round(random_random()*10*2)) % 2 == 0:
         return flip.format(bold("Heads"))
     return flip.format(bold("Tails"))
 
 @register('draw')
 async def draw(command, msg, user, channel, *args, **kwargs):
     full_msg = kwargs['full_msg']
-    rs_info = json.loads(open(os.path.join(os.path.dirname(__file__), 'rs.json')).read())
-    games = list(rs_info.copy().keys())
     char_num = 7
     client = kwargs['client']
     unicode_reactions = ["1⃣","2⃣","3⃣","4⃣","5⃣","6⃣","7⃣"]
     player1 = user
 
+    if len(msg.split(' ')) > 2:
+        raise Exception(bold("Draw") + ": Too many arguments. " + await help_lizard('','','',''))
     # No mention or too many, Raise exception
-    if not full_msg.mentions or len(full_msg.mentions) > 1:
+    elif not full_msg.mentions or len(full_msg.mentions) > 1:
         raise Exception(bold("Draw")+ ": You must mention exactly one user to draw against.")
 
     player2 = full_msg.mentions[0]
@@ -61,13 +59,13 @@ async def draw(command, msg, user, channel, *args, **kwargs):
         # No game to be found so default to sfv
         game = 'sfv'
 
-    if game in games:
-        chars = rs_info.get(game, []).copy()[0:-1]
-        if len(chars) < char_num:
-            # If we have a game with an amount of characters less than the number of cards drawn, it will never create a list
-            raise Exception(bold("Draw")+ ": Invalid game: {0}. The game selected has too few characters to function with this command.".format(bold(game)))
-    else:
+    chars, games = get_random_chars(game)
+    if not chars:
         raise Exception(bold("Draw") + ": Invalid game: {0}. Valid games are: {1}".format(bold(game), bold(', '.join(games))))
+
+    if len(chars) < char_num:
+        # If we have a game with an amount of characters less than the number of cards drawn, it will never create a list
+        raise Exception(bold("Draw")+ ": Invalid game: {0}. The game selected has too few characters to function with this command.".format(bold(game)))
 
     # Initial accept embed
     accept_embed = Embed(title="Card Draw", colour=Colour(0x0fa1dc))
@@ -90,7 +88,7 @@ async def draw(command, msg, user, channel, *args, **kwargs):
     # if we got here, draw was accepted
 
     # randomly choose player order
-    order = random.choice([[player1,player2,player2,player1,player1,player2],[player2,player1,player1,player2,player2,player1]])
+    order = random_choice([[player1,player2,player2,player1,player1,player2],[player2,player1,player1,player2,player2,player1]])
     # declare an Array of 0s to mark all cards as not picked
     # -1 means a card ban, 1 means a card draw
     picks = [0] * char_num
@@ -102,7 +100,7 @@ async def draw(command, msg, user, channel, *args, **kwargs):
     # Make it so that it has to be all different characters
     characters_list = []
     while len(characters_list) < char_num:
-        new_char = random.choice(chars)
+        new_char = random_choice(chars)
         # Only add to the list if it is a new character
         if not new_char in characters_list:
             characters_list.append(new_char)
@@ -210,9 +208,11 @@ async def github(command, msg, user, channel, *args, **kwargs):
 @register('help-lizard')
 @register('helpliz')
 async def help_lizard(command, msg, user, channel, *args, **kwargs):
+    if len(msg.split(' ')) > 2:
+        raise Exception(bold("Help_Lizard") + ": Too many arguments. " + await help_lizard('','','',''))
     help_commands = kwargs.get('help', False)
 
-    split = msg.split(' ')
+    split = msg.lower().split(' ')
     cmd = ' '.join(split[0:2]) if len(split) > 1 else split[0]
 
     if not help_commands:
@@ -257,22 +257,28 @@ async def prefix(command, msg, user, channel, *args, **kwargs):
 @register('random')
 @register('rs')
 async def randomselect(command, msg, user, channel, *args, **kwargs):
-    game = msg.split(' ')[0].lower() if msg.split(' ')[0] else 'sfv'
-    rs_info = json.loads(open(os.path.join(os.path.dirname(__file__), 'rs.json')).read())
-    games = list(rs_info.copy().keys())
+    if len(msg.split(' ')) > 1:
+        raise Exception(bold("RandomSelect") + ": Too many arguments. " + await help_lizard('','','',''))
+    # Start with randomselect basis to get characters
+    try:
+        game = msg.split(' ')[0].lower()
+    except:
+        # No game to be found so default to sfv
+        game = 'sfv'
 
-    if game in games:
-        chars = rs_info.get(game, []).copy()[0:-1]
-    else:
+    chars, games = get_random_chars(game)
+    if not chars:
         raise Exception(bold("RandomSelect") + ": Invalid game: {0}. Valid games are: {1}".format(bold(game), bold(', '.join(games))))
 
-    return "{0} Your randomly selected character is: {1}".format(user.mention, bold(random.choice(chars)))
+    return "{0} Your randomly selected character is: {1}".format(user.mention, bold(random_choice(chars)))
 
 @register('stats')
 async def stats(command, msg, user, channel, *args, **kwargs):
     cmd = msg.split(' ')[0].lower() if msg.split(' ')[0] else ''
     func_map = kwargs['func_map'] if cmd else []
-    if cmd and cmd not in func_map:
+    if len(msg.split(' ')) > 1:
+        raise Exception(bold("Stats") + ": Too many arguments. " + await help_lizard('','','',''))
+    elif cmd and cmd not in func_map:
         raise Exception(bold("Stats") + ": Invalid Subcommand. " + await help_lizard('','','',''))
     stats = read_stat(cmd,func_map)
 
@@ -295,7 +301,10 @@ async def status(command, msg, user, channel, *args, **kwargs):
     if currentRound:
         # Read the status message for a channel and make it bold
         # Currently the message must have {0} so it can fill in the current round
-        return bold(read_db('channel', 'status', channel.id).format(currentRound))
+        try:
+            return bold(read_db('channel', 'status', channel.id).format(currentRound))
+        except:
+            raise Exception(bold("Status") + ": Round message includes invalid {}. Please correct the status message to include only {0}")
     return bold("Tournament has not begun. Please wait for the TOs to start Round 1!")
 
 @register('stream')
@@ -322,6 +331,9 @@ async def challonge(command, msg, user, channel, *args, **kwargs):
         if not subcommand:
                 raise Exception(bold("Challonge") + ": Lack of arguments. " + await help_lizard('','','',''))
 
+        if len(msg.split(' ')) > 3:
+            raise Exception(bold("Challonge") + ": Too many arguments. " + await help_lizard('','','',''))
+
         try:
             if msg.split(' ')[1].isdigit():
                 raise Exception("Bracket link is only digits.")
@@ -338,7 +350,7 @@ async def challonge(command, msg, user, channel, *args, **kwargs):
             tour_url = subdomain + '-' + tour_url
 
         # Get the participants for the tournament
-        parts_get = requests.get(base_url + tour_url + "/participants.json", params={'api_key':api_key})
+        parts_get = requests_get(base_url + tour_url + "/participants.json", params={'api_key':api_key})
         if '200' in str(parts_get.status_code):
             parts = parts_get.json() # Convert response from json to Python Dictionary
 
@@ -353,7 +365,15 @@ async def challonge(command, msg, user, channel, *args, **kwargs):
             elif subcommand == 'seeding':
                 # If msg has 3 params left 3rd one must be seed number
                 # Else, seed whole bracket
-                seed_num = int(msg.split(' ')[-1]) if msg.split(' ')[-1].isdigit() else 0
+                try:
+                    if msg.split(' ')[-1] == subcommand or msg.split(' ')[-1] in tour_url:
+                        seed_num = 0
+                    elif not msg.split(' ')[-1].isdigit() and not int(msg.split(' ')[-1]) >= 0:
+                        raise
+                    else:
+                        seed_num = int(msg.split(' ')[-1])
+                except:
+                    raise Exception(bold("Challonge") + ": Seeding number must be a positive integer or 0 for everybody")
 
                 # Get Google Sheets ID
                 sheet_id = read_db('channel', 'seeding', channel.id)
@@ -429,12 +449,17 @@ async def edit(command, msg, user, channel, *args, **kwargs):
         channel_message = ' '.join(mentions.keys()) # Send usernames back to the channel
     # Check if the Sheets ID matches what Google specified
     elif editable_command in ['seeding']:
-        reg = re.compile('[a-zA-Z0-9-_]+')
-        if not reg.fullmatch(params[0]) or len(params[0]) > 80:
+        reg = re_compile('[a-zA-Z0-9-_]+')
+        if not params:
+            pass
+        elif not reg.fullmatch(params[0]) or len(params[0]) > 80:
             raise Exception(bold("Edit") + ": Invalid Sheets spreadsheet ID. Please view <https://github.com/lizardman301/Lizard-bot-rsf/blob/master/doc/seeding_with_sheets.md> for a walkthrough")
     # Check if prefix is a singular character
-    elif editable_command in ['prefix-lizard'] and len(params[0]) > 1:
+    elif editable_command in ['prefix-lizard'] and not len(db_message) == 1:
         raise Exception(bold("Edit") + ": Lizard-BOT prefix must be a singular character.")
+    # Check if the status message contains {0}
+    elif editable_command in ['status'] and not db_message.count('{0}') > 0:
+        raise Exception(bold("Edit") + ": Status message must include {0} to substitute the round number")
     # Check if bracket, pingtest, status, and stream are small enough to store and send into Discord channels
     elif editable_command in ['bracket','pingtest','status','stream'] and len(db_message) > 1945:
         raise Exception(bold("Edit") + ": Message is too long to be stored. Shorten your message to 1945 characters or less")
@@ -461,11 +486,18 @@ async def refresh(command, msg, user, channel, *args, **kwargs):
 @register('remind')
 async def remind(command, msg, user, channel, *args, **kwargs):
     params = msg.split(' ')
-    time = int(params[0]) #time is in minutes
+    try:
+        time = int(params[0]) #time is in minutes
+        if time < 1:
+            raise
+    except:
+        raise Exception(bold("Remind") + ": Invalid time. Please try again with a positive whole value for minutes")
     reason = ""
     #specific reason if provided
     if len(params) > 1:
         reason = " ".join(params[1:])
+        if len(reason) > 1900:
+            raise Exception(bold("Remind") + ": Message is too long to be sent back through Discord. Shorten your message to 1900 characters or less")
 
     if reason:
         formatted_msg = "OK! I will ping you in {0} minutes to remind you about \"{1}\"".format(time,reason)
@@ -476,7 +508,7 @@ async def remind(command, msg, user, channel, *args, **kwargs):
     await channel.send(formatted_msg)
 
     # wait message time
-    await asyncio.sleep(60 * time)
+    await asyncio_sleep(60 * time)
     if reason:
         formatted_msg = bold("{0}: It has been {1} minutes, don't forget \"{2}\"!").format(user.mention,time,reason)
     else:
@@ -494,4 +526,7 @@ async def round_lizard(command, msg, user, channel, *args, **kwargs):
     if len(msg) > 50:
         raise Exception(bold("Round_Lizard") + ": Custom round number must be less then 50 characters")
     save_db('channel', 'round', msg, channel.id)
-    return await status('status', msg, user, channel)
+    try:
+        return await status('status', msg, user, channel)
+    except:
+        raise Exception(bold("Round_Lizard") + ": Round message includes invalid {}. Please correct the status message to include only {0}")

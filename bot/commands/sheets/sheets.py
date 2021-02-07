@@ -1,10 +1,10 @@
 from googleapiclient.discovery import build # Builds the call
 from googleapiclient.errors import HttpError # Catches HTTP errors
 from google.oauth2 import service_account # Google Authentication
-import os # OS-independent way of getting directory paths
+from os import path as os_path # OS-independent way of getting directory paths
 
 def sheets(sheet_id):
-    creds = service_account.Credentials.from_service_account_file(os.path.join(os.path.dirname(__file__)) + '/credentials.json', scopes=['https://www.googleapis.com/auth/spreadsheets.readonly'])
+    creds = service_account.Credentials.from_service_account_file(os_path.join(os_path.dirname(__file__)) + '/credentials.json', scopes=['https://www.googleapis.com/auth/spreadsheets.readonly'])
     service = build('sheets', 'v4', credentials=creds)
 
     # Call the Sheets API

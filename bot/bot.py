@@ -1,10 +1,10 @@
-import asyncio
+from asyncio import sleep as asyncio_sleep
 import discord
-import json
-import os
-import random
-import traceback
-import sys
+from json import loads as json_loads
+from os import path as os_path
+from random import choice as random_choice
+from traceback import print_exc as traceback_print_exc
+from sys import exc_info as sys_exc_info
 
 # Local imports
 from commands.utilities import (read_db, settings_exist)
@@ -49,7 +49,7 @@ async def change_status():
             # Might've gotten ratelimited so just sleep for the interval and try later.
             print('Exception when trying to change status. Trying again in 8 hours')
             pass
-        await asyncio.sleep(28800)
+        await asyncio_sleep(28800)
 
 # Yaksha
 # When message is typed in any channel the bot has access to, check to see if the bot needs to respond
@@ -67,21 +67,24 @@ async def on_message(message):
             return
         # Choose from a random response, then follow with a Bot message
         responses = ["Ok", "Thanks", "Sounds good to me", "Buff Rashid", "Beep Boop", "Yes", "No", "Good to know", "Glad to hear it", "I'll keep that in mind", "The answer lies in the heart of battle", "Go home and be a family man"]
-        await message.channel.send("{0} \n**I am a Bot that plays Rashid. Mentions cause my little Rashid brain to short circuit. Did you have ~~an eagle spi~~ a command?**".format(random.choice(responses)))
+        await message.channel.send("{0} \n**I am a Bot that plays Rashid. Mentions cause my little Rashid brain to short circuit. Did you have ~~an eagle spi~~ a command?**".format(random_choice(responses)))
         return
 
     try:
         # Check if the channel is in the DB
         # Add it if it isn't
         if not settings_exist(message.guild.id, message.channel.id):
-            await chan.send("Oops, I'm broken")
-            print("Lizard-BOT failed to create DB entry for: " + message.guild.name + ". Guild ID: " + message.guild.id)
+            raise Exception("Lizard-BOT failed to create DB entry for: " + message.guild.name + ". Guild ID: " + message.guild.id)
 
         # Get prefix for the guild
         prefix = read_db('guild', 'prefix-lizard', message.guild.id)
 
+        # Check if the attempted_cmd takes arguments
+        if message.content.split(' ')[0][1:].lower() in client.no_arg_cmds and len(message.content.split()) > 1:
+            await message.channel.send("Too many arguments. Check help-lizard for more info")
+            return
         # Hardcode prefix command to be accessible via !
-        if message.content.startswith("!prefix-lizard") or message.content.startswith("!prefliz"):
+        elif message.content.split(' ')[0] == "!prefix-lizard" or message.content.split(' ')[0] == "!prefliz":
             response = await client.interface.call_command('prefix-lizard', 0, 0, 0, guild=message.guild.id)
             if response:
                 await message.channel.send(response)
@@ -95,10 +98,6 @@ async def on_message(message):
             cmd = command
             msg = message.content # The message
             attempted_cmd = msg.split(' ')[0][1:].lower() # Get the attempted command from the beginning of the string
-
-            if attempted_cmd in client.no_arg_cmds and len(msg.split()) > 1:
-                await message.channel.send("Too many arguments. Check help-lizard for more info")
-                return
 
             # Check if the message begins with a command
             if attempted_cmd and attempted_cmd == command:
@@ -122,13 +121,14 @@ async def on_message(message):
                     await message.channel.send(response)
                 break
     except Exception:
-        # Print error to console
-        traceback.print_exc()
-
+        # Expected error
         # Return friendly user message
-        if client.interface._func_mapping[cmd].__name__ in str(sys.exc_info()[1]).split(':')[0].strip("*").lower():
-            await message.channel.send(str(sys.exc_info()[1]).replace('_', '-'))
+        # Don't print error to console
+        if client.interface._func_mapping[cmd].__name__ in str(sys_exc_info()[1]).split(':')[0].strip("*").lower():
+            await message.channel.send(str(sys_exc_info()[1]).replace('_', '-'))
         else:
+            # Print error to console
+            traceback_print_exc()
             # If we get this far and something breaks
             # Something is very wrong
             await message.channel.send("I is broken.\nBuff Rashid and submit an issue via <https://github.com/lizardman301/Lizard-bot-rsf/issues>\nOr just tell Lizardman301. That's what I do.")
@@ -140,7 +140,7 @@ def main():
     client.help = {}
 
     # Pull in a separate config
-    config = json.loads(open(os.path.join(os.path.dirname(__file__), 'commands/bots.json')).read())
+    config = json_loads(open(os_path.join(os_path.dirname(__file__), 'commands/bots.json')).read())
 
     # Grab our commands from the json
     commands = list(config.get('common_commands', {}).copy().values())
@@ -157,9 +157,9 @@ def main():
                 break
             # Elif the full command doesn't take args, have the aliases not accept args
             elif aliases[0] in no_arg_cmds:
-                client.no_arg_cmds.append(alias)
+                client.no_arg_cmds.append(alias.lower())
             # Add the help message for each alias
-            client.help.update({alias:aliases[-1]})
+            client.help.update({alias.lower():aliases[-1]})
             # Add the command and aliases as valid commands
             client.commands.append(alias)
 
