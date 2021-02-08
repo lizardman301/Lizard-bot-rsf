@@ -79,8 +79,8 @@ async def on_message(message):
         # Get prefix for the guild
         prefix = read_db('guild', 'prefix-lizard', message.guild.id)
 
-        # Check if the attempted_cmd takes arguments
-        if message.content.split(' ')[0][1:].lower() in client.no_arg_cmds and len(message.content.split()) > 1:
+        # Check if the attempted_cmd is !prefix-lizard and has too many args
+        if (message.content.split(' ')[0] == "!prefix-lizard" or message.content.split(' ')[0] == "!prefliz") and len(message.content.split()) > 1:
             await message.channel.send("Too many arguments. Check help-lizard for more info")
             return
         # Hardcode prefix command to be accessible via !
@@ -91,6 +91,10 @@ async def on_message(message):
             return
         # If other commands don't start with the correct prefix, do nothing
         elif not message.content.startswith(prefix):
+            return
+        # Check if the attempted_cmd takes arguments
+        elif message.content.split(' ')[0][1:].lower() in client.no_arg_cmds and len(message.content.split()) > 1:
+            await message.channel.send("Too many arguments. Check help-lizard for more info")
             return
 
         for command in client.commands:
