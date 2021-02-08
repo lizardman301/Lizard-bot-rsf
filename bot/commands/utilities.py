@@ -1,7 +1,10 @@
 from discord.utils import escape_markdown # Regexing fun simplified
-import pymysql.cursors # Use for DB connections
-import re # Process strings
-import requests # HTTP functions
+from pymysql import connect as pymysql_connect # Use for DB connections
+from pymysql.cursors import DictCursor as pymysql_DictCursor # Use for DB connections
+from json import loads as json_loads
+from os import path as os_path
+from re import search as re_search, compile as re_compile # Process strings
+from requests import put as requests_put # HTTP functions
 
 # Local imports
 from secret import (sql_host,sql_port,sql_user,sql_pw,sql_db, api_key) # Store secret information
@@ -43,7 +46,7 @@ def get_chal_tour_id(bracket_msg):
 
     # find first match and make that the url to work off of
     # if no match, return empty string immediately
-    matches = re.search(regex, bracket_msg) 
+    matches = re_search(regex, bracket_msg) 
     if matches:
         url = matches.group(0)
     else:
@@ -54,6 +57,14 @@ def get_chal_tour_id(bracket_msg):
     # get the last group in order to get the tournament identifier
     tour_id = url.split("/", 1)[-1]
     return tour_id # return it
+
+def get_random_chars(game):
+    rs_info = json_loads(open(os_path.join(os_path.dirname(__file__), 'rs.json')).read())
+    games = list(rs_info.copy().keys())
+
+    if game not in games:
+        return [], games
+    return rs_info.get(game, []).copy()[0:-1], games
 
 # Get all users in a Discord
 def get_users(msg):
@@ -68,7 +79,7 @@ def get_users(msg):
 
 # Perform regex to find out if a string is a Discord channel
 def is_channel(channel):
-    reg = re.compile('<#\d*>')
+    reg = re_compile('<#\d*>')
     if reg.fullmatch(channel):
         return int(channel[2:][:-1]) # Return only the channel ID
     return 0
@@ -171,7 +182,7 @@ def seeding(sheet_id, parts, url, seed_num):
             # If Challonge user equals the username we have for seeding
             # Then, update seed number with their index location
             if p['challonge_username'] == finished_seeding[player].split(' ')[0]:
-                response = requests.put(url + "/participants/" + str(p['id']) + ".json", params={'api_key':api_key, 'participant[seed]':player})
+                response = requests_put(url + "/participants/" + str(p['id']) + ".json", params={'api_key':api_key, 'participant[seed]':player})
                 if '200' in str(response.status_code):
                     continue
                 elif '401' in str(response.status_code):
@@ -186,7 +197,7 @@ def seeding(sheet_id, parts, url, seed_num):
 # Create a connection to the database
 def make_conn():
     try:
-        return pymysql.connect(host=sql_host, port=sql_port, user=sql_user, password=sql_pw, db=sql_db, charset='utf8mb4', autocommit=True, cursorclass=pymysql.cursors.DictCursor)
+        return pymysql_connect(host=sql_host, port=sql_port, user=sql_user, password=sql_pw, db=sql_db, charset='utf8mb4', autocommit=True, cursorclass=pymysql_DictCursor)
     except:
         raise Exception("Unable to connect to SQL server. Is it turned on? Did you point the bot to the right IP address?")
 
