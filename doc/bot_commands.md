@@ -213,10 +213,11 @@ Prints the prefix currently in use for Lizard-BOT. Will always respond to the "!
 
 Restricted: No
 
-Shortcuts: `!random` `!rs`
+Shortcuts: `!random` `!rs` `!stageselect`
 
 Returns a randomly selected character from the game in the arguments. Will return a SFV character if no game is given.
 If a game that does not exist is provided as an argument, it will return the list of acceptable games.
+!stageselect is a shortcut to !randomselect t7stages
 
 ## `!refresh`
 ![!refresh example](/doc/assets/images/refresh.png)

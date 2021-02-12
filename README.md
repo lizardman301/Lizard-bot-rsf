@@ -148,7 +148,7 @@ Prints the prefix currently in use for Lizard-BOT.
 
 `!randomselect [game]`
 Returns a randomly selected character from the current the specified game. Assumes SFV if no game is given.
-Current games are **3s, footsies, gbvs, samsho, sfv, t7, uni, xrd, +r**
+Current games are **3s, footsies, gbvs, mk11, samsho, sfv, t7, t7stages, uni, xrd, +r**
 
 `!stats [command]`
 Returns the list of all commands and the amount of times they have been used across all servers.  Add a command in the argument to return the count for only that command.
