@@ -58,6 +58,17 @@ Shortcuts: `!flip` `!cf`
 The bot will flip a coin (metaphorically speaking) and return either heads or tails.
 Fun fact: If 4 heads show up in a row, a Gief player just won a round by SPD'ing 4 times.
 
+## `!disable [command]`
+![!disable example](/doc/assets/images/disable.png)
+
+Restricted: Yes
+
+Shortcuts: None
+
+Using this with any command (besides !disable, !edit, and !enable) in Lizard-BOT to disable its use throughout the server.  Useful if people are abusing a command or it is unneccessary for what you are running.  Use !enable to undo this action. You must !disable all shortcuts if you want to completely shut out a command. If you provide 'list' as a command, it will list the current disabled commands.
+
+PS If you disable any variation of !lizardman I will be very sad.
+
 ## `!draw [mention] <game>`
 ![!draw example](/doc/assets/images/draw.png)
 
@@ -123,6 +134,16 @@ Server-wide edit commands do not require a channel to be specified.
 	 * Recommended to make it ping each individual TO
 	 * Unique for each channel
 	 * Default value:
+
+
+## `!enable [command]`
+![!enable example](/doc/assets/images/enable.png)
+
+Restricted: Yes
+
+Shortcuts: None
+
+Using this with any command in Lizard-BOT to enable a previously disabled command.
 
 ## `!github`
 ![!github example](/doc/assets/images/github.png)

@@ -8,7 +8,7 @@ from requests import get as requests_get
 
 # Local imports
 from secret import api_key
-from commands.utilities import (register, bold, get_chal_tour_id, get_random_chars, get_users, is_channel, pings_b_gone, checkin, seeding, read_db, read_stat, save_db, settings_exist)
+from commands.utilities import (register, bold, get_chal_tour_id, get_random_chars, get_users, is_channel, pings_b_gone, checkin, seeding, read_db, read_stat, save_db, settings_exist, set_disable, set_enable, read_disable)
 
 # All @register decorators are a product of reviewing Yaksha
 # See utilities.register for more information
@@ -88,7 +88,7 @@ async def draw(command, msg, user, channel, *args, **kwargs):
     # if we got here, draw was accepted
 
     # randomly choose player order
-    order = random_choice([[player1,player2,player2,player1,player1,player2],[player2,player1,player1,player2,player2,player1]])
+    order = random_choice([[player1,player2,player1,player2,player2,player1],[player2,player1,player2,player1,player1,player2]])
     # declare an Array of 0s to mark all cards as not picked
     # -1 means a card ban, 1 means a card draw
     picks = [0] * char_num
@@ -256,20 +256,26 @@ async def prefix(command, msg, user, channel, *args, **kwargs):
 @register('randomselect')
 @register('random')
 @register('rs')
+@register('stageselect')
 async def randomselect(command, msg, user, channel, *args, **kwargs):
     if len(msg.split(' ')) > 1:
         raise Exception(bold("RandomSelect") + ": Too many arguments. " + await help_lizard('','','',''))
     # Start with randomselect basis to get characters
-    try:
-        game = msg.split(' ')[0].lower()
-    except:
-        # No game to be found so default to sfv
-        game = 'sfv'
+    # If using stageselect, make it t7stages
+    if command == 'stageselect':
+            game = 't7stages'
+    else:
+        if msg.split(' ')[0].lower() != '':
+            game = msg.split(' ')[0].lower()
+        else:
+            # No game to be found so default to sfv
+            game = 'sfv'
 
     chars, games = get_random_chars(game)
     if not chars:
         raise Exception(bold("RandomSelect") + ": Invalid game: {0}. Valid games are: {1}".format(bold(game), bold(', '.join(games))))
-
+    if game == "t7stages":
+            return "{0} Your randomly selected stage is: {1}".format(user.mention, bold(random_choice(chars)))
     return "{0} Your randomly selected character is: {1}".format(user.mention, bold(random_choice(chars)))
 
 @register('stats')
@@ -400,6 +406,30 @@ async def challonge(command, msg, user, channel, *args, **kwargs):
         else:
             print(parts_get.text)
             raise Exception(bold("Challonge") + ": Unknown Challonge error for " + tour_url)
+@register('disable')
+async def disable(command, msg, user, channel, *args, **kwargs):
+    params = msg.split(' ')
+    to_disable = params[0] # could be expanded to do more
+    if not to_disable:
+        # No command provided
+        raise Exception(bold("Disable") + ": No command provided")
+    if to_disable == "list":
+        # Optional arg to list disabled commands
+        current_list = read_disable(kwargs['guild'])
+        return "Current disabled commands are: **{0}**".format(", ".join(current_list))
+    elif to_disable not in kwargs['client'].commands:
+        # Not a valid command in the first place, don't disable
+        raise Exception(bold("Disable") + ": That is not a command in Lizard-BOT and cannot be disabled")
+    try:
+        current_list = set_disable(kwargs['guild'],to_disable)
+    except Exception as e:
+        if str(e) == "Command already disabled.":
+            raise Exception(bold("Disable") + ": Cannot disable an already disabled command")
+        elif str(e) == "Cannot disable important command.":
+            raise Exception(bold("Disable") + ": Cannot disable an essential command")
+        else:
+            raise Exception(bold("Disable") + ": Error occured disabling command")
+    return "{0} has been disabled. Current disabled commands are: **{1}**".format(to_disable, ", ".join(current_list))
 
 @register('edit')
 async def edit(command, msg, user, channel, *args, **kwargs):
@@ -478,6 +508,24 @@ async def edit(command, msg, user, channel, *args, **kwargs):
         save_db('channel', editable_command, db_message, channel.id) # Save the new message to the proper setting in a given channel
 
     return "The new {0} is: {1}".format(bold(editable_command), bold(channel_message)) # Print the new message for a given setting
+
+@register('enable')
+async def enable(command, msg, user, channel, *args, **kwargs):
+    params = msg.split(' ')
+    to_enable = params[0] # could be expanded to do more
+    if not to_enable:
+        # No command provided
+        raise Exception(bold("Enable") + ": No command provided")
+    try:
+        current_list = set_enable(kwargs['guild'], to_enable)
+    except Exception as e:
+        if str(e) == "Command is not disabled.":
+            raise Exception(bold("Enable") + ": Cannot enable a command that is not disabled.")
+        elif str(e) == "There is nothing disabled.":
+            raise Exception(bold("Enable") + ": There is currently nothing disabled.")
+        else:
+            raise Exception(bold("Enable") + ": Error occured enabling command")
+    return "{0} has been enabled. Current disabled commands are: **{1}**".format(to_enable, ', '.join(current_list))
 
 @register('refresh')
 async def refresh(command, msg, user, channel, *args, **kwargs):

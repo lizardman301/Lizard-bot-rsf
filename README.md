@@ -42,6 +42,9 @@ If you have a valid challonge link in your `!bracket` command, Lizard-BOT does n
  * seeding [bracket url ID] [number of players to seed(Must be integer greater than or equal to 1)]
 	 * Seeds the tournament based on points in the spreadsheet and the number of players to seed
 
+`!disable [command]`
+Using this with any command (besides !disable, !edit, and !enable) in Lizard-BOT to disable its use throughout the server.
+
 `!edit [channel(s)] <setting> <value>`
 There are multiple settings that can be edited to allow customization.
 
@@ -89,6 +92,9 @@ If multiple channels are listed, the setting will be updated to the same value a
 	 * Recommended to make it ping each individual TO
 	 * Unique for each channel
 	 * Default value:
+
+`!enable [command]`
+Using this with any command in Lizard-BOT to enable a previously disabled command.
 
 `!refresh`
 Sends a message to the chat to let people know to refresh the bracket page.

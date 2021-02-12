@@ -7,7 +7,7 @@ from traceback import print_exc as traceback_print_exc
 from sys import exc_info as sys_exc_info
 
 # Local imports
-from commands.utilities import (read_db, settings_exist)
+from commands.utilities import (read_db, settings_exist, read_disable)
 import interface
 from secret import token
 
@@ -78,6 +78,8 @@ async def on_message(message):
 
         # Get prefix for the guild
         prefix = read_db('guild', 'prefix-lizard', message.guild.id)
+        # get list of disabled commands
+        disabled_commands = read_disable(message.guild.id)
 
         # Check if the attempted_cmd is !prefix-lizard and has too many args
         if (message.content.split(' ')[0] == "!prefix-lizard" or message.content.split(' ')[0] == "!prefliz") and len(message.content.split()) > 1:
@@ -95,6 +97,10 @@ async def on_message(message):
         # Check if the attempted_cmd takes arguments
         elif message.content.split(' ')[0][1:].lower() in client.no_arg_cmds and len(message.content.split()) > 1:
             await message.channel.send("Too many arguments. Check help-lizard for more info")
+            return
+        # Check if the command is disabled in a server
+        elif message.content.split(' ')[0][1:].lower() in disabled_commands:
+            await message.channel.send("That command is disabled in this server.")
             return
 
         for command in client.commands:
@@ -114,9 +120,9 @@ async def on_message(message):
                 if command in ['challonge', 'chal', 'draw', 'edit']:
                     kwargs['full_msg'] = message
 
-                    # Give draw client perms for adding reactions
-                    if command in ['draw']:
-                        kwargs['client'] = client
+                # Give draw client perms for adding reactions, disable for reading all commands
+                if command in ['draw', 'disable']:
+                    kwargs['client'] = client
 
                 # Await the interface calling the command
                 response = await client.interface.call_command(command, msg, user, message.channel, **kwargs)
