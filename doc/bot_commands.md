@@ -65,7 +65,7 @@ Restricted: Yes
 
 Shortcuts: None
 
-Using this with any command (besides !disable, !edit, and !enable) in Lizard-BOT to disable its use throughout the server.  Useful if people are abusing a command or it is unneccessary for what you are running.  Use !enable to undo this action. You must !disable all shortcuts if you want to completely shut out a command. If you provide 'list' as a command, it will list the current disabled commands.
+Using this with any command (besides !disable, !edit, and !enable) in Lizard-BOT to disable its use throughout the server.  Useful if people are abusing a command or it is unneccessary for what you are running.  Use !enable to undo this action. This will disable all versions of the command (IE disabling !liz will disable !lizardman and !ping also). If you provide 'list' as a command, it will list the current disabled commands.
 
 PS If you disable any variation of !lizardman I will be very sad.
 

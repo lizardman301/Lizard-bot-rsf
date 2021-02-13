@@ -417,11 +417,15 @@ async def disable(command, msg, user, channel, *args, **kwargs):
         # Optional arg to list disabled commands
         current_list = read_disable(kwargs['guild'])
         return "Current disabled commands are: **{0}**".format(", ".join(current_list))
-    elif to_disable not in kwargs['client'].commands:
+    try:
+        # get the actual function name
+        function_name = kwargs['func_map'][to_disable].__name__
+    except:
         # Not a valid command in the first place, don't disable
         raise Exception(bold("Disable") + ": That is not a command in Lizard-BOT and cannot be disabled")
     try:
-        current_list = set_disable(kwargs['guild'],to_disable)
+        # Disable function name
+        current_list = set_disable(kwargs['guild'],function_name)
     except Exception as e:
         if str(e) == "Command already disabled.":
             raise Exception(bold("Disable") + ": Cannot disable an already disabled command")
@@ -517,7 +521,12 @@ async def enable(command, msg, user, channel, *args, **kwargs):
         # No command provided
         raise Exception(bold("Enable") + ": No command provided")
     try:
-        current_list = set_enable(kwargs['guild'], to_enable)
+        function_name = kwargs['func_map'][to_enable].__name__
+    except:
+         # Not a valid command in the first place
+         raise Exception(bold("Enable") + ": That is not a command in Lizard-BOT and cannot be enabled")
+    try:
+        current_list = set_enable(kwargs['guild'], function_name)
     except Exception as e:
         if str(e) == "Command is not disabled.":
             raise Exception(bold("Enable") + ": Cannot enable a command that is not disabled.")
