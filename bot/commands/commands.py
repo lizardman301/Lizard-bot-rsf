@@ -258,7 +258,7 @@ async def prefix(command, msg, user, channel, *args, **kwargs):
 @register('rs')
 @register('stageselect')
 async def randomselect(command, msg, user, channel, *args, **kwargs):
-    if len(msg.split(' ')) > 1:
+    if (command == 'stageselect' and len(msg.split(' ')) > 0) or len(msg.split(' ')) > 1:
         raise Exception(bold("RandomSelect") + ": Too many arguments. " + await help_lizard('','','',''))
     # Start with randomselect basis to get characters
     # If using stageselect, make it t7stages
@@ -406,23 +406,31 @@ async def challonge(command, msg, user, channel, *args, **kwargs):
         else:
             print(parts_get.text)
             raise Exception(bold("Challonge") + ": Unknown Challonge error for " + tour_url)
+
 @register('disable')
 async def disable(command, msg, user, channel, *args, **kwargs):
     params = msg.split(' ')
+
+    if len(msg.split(' ')) > 1:
+        raise Exception(bold("Disable") + ": Too many arguments. " + await help_lizard('','','',''))
+
     to_disable = params[0] # could be expanded to do more
+
     if not to_disable:
         # No command provided
         raise Exception(bold("Disable") + ": No command provided")
-    if to_disable == "list":
+    elif to_disable == "list":
         # Optional arg to list disabled commands
         current_list = read_disable(kwargs['guild'])
         return "Current disabled commands are: **{0}**".format(", ".join(current_list))
+
     try:
         # get the actual function name
         function_name = kwargs['func_map'][to_disable].__name__
     except:
         # Not a valid command in the first place, don't disable
         raise Exception(bold("Disable") + ": That is not a command in Lizard-BOT and cannot be disabled")
+
     try:
         # Disable function name
         current_list = set_disable(kwargs['guild'],function_name)
@@ -431,8 +439,7 @@ async def disable(command, msg, user, channel, *args, **kwargs):
             raise Exception(bold("Disable") + ": Cannot disable an already disabled command")
         elif str(e) == "Cannot disable important command.":
             raise Exception(bold("Disable") + ": Cannot disable an essential command")
-        else:
-            raise Exception(bold("Disable") + ": Error occured disabling command")
+
     return "{0} has been disabled. Current disabled commands are: **{1}**".format(to_disable, ", ".join(current_list))
 
 @register('edit')
@@ -516,15 +523,22 @@ async def edit(command, msg, user, channel, *args, **kwargs):
 @register('enable')
 async def enable(command, msg, user, channel, *args, **kwargs):
     params = msg.split(' ')
+
+    if len(msg.split(' ')) > 1:
+        raise Exception(bold("Enable") + ": Too many arguments. " + await help_lizard('','','',''))
+
     to_enable = params[0] # could be expanded to do more
+
     if not to_enable:
         # No command provided
         raise Exception(bold("Enable") + ": No command provided")
+
     try:
         function_name = kwargs['func_map'][to_enable].__name__
     except:
          # Not a valid command in the first place
-         raise Exception(bold("Enable") + ": That is not a command in Lizard-BOT and cannot be enabled")
+         raise Exception(bold("Enable") + ": " + bold(to_enable) + " is not a command in Lizard-BOT and cannot be enabled")
+
     try:
         current_list = set_enable(kwargs['guild'], function_name)
     except Exception as e:
@@ -532,8 +546,7 @@ async def enable(command, msg, user, channel, *args, **kwargs):
             raise Exception(bold("Enable") + ": Cannot enable a command that is not disabled.")
         elif str(e) == "There is nothing disabled.":
             raise Exception(bold("Enable") + ": There is currently nothing disabled.")
-        else:
-            raise Exception(bold("Enable") + ": Error occured enabling command")
+
     return "{0} has been enabled. Current disabled commands are: **{1}**".format(to_enable, ', '.join(current_list))
 
 @register('refresh')

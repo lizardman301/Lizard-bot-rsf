@@ -1,8 +1,7 @@
 from discord.utils import escape_markdown # Regexing fun simplified
 from pymysql import connect as pymysql_connect # Use for DB connections
 from pymysql.cursors import DictCursor as pymysql_DictCursor # Use for DB connections
-from json import loads as json_loads
-from json import dumps as json_dumps
+from json import loads as json_loads, dumps as json_dumps
 from os import path as os_path
 from re import search as re_search, compile as re_compile # Process strings
 from requests import put as requests_put # HTTP functions
@@ -330,31 +329,31 @@ def read_disable(server):
             sql = "SELECT `disabled_list` FROM guild_settings WHERE guild_id = %s"
             cursor.execute(sql, (server))
             disabled_list=json_loads(cursor.fetchone()['disabled_list']) # Return the value for the setting
-    except:
-        # Create a new disabled list that is empty and save it, if none exists
-        with conn.cursor() as cursor:
-            sql = "UPDATE guild_settings SET disabled_list = %s WHERE guild_id = %s"
-            cursor.execute(sql, (json_dumps([]), server))
-            disabled_list = []
     finally:
         conn.close() # Close the connection
+
     return disabled_list
 
 def set_disable(server, command):
     # List of commands you cannot disable
-    dont_disable =["disable","edit","enable"]
+    dont_disable =["disable","edit","enable","prefix"]
+
     if command in dont_disable:
         # Command is one that is not allowed to be disabled
         raise Exception("Cannot disable important command.")
+
     # Get current disable list first
     disabled_list = read_disable(server)
+
     if command in disabled_list:
         # Already disabled, return error
         raise Exception("Command already disabled.")
+
     # Add new command
     disabled_list.append(command)
     # Sort alphabetically
     disabled_list = sorted(disabled_list)
+
     # Set new list in db
     conn = make_conn() # Make DB Connection
 
@@ -366,9 +365,9 @@ def set_disable(server, command):
     except:
         # Something went completely wrong here if a new row wasn't created in disabled_list
         raise Exception("Could not save list to table")
-
     finally:
         conn.close() # Close the connection
+
     return disabled_list #in case you need it.
 
 def set_enable(server, command):
@@ -380,6 +379,7 @@ def set_enable(server, command):
     elif command not in disabled_list:
         # Already disabled, return error
         raise Exception("Command is not disabled.")
+
     # Remove command
     disabled_list.remove(command)
     # Set new list in db
@@ -393,8 +393,8 @@ def set_enable(server, command):
     except:
         # Something went completely wrong here if a new row wasn't created in disabled_list
         raise Exception("Could not save list to table")
-
     finally:
         conn.close() # Close the connection
+
     return disabled_list #in case you need it.
 

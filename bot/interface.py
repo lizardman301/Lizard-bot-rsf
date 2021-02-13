@@ -56,7 +56,7 @@ class Interface():
         '''
         # First check if the command is disabled
         if self._func_mapping[command].__name__ in read_disable(kwargs['guild']):
-            return "{0} has been disabled in this server.".format(command)
+            return "**{0}** has been disabled in this server.".format(command)
 
         # Second check if the user is allowed to call this
         # function.
