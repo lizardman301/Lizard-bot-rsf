@@ -1,6 +1,6 @@
 # Local imports
 from commands import commands
-from commands.utilities import (get_callbacks, read_db, stat_up)
+from commands.utilities import (get_callbacks, read_db, stat_up, read_disable)
 
 # Yaksha
 class Interface():
@@ -54,15 +54,18 @@ class Interface():
         Determines which function to call from the func_mapping
         dict using the command arg as the key.
         '''
+        # First check if the command is disabled
+        if self._func_mapping[command].__name__ in read_disable(kwargs['guild']):
+            return "**{0}** has been disabled in this server.".format(command)
 
-        # First check if the user is allowed to call this
+        # Second check if the user is allowed to call this
         # function.
         if self.user_has_permission(user, command, kwargs['guild']):
             if self._func_mapping[command].__name__ in ['help_lizard']:
                 kwargs['help'] = self.help
             elif self._func_mapping[command].__name__ == 'edit':
                 kwargs['edit_subs'] = self.edit_subcommands.keys()
-            elif self._func_mapping[command].__name__ == 'stats':
+            elif self._func_mapping[command].__name__ in ['disable','enable','stats']:
                 kwargs['func_map'] = self._func_mapping
             try:
                 result = await self._func_mapping[command](command, msg, user, channel, *args, **kwargs)

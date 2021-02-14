@@ -5,7 +5,15 @@
 			"chal",
 			"Uses Challonge's API to pull data into Discord"
 		],
+		"disable": [
+			"disable",
+			"Takes the given argument and disables that command for the entire discord. Use enable to make it work again"
+		],
 		"edit": ["edit","There are multiple settings that can be edited to allow customization. If multiple channels are listed, the setting will be updated to the same value across all listed channels."],
+		"enable": [
+			"enable",
+			"Takes the given argument and if it is disabled in the server, enables it for use again"
+		],
 		"refresh": ["refresh", "Sends a \"REFRESH THE BRACKET\" reminder into the chat."],
 		"remind": ["remind", "Allows the admin to set a timed reminder"],
 		"reset": ["reset", "Resets the round count back to its default value"],
@@ -46,7 +54,7 @@
 		"pingtest": [
 			"pingtest",
 			"pt",
-			"Explains how to run a ping test using <https://testmyspeed.onl/> and a common server"
+			"Explains how to run a ping test. Can be edited to give specific instructions on how to preform a test."
 		],
 		"prefix-lizard": [
 			"prefix-lizard",
@@ -57,6 +65,7 @@
 			"randomselect",
 			"random",
 			"rs",
+			"stageselect",
 			"Returns a randomly selected character from the game in the arguments. Will return a SFV character if no game is given."
 		],
 		"stats": ["stats", "Returns the usage for Lizard-BOT commands"],
