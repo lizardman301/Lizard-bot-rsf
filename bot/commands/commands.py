@@ -186,7 +186,7 @@ async def draw(command, msg, user, channel, *args, **kwargs):
             # mark character as picked
             picks[number] = 1
             # edit embed to bold character
-            card_embed.set_field_at(number, name="Char {0}".format(number+1), value = bold(characters_list[number]))
+            card_embed.set_field_at(number, name="Char {0}".format(number+1), value = "__"+bold(characters_list[number])+"__")
             # assign character chosen to 
             if player == player1:
                 p1_chars.append(characters_list[number])

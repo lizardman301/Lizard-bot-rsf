@@ -66,7 +66,7 @@ async def on_message(message):
         if "@everyone" in message.content or "@here" in message.content:
             return
         # Choose from a random response, then follow with a Bot message
-        responses = ["Ok", "Thanks", "Sounds good to me", "Buff Rashid", "Beep Boop", "Yes", "No", "Good to know", "Glad to hear it", "I'll keep that in mind", "The answer lies in the heart of battle", "Go home and be a family man"]
+        responses = ["Ok", "Thanks", "Sounds good to me", "Buff Rashid", "Buff Rashid", "Beep Boop", "Yes", "No", "Good to know", "Glad to hear it", "I'll keep that in mind", "The answer lies in the heart of battle", "Go home and be a family man"]
         await message.channel.send("{0} \n**I am a Bot that plays Rashid. Mentions cause my little Rashid brain to short circuit. Did you have ~~an eagle spi~~ a command?**".format(random_choice(responses)))
         return
 
