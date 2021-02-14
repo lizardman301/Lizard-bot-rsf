@@ -414,7 +414,7 @@ async def disable(command, msg, user, channel, *args, **kwargs):
     if len(msg.split(' ')) > 1:
         raise Exception(bold("Disable") + ": Too many arguments. " + await help_lizard('','','',''))
 
-    to_disable = params[0] # could be expanded to do more
+    to_disable = params[0].lower() # could be expanded to do more
 
     if not to_disable:
         # No command provided
@@ -527,7 +527,7 @@ async def enable(command, msg, user, channel, *args, **kwargs):
     if len(msg.split(' ')) > 1:
         raise Exception(bold("Enable") + ": Too many arguments. " + await help_lizard('','','',''))
 
-    to_enable = params[0] # could be expanded to do more
+    to_enable = params[0].lower() # could be expanded to do more
 
     if not to_enable:
         # No command provided
