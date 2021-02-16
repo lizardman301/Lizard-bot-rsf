@@ -74,13 +74,15 @@ async def draw(command, msg, user, channel, *args, **kwargs):
         accept_msg = await channel.send(embed=accept_embed)
     except:
         raise Exception(bold("Draw") + ": Error sending embed to chat. Give Lizard-BOT the permission: " + bold("Embed Links"))
-
+    await accept_msg.add_reaction('❌')    
     await accept_msg.add_reaction('✅')
 
     try:
         # Wait for the reaction from the correct user
         # lambda function check for the correct reaction and the correct user
-        reaction, user = await client.wait_for('reaction_add', timeout=60.0, check=lambda reaction, user: user == player2 and str(reaction.emoji) == '✅' and reaction.message == accept_msg)
+        reaction, user = await client.wait_for('reaction_add', timeout=60.0, check=lambda reaction, user: user == player2 and (str(reaction.emoji) == '✅' or str(reaction.emoji) == '❌') and reaction.message == accept_msg)
+        if str(reaction.emoji) == '❌':
+            raise Exception()
     except:
         await accept_msg.delete()
         raise Exception(bold("Draw") + ": The draw was not accepted.")
@@ -138,7 +140,7 @@ async def draw(command, msg, user, channel, *args, **kwargs):
                 try:
                     reaction_read, user_to_check  = await client.wait_for('reaction_add', timeout=60.0)
                     msg_to_check = reaction_read.message
-                    if not(msg_to_check == game_msg):
+                    if not(msg_to_check == game_msg and user_to_check == player):
                         continue
                     reaction_read_emoji = reaction_read.emoji
                     number = unicode_reactions.index(reaction_read_emoji)
@@ -147,9 +149,13 @@ async def draw(command, msg, user, channel, *args, **kwargs):
                         reaction_read_emoji = None
                         card_embed.set_footer(text="{0}, that character is already banned, please choose another.".format(player.display_name))
                         await game_msg.edit(embed = card_embed)
-                except:
+                except TimeoutError:
+                    # Took too much time, deletes message
                     await game_msg.delete()
                     raise Exception(bold("Draw") + ": {0} failed to ban a character.".format(player.display_name))
+                except:
+                    # As of right now, if something else goes wrong its because a reaction its not expecting was sent, go to the next loop
+                    continue
             # mark character as banned
             picks[number] = -1
             # Strikethrough char on embed
@@ -166,7 +172,7 @@ async def draw(command, msg, user, channel, *args, **kwargs):
                 try:
                     reaction_read, user_to_check  = await client.wait_for('reaction_add', timeout=60.0)
                     msg_to_check = reaction_read.message
-                    if not(msg_to_check == game_msg):
+                    if not(msg_to_check == game_msg and user_to_check == player):
                         continue
                     reaction_read_emoji = reaction_read.emoji
                     number = unicode_reactions.index(reaction_read_emoji)
@@ -180,9 +186,13 @@ async def draw(command, msg, user, channel, *args, **kwargs):
                         reaction_read_emoji = None
                         card_embed.set_footer(text="{0}, that character is already chosen, please choose another.".format(player.display_name))
                         await game_msg.edit(embed = card_embed)
-                except:
+                except TimeoutError:
+                    # Took too much time, deletes message
                     await game_msg.delete()
-                    raise Exception(bold("Draw") +  ": {0} failed to choose a character.".format(player.display_name))
+                    raise Exception(bold("Draw") + ": {0} failed to choose a character.".format(player.display_name))
+                except:
+                    # As of right now, if something else goes wrong its because a reaction its not expecting was sent, go to the next loop
+                    continue
             # mark character as picked
             picks[number] = 1
             # edit embed to bold character
