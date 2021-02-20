@@ -1,5 +1,5 @@
 # Local imports
-from commands import commands
+from commands import commands, challonge, edit
 from commands.utilities import (get_callbacks, read_db, stat_up, read_disable)
 
 # Yaksha
@@ -7,13 +7,12 @@ class Interface():
 
     # Yaksha
     # Initialize Interface with all our nice defaults
-    def __init__(self, admin_commands, edit_subcommands, help):
+    def __init__(self, admin_commands, help):
         self._func_mapping = {} # Map for future reference
-        self._modules = [commands] # Stores the reference to each .py we have command functions in
+        self._modules = [commands, challonge, edit] # Stores the reference to each .py we have command functions in
         self.remap_functions() # Map functions for reference by command name
         self.admin_commands = admin_commands # Bring over the admin commands
         self.help = help # Bring over help info
-        self.edit_subcommands = edit_subcommands # Bring over the edit subcommands
 
     # Yaksha
     def remap_functions(self):
@@ -55,13 +54,13 @@ class Interface():
         dict using the command arg as the key.
         '''
         # First check if the command is disabled
-        if self._func_mapping[command].__name__ in read_disable(kwargs['guild']):
+        if self._func_mapping[command].__name__ in await read_disable(kwargs['guild']):
             return "**{0}** has been disabled in this server.".format(command)
 
         # Second check if the user is allowed to call this
         # function.
-        if self.user_has_permission(user, command, kwargs['guild']):
-            if self._func_mapping[command].__name__ in ['help_lizard']:
+        if await self.user_has_permission(user, command, kwargs['guild']):
+            if self._func_mapping[command].__name__ == 'help_lizard':
                 kwargs['help'] = self.help
             elif self._func_mapping[command].__name__ == 'edit':
                 kwargs['edit_subs'] = self.edit_subcommands.keys()
@@ -69,14 +68,14 @@ class Interface():
                 kwargs['func_map'] = self._func_mapping
             try:
                 result = await self._func_mapping[command](command, msg, user, channel, *args, **kwargs)
-                stat_up(self._func_mapping[command].__name__)
+                await stat_up(self._func_mapping[command].__name__)
                 return result
             except:
                 raise
         else:
             return "You do not have permissions to access the command: " + command
 
-    def user_has_permission(self, user, command, id):
+    async def user_has_permission(self, user, command, id):
         '''
         Performs various checks on the user and the
         command to determine if they're allowed to use it.
@@ -84,7 +83,7 @@ class Interface():
         # Check if the user is an admin and
         # if the command is an admin command.
         if command in self.admin_commands:
-            botrole = read_db('guild', 'botrole', id)
+            botrole = await read_db('guild', 'botrole', id)
 
             # If botrole is not set, allow the command
             if not botrole:

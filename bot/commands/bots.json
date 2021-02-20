@@ -1,15 +1,30 @@
 {
 	"admin_commands": {
-		"challonge": [
-			"challonge",
-			"chal",
-			"Uses Challonge's API to pull data into Discord"
+		"challonge checkin": [
+			"challonge checkin",
+			"chal checkin",
+			"Checks the given bracket for users that are not checked in and users whose Challonge names are not in the server"
+		],
+		"challonge seeding": [
+			"challonge seeding",
+			"challonge seed",
+			"chal seeding",
+			"chal seed",
+			"Seeds the tournament based on points in the spreadsheet and the number of players to seed"
 		],
 		"disable": [
 			"disable",
 			"Takes the given argument and disables that command for the entire discord. Use enable to make it work again"
 		],
-		"edit": ["edit","There are multiple settings that can be edited to allow customization. If multiple channels are listed, the setting will be updated to the same value across all listed channels."],
+		"edit botrole": ["edit botrole", "edit role", "This role determines what role is needed to access the TO Commands\nNew value must be a ping to the role desired\nDefault value: @everyone"],
+		"edit bracket": ["edit bracket", "Allows you to add a link to a bracket for users to view\nUnique for each channel\nDefault value: 'There is no bracket set for this channel'"],
+		"edit challonge": ["edit challonge", "Specifies the challonge subdomain to check for tournaments\nNecessary for Challonge integration\nDefault Value:"],
+		"edit pingtest": ["edit pingtest", "Allows you to set a message for players to do a ping test\nDefault Value: Use <https://testmyspeed.onl/> for ping tests."],
+		"edit prefix-lizard": ["edit prefix-lizard", "Allows you to change the prefix for commands\nUseful if you use multiple bots that may have similar commands and prefixes\nDefault Value: !"],
+		"edit seeding": ["edit seeding", "Allows you to set the Google Sheets spreadsheet ID to be used to check points\nPlease see: [Our Documentation](https://github.com/lizardman301/Lizard-bot-rsf/blob/master/doc/seeding_with_sheets.md) for instructions on creating/adapting a spreadsheet\nUnique for each channel\nDefault value:"],
+		"edit status": ["edit status", "Allows you to change the flavor text of the !round and !status commands for individual channels\nText uses {0} as a marker for where the round count will be added\nUnique for each channel\nDefault value: Winner's Round {0} can play! Losers can play till top 8 losers side. If you have a bye Round {0}, Please Wait!"],
+		"edit stream": ["edit stream", "Allows you to add a stream link that users can ping to get a link of\nUnique for each channel\nDefault value: There are no streams set for this channel"],
+		"edit tos": ["edit tos", "Allows you to list all Tournament Organizers involved\nRecommended to make it ping each individual TO\nUnique for each channel\nDefault value:"],
 		"enable": [
 			"enable",
 			"Takes the given argument and if it is disabled in the server, enables it for use again"
@@ -26,6 +41,11 @@
 			"Returns the role that allows access to the administrator commands"
 		],
 		"bracket": ["bracket", "Shows the current bracket set in the channel"],
+		"challonge report":[
+			"challonge report",
+			"chal report",
+			"Allows users to report their score for the tournament configured in !bracket"
+		],
 		"coin-flip": [
 			"coin-flip",
 			"flip",
@@ -73,24 +93,10 @@
 		"stream": ["stream", "Returns the stream link if one is set"],
 		"TOs": ["TOs", "Sends a message back with all the Tournament Organizers pinged once set"]
 	},
-	"challonge_subcommands": {
-		"checkin":["checkin", "Checks the given bracket for users that are not checked in and users whose Challonge names are not in the server"],
-		"seeding":["seeding", "Seeds the tournament based on points in the spreadsheet and the number of players to seed"]
-	},
-	"edit_subcommands": {
-		"botrole": ["botrole", "This role determines what role is needed to access the TO Commands\nNew value must be a ping to the role desired\nDefault value: @everyone"],
-		"bracket": ["bracket", "Allows you to add a link to a bracket for users to view\nUnique for each channel\nDefault value: 'There is no bracket set for this channel'"],
-		"challonge": ["challonge", "Specifies the challonge subdomain to check for tournaments\nNecessary for Challonge integration\nDefault Value:"],
-		"pingtest": ["pingtest", "Allows you to set a message for players to do a ping test\nDefault Value: Use <https://testmyspeed.onl/> for ping tests."],
-		"prefix-lizard": ["prefix-lizard", "Allows you to change the prefix for commands\nUseful if you use multiple bots that may have similar commands and prefixes\nDefault Value: !"],
-		"seeding": ["seeding", "Allows you to set the Google Sheets spreadsheet ID to be used to check points\nPlease see: [Our Documentation](https://github.com/lizardman301/Lizard-bot-rsf/blob/master/doc/seeding_with_sheets.md) for instructions on creating/adapting a spreadsheet\nUnique for each channel\nDefault value:"],
-		"status": ["status", "Allows you to change the flavor text of the !round and !status commands for individual channels\nText uses {0} as a marker for where the round count will be added\nUnique for each channel\nDefault value: Winner's Round {0} can play! Losers can play till top 8 losers side. If you have a bye Round {0}, Please Wait!"],
-		"stream": ["stream", "Allows you to add a stream link that users can ping to get a link of\nUnique for each channel\nDefault value: There are no streams set for this channel"],
-		"tos": ["tos", "Allows you to list all Tournament Organizers involved\nRecommended to make it ping each individual TO\nUnique for each channel\nDefault value:"]
-	},
 	"no_arg_commands": [
 		"botrole",
 		"bracket",
+		"challonge checkin",
 		"coin-flip",
 		"github",
 		"lizardbot-discord",
