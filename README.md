@@ -45,7 +45,7 @@ If you have a valid challonge link in your `!bracket` command, Lizard-BOT does n
 `!disable [command]`
 Using this with any command (besides !disable, !edit, and !enable) in Lizard-BOT to disable its use throughout the server.
 
-`!edit [channel(s)] <setting> <value>`
+`!edit <setting> [channel(s)] <value>`
 There are multiple settings that can be edited to allow customization.
 
 If multiple channels are listed, the setting will be updated to the same value across all listed channels.
