@@ -390,8 +390,13 @@ async def enable(command, msg, user, channel, *args, **kwargs):
     try:
         function_name = kwargs['func_map'][to_enable].__name__
     except:
-         # Not a valid command in the first place
-         raise Exception(bold("Enable") + ": " + bold(to_enable) + " is not a command in Lizard-BOT and cannot be enabled")
+         # Check if command is in the disable list, if so return that name
+         # Used for commands that were disabled but changed in an update
+         disable_list = await read_disable(kwargs['guild'])
+         if to_enable in disable_list:
+             function_name = to_enable
+         else:
+            raise Exception(bold("Enable") + ": " + bold(to_enable) + " is not a command in Lizard-BOT and cannot be enabled")
 
     try:
         return "{0} has been enabled. Current disabled commands are: **{1}**".format(to_enable, ', '.join(await set_enable(kwargs['guild'], function_name)))
