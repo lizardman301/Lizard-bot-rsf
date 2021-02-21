@@ -1,5 +1,7 @@
-from asyncio import sleep as asyncio_sleep
+#import asyncio
 import discord
+
+from asyncio import sleep as asyncio_sleep
 from json import loads as json_loads
 from os import path as os_path
 from random import choice as random_choice
@@ -55,7 +57,7 @@ async def change_status():
 # When message is typed in any channel the bot has access to, check to see if the bot needs to respond
 @client.event
 async def on_message(message):
-    cmd = 'bracket'
+    command = 'bracket'
     # If the bot is the user, do not respond
     if message.author == client.user:
         return
@@ -73,11 +75,11 @@ async def on_message(message):
     try:
         # Check if the channel is in the DB
         # Add it if it isn't
-        if not settings_exist(message.guild.id, message.channel.id):
+        if not await settings_exist(message.guild.id, message.channel.id):
             raise Exception("Lizard-BOT failed to create DB entry for: " + message.guild.name + ". Guild ID: " + message.guild.id)
 
         # Get prefix for the guild
-        prefix = read_db('guild', 'prefix-lizard', message.guild.id)
+        prefix = await read_db('guild', 'prefix-lizard', message.guild.id)
         # get list of disabled commands
 
         # Check if the attempted_cmd is !prefix-lizard and has too many args
@@ -100,10 +102,12 @@ async def on_message(message):
 
         for command in client.commands:
             command = command.lower() # Lower the command for easier matching
-            cmd = command
             msg = message.content # The message
             attempted_cmd = msg.split(' ')[0][1:].lower() # Get the attempted command from the beginning of the string
 
+            if attempted_cmd in ['challonge', 'chal', 'edit'] and len(msg.split(' ')) > 1:
+                attempted_cmd += ' ' + msg.split(' ')[1].lower()
+            
             # Check if the message begins with a command
             if attempted_cmd and attempted_cmd == command:
                 user = message.author # The author
@@ -112,12 +116,18 @@ async def on_message(message):
                 # Remove the command from the start
                 msg = msg[len(command)+1:].strip()
 
-                if command in ['challonge', 'chal', 'draw', 'edit']:
+                if command in ['challonge checkin', 'chal checkin']:
+                    kwargs['guild_members'] = message.guild.members
+                elif command in ['edit botrole', 'edit role']:
+                    kwargs['guild_default_role'] = message.guild.default_role
+                    kwargs['role_mentions'] = message.role_mentions
+                elif command in ['edit bracket', 'edit pingtest', 'edit status', 'edit seeding', 'edit stream', 'edit tos']:
+                    kwargs['channel_mentions'] = message.channel_mentions
+                    if command in ['edit tos']:
+                        kwargs['mentions'] = message.mentions
+                elif command in ['draw']:
                     kwargs['full_msg'] = message
-
-                    # Give draw client perms for adding reactions, disable for reading all commands
-                    if command in ['draw']:
-                        kwargs['client'] = client
+                    kwargs['client'] = client
 
                 # Await the interface calling the command
                 response = await client.interface.call_command(command, msg, user, message.channel, **kwargs)
@@ -129,7 +139,7 @@ async def on_message(message):
         # Expected error
         # Return friendly user message
         # Don't print error to console
-        if client.interface._func_mapping[cmd].__name__ in str(sys_exc_info()[1]).split(':')[0].strip("*").lower():
+        if client.interface._func_mapping[command].__name__ in str(sys_exc_info()[1]).split(':')[0].strip("*").lower() or ('challonge' in client.interface._func_mapping[command].__name__ and 'challonge' in str(sys_exc_info()[1]).split(':')[0].strip("*").lower()) or ('edit' in client.interface._func_mapping[command].__name__ and 'edit' in str(sys_exc_info()[1]).split(':')[0].strip("*").lower()):
             await message.channel.send(str(sys_exc_info()[1]).replace('_', '-'))
         else:
             # Print error to console
@@ -176,23 +186,8 @@ def main():
         for alias in aliases:
             # Add the command and aliases as admin commands
             client.admin_commands.append(alias)
-
-    client.challonge_subcommands = config.get('challonge_subcommands', {}).copy()
-    for subcmd in client.challonge_subcommands:
-        for info in client.challonge_subcommands[subcmd]:
-            if info == client.challonge_subcommands[subcmd][-1]:
-                client.help.update({"challonge " + subcmd:info})
-                break
-
-    client.edit_subcommands = config.get('edit_subcommands', {}).copy()
-    for subcmd in client.edit_subcommands:
-        for info in client.edit_subcommands[subcmd]:
-            if info == client.edit_subcommands[subcmd][-1]:
-                client.help.update({"edit " + subcmd:info})
-                break
-
     # Start our interface for our commands and Discord
-    client.interface = interface.Interface(client.admin_commands, client.edit_subcommands, client.help)
+    client.interface = interface.Interface(client.admin_commands, client.help)
 
     # Start loop for status change
     client.loop.create_task(change_status())

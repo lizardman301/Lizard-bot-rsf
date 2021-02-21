@@ -8,7 +8,7 @@ from requests import get as requests_get
 
 # Local imports
 from secret import api_key
-from commands.utilities import (register, bold, get_chal_tour_id, get_random_chars, get_users, is_channel, pings_b_gone, checkin, seeding, read_db, read_stat, save_db, settings_exist, set_disable, set_enable, read_disable)
+from commands.utilities import (register, bold, get_random_chars, read_db, read_disable, read_stat, save_db, set_disable, set_enable)
 
 # All @register decorators are a product of reviewing Yaksha
 # See utilities.register for more information
@@ -17,11 +17,11 @@ from commands.utilities import (register, bold, get_chal_tour_id, get_random_cha
 @register('role')
 async def botrole(command, msg, user, channel, *args, **kwargs):
     # Pull the role name from the guild's roles
-    return "The bot role is {0}".format(bold(channel.guild.get_role(read_db('guild', 'botrole', kwargs['guild'])).name))
+    return "The bot role is {0}".format(bold(channel.guild.get_role(await read_db('guild', 'botrole', kwargs['guild'])).name))
 
 @register('bracket')
 async def bracket(command, msg, user, channel, *args, **kwargs):
-    return read_db('channel', 'bracket', channel.id)
+    return await read_db('channel', 'bracket', channel.id)
 
 @register('coin-flip')
 @register('flip')
@@ -256,19 +256,19 @@ async def ping(command, msg, user, channel, *args, **kwargs):
 @register('pingtest')
 @register('pt')
 async def pingtest(command, msg, user, channel, *args, **kwargs):
-    return read_db('channel', 'pingtest', channel.id)
+    return await read_db('channel', 'pingtest', channel.id)
 
 @register('prefix-lizard')
 @register('prefliz')
 async def prefix(command, msg, user, channel, *args, **kwargs):
-    return "The prefix is: {0}".format(read_db('guild', 'prefix-lizard', kwargs['guild']))
+    return "The prefix is: {0}".format(await read_db('guild', 'prefix-lizard', kwargs['guild']))
 
 @register('randomselect')
 @register('random')
 @register('rs')
 @register('stageselect')
 async def randomselect(command, msg, user, channel, *args, **kwargs):
-    if (command == 'stageselect' and len(msg.split(' ')) > 0) or len(msg.split(' ')) > 1:
+    if (command == 'stageselect' and msg) or len(msg.split(' ')) > 1:
         raise Exception(bold("RandomSelect") + ": Too many arguments. " + await help_lizard('','','',''))
     # Start with randomselect basis to get characters
     # If using stageselect, make it t7stages
@@ -294,9 +294,10 @@ async def stats(command, msg, user, channel, *args, **kwargs):
     func_map = kwargs['func_map'] if cmd else []
     if len(msg.split(' ')) > 1:
         raise Exception(bold("Stats") + ": Too many arguments. " + await help_lizard('','','',''))
-    elif cmd and cmd not in func_map:
+    elif cmd and cmd not in ['challonge', 'edit'] and cmd not in func_map:
+        print(cmd)
         raise Exception(bold("Stats") + ": Invalid Subcommand. " + await help_lizard('','','',''))
-    stats = read_stat(cmd,func_map)
+    stats = await read_stat(cmd,func_map)
 
     embed = Embed(title="Stats!", colour=Colour(0x0fa1dc))
     embed.set_author(name="Lizard-BOT", url="https://github.com/lizardman301/Lizard-bot-rsf", icon_url="https://raw.githubusercontent.com/lizardman301/Lizard-bot-rsf/master/doc/assets/images/cmface.png")
@@ -313,23 +314,24 @@ async def stats(command, msg, user, channel, *args, **kwargs):
 
 @register('status')
 async def status(command, msg, user, channel, *args, **kwargs):
-    currentRound = read_db('channel', 'round', channel.id)
+    currentRound = await read_db('channel', 'round', channel.id)
     if currentRound:
         # Read the status message for a channel and make it bold
         # Currently the message must have {0} so it can fill in the current round
         try:
-            return bold(read_db('channel', 'status', channel.id).format(currentRound))
+            message = await read_db('channel', 'status', channel.id)
+            return bold(message.format(currentRound))
         except:
             raise Exception(bold("Status") + ": Round message includes invalid {}. Please correct the status message to include only {0}")
     return bold("Tournament has not begun. Please wait for the TOs to start Round 1!")
 
 @register('stream')
 async def stream(command, msg, user, channel, *args, **kwargs):
-    return read_db('channel', 'stream', channel.id)
+    return await read_db('channel', 'stream', channel.id)
 
 @register('tos')
 async def TOs(command, msg, user, channel, *args, **kwargs):
-    tos = read_db('channel', 'tos', channel.id)
+    tos = await read_db('channel', 'tos', channel.id)
     # If we get a value back, return TOs
     if tos:
         return tos
@@ -337,101 +339,21 @@ async def TOs(command, msg, user, channel, *args, **kwargs):
 
 # Admin Commands
 
-@register('challonge')
-@register('chal')
-async def challonge(command, msg, user, channel, *args, **kwargs):
-    async with channel.typing():
-        base_url = "https://api.challonge.com/v1/tournaments/" # Base url to access Challonge's API
-        subcommand = msg.split(' ')[0].lower() # The function trying to be accomplished
-
-        if not subcommand:
-                raise Exception(bold("Challonge") + ": Lack of arguments. " + await help_lizard('','','',''))
-
-        if len(msg.split(' ')) > 3:
-            raise Exception(bold("Challonge") + ": Too many arguments. " + await help_lizard('','','',''))
-
-        try:
-            if msg.split(' ')[1].isdigit():
-                raise Exception("Bracket link is only digits.")
-            tour_url = msg.split(' ')[1] # Bracket to pull from
-        except:
-            tour_url = get_chal_tour_id(read_db('channel', 'bracket', channel.id)) # no bracket provided, give it one from DB
-            if not tour_url: # no bracket found still, return so we dont have issues
-                raise Exception(bold("Challonge") + ": Bracket link is missing. Try setting the bracket command or including it in the command")
-
-        subdomain = read_db('guild', 'challonge', kwargs['guild']) # Server's subdomain with Challonge
-
-        # Properly add the subdomain to the bracket url
-        if subdomain:
-            tour_url = subdomain + '-' + tour_url
-
-        # Get the participants for the tournament
-        parts_get = requests_get(base_url + tour_url + "/participants.json", params={'api_key':api_key})
-        if '200' in str(parts_get.status_code):
-            parts = parts_get.json() # Convert response from json to Python Dictionary
-
-            # If Checkin
-            if subcommand == 'checkin':
-                not_checked_in_parts, not_discord_parts = checkin(parts, get_users(kwargs['full_msg']))
-
-                # Message showing who is not checked in and who is not in the Discord
-                return_msg = "**NOT CHECKED IN:** {0}\n**NOT IN DISCORD:** {1}\n".format(', '.join(not_checked_in_parts), ', '.join(not_discord_parts)) + await not_in_discord(0,0,0,0)
-
-            # If Seeding
-            elif subcommand == 'seeding':
-                # If msg has 3 params left 3rd one must be seed number
-                # Else, seed whole bracket
-                try:
-                    if msg.split(' ')[-1] == subcommand or msg.split(' ')[-1] in tour_url:
-                        seed_num = 0
-                    elif not msg.split(' ')[-1].isdigit() and not int(msg.split(' ')[-1]) >= 0:
-                        raise
-                    else:
-                        seed_num = int(msg.split(' ')[-1])
-                except:
-                    raise Exception(bold("Challonge") + ": Seeding number must be a positive integer or 0 for everybody")
-
-                # Get Google Sheets ID
-                sheet_id = read_db('channel', 'seeding', channel.id)
-
-                # If seeding hasn't been set, inform user
-                if not sheet_id:
-                    raise Exception(bold("Challonge") + ": There is no seeding sheet for this channel. Please view <https://github.com/lizardman301/Lizard-bot-rsf/blob/master/doc/seeding_with_sheets.md> for a walkthrough")
-
-                seeds = seeding(sheet_id, parts, base_url + '/' + tour_url,seed_num)
-
-                # Seeding takes place in different method
-                await channel.send("**SEEDING:**\n {0}".format(',\n'.join(escape_markdown(pformat(seeds))[1:-1].split(', '))))
-
-                # Final message that seeding is complete
-                return_msg = bold("SEEDING IS NOW COMPLETE!\nPLEASE REFRESH YOUR BRACKETS\nWAIT FOR THE ROUND 1 ANNOUNCEMENT TO START PLAYING")
-
-            # Bad command catching
-            else:
-                raise Exception(bold("Challonge") + ": Invalid Challonge subcommand. " + await help_lizard('','','',''))
-
-            return return_msg # Return the final message
-        elif '404' in str(parts_get.status_code):
-            raise Exception(bold("Challonge") + ": Lizard-BOT can not find tournament: " + tour_url)
-        else:
-            print(parts_get.text)
-            raise Exception(bold("Challonge") + ": Unknown Challonge error for " + tour_url)
-
 @register('disable')
 async def disable(command, msg, user, channel, *args, **kwargs):
-    params = msg.split(' ')
+    params = msg.lower().split(' ')
 
-    if len(msg.split(' ')) > 1:
+    if len(msg.split(' ')) > 2:
         raise Exception(bold("Disable") + ": Too many arguments. " + await help_lizard('','','',''))
 
-    to_disable = params[0].lower() # could be expanded to do more
+    to_disable = ' '.join(params[0:2]) # could be expanded to do more
 
     if not to_disable:
         # No command provided
         raise Exception(bold("Disable") + ": No command provided")
     elif to_disable == "list":
         # Optional arg to list disabled commands
-        current_list = read_disable(kwargs['guild'])
+        current_list = await read_disable(kwargs['guild'])
         return "Current disabled commands are: **{0}**".format(", ".join(current_list))
 
     try:
@@ -443,7 +365,7 @@ async def disable(command, msg, user, channel, *args, **kwargs):
 
     try:
         # Disable function name
-        current_list = set_disable(kwargs['guild'],function_name)
+        current_list = await set_disable(kwargs['guild'],function_name)
     except Exception as e:
         if str(e) == "Command already disabled.":
             raise Exception(bold("Disable") + ": Cannot disable an already disabled command")
@@ -452,92 +374,14 @@ async def disable(command, msg, user, channel, *args, **kwargs):
 
     return "{0} has been disabled. Current disabled commands are: **{1}**".format(to_disable, ", ".join(current_list))
 
-@register('edit')
-async def edit(command, msg, user, channel, *args, **kwargs):
-    params = msg.split(' ')
-    full_msg = kwargs['full_msg'] # Allows us to access the role_mentions
-    command_channels = {} # Stores channels to iterate over
-
-    # Check for multi-channel changes at message start
-    if full_msg.channel_mentions:
-        for param in params:
-            if is_channel(param):
-                for chnl in full_msg.channel_mentions:
-                    if chnl.id == is_channel(param) and 'text' in chnl.type:
-                        command_channels.update({chnl.id: chnl.mention}) # Save channel for later
-            else:
-                break
-        for chnl in command_channels:
-            params.remove(command_channels[chnl]) # Remove the channel from the params
-            
-    params[0] = params[0].lower() # Make sure the command we are editing is in lowercase
-    editable_command = params[0] # The command we are editing
-    if editable_command not in kwargs['edit_subs']:
-        raise Exception(bold("Edit") + ": Invalid Subcommand. " + await help_lizard('','','',''))
-
-    params.remove(editable_command) # Remove the command from the params
-    # Rejoin the rest of the parameters with spaces
-    db_message = ' '.join(params) # The message we send to the Database
-    channel_message = ' '.join(params) # The message that gets sent
-
-    # Grab just the BigInt part of bot_role
-    if editable_command in ['botrole']:
-        if not full_msg.role_mentions or len(full_msg.role_mentions) > 1:
-            raise Exception(bold("Edit") + " : Too few/many role mentions for botrole. Try again with only one role mentioned")
-        elif full_msg.role_mentions:
-            db_message = str(full_msg.role_mentions[0].id)
-            channel_message = full_msg.role_mentions[0].name
-        # Allow @everyone to be a botrole
-        elif not params:
-            db_message = str(full_msg.guild.default_role.id)
-            channel_message = full_msg.guild.default_role.name
-    elif editable_command in ['tos'] and (not full_msg.mentions and params):
-            raise Exception(bold("Edit") + ": Invalid user mention. Try @'ing somebody")
-    # Remove the bot pinging TOs on the confirmation message
-    elif editable_command in ['tos']:
-        mentions = pings_b_gone(full_msg.mentions)
-        db_message = ' '.join(mentions.values()) # Put mention values into the database
-        channel_message = ' '.join(mentions.keys()) # Send usernames back to the channel
-    # Check if the Sheets ID matches what Google specified
-    elif editable_command in ['seeding']:
-        reg = re_compile('[a-zA-Z0-9-_]+')
-        if not params:
-            pass
-        elif not reg.fullmatch(params[0]) or len(params[0]) > 80:
-            raise Exception(bold("Edit") + ": Invalid Sheets spreadsheet ID. Please view <https://github.com/lizardman301/Lizard-bot-rsf/blob/master/doc/seeding_with_sheets.md> for a walkthrough")
-    # Check if prefix is a singular character
-    elif editable_command in ['prefix-lizard'] and not len(db_message) == 1:
-        raise Exception(bold("Edit") + ": Lizard-BOT prefix must be a singular character.")
-    # Check if the status message contains {0}
-    elif editable_command in ['status'] and not db_message.count('{0}') > 0:
-        raise Exception(bold("Edit") + ": Status message must include {0} to substitute the round number")
-    # Check if bracket, pingtest, status, and stream are small enough to store and send into Discord channels
-    elif editable_command in ['bracket','pingtest','status','stream'] and len(db_message) > 1945:
-        raise Exception(bold("Edit") + ": Message is too long to be stored. Shorten your message to 1945 characters or less")
-
-    # Check for guild settings, channel settings, or multi channel settings
-    if editable_command in ['botrole', 'challonge','prefix-lizard']:
-        save_db('guild', editable_command, db_message, kwargs['guild']) # Save the new message to the proper setting in a given guild
-    elif command_channels:
-        # For each channel, save the setting
-        for chnl in command_channels: 
-            # We have to double check that the channel is in the DB
-            if settings_exist(kwargs['guild'], chnl):
-                save_db('channel', editable_command, db_message, chnl) # Save the new message to the proper setting in a given channel
-        return "All listed channels had the {0} updated to {1}".format(bold(editable_command), bold(channel_message))
-    else:
-        save_db('channel', editable_command, db_message, channel.id) # Save the new message to the proper setting in a given channel
-
-    return "The new {0} is: {1}".format(bold(editable_command), bold(channel_message)) # Print the new message for a given setting
-
 @register('enable')
 async def enable(command, msg, user, channel, *args, **kwargs):
-    params = msg.split(' ')
+    params = msg.lower().split(' ')
 
-    if len(msg.split(' ')) > 1:
+    if len(msg.split(' ')) > 2:
         raise Exception(bold("Enable") + ": Too many arguments. " + await help_lizard('','','',''))
 
-    to_enable = params[0].lower() # could be expanded to do more
+    to_enable = ' '.join(params[0:2]) # could be expanded to do more
 
     if not to_enable:
         # No command provided
@@ -546,18 +390,21 @@ async def enable(command, msg, user, channel, *args, **kwargs):
     try:
         function_name = kwargs['func_map'][to_enable].__name__
     except:
-         # Not a valid command in the first place
-         raise Exception(bold("Enable") + ": " + bold(to_enable) + " is not a command in Lizard-BOT and cannot be enabled")
+         # Check if command is in the disable list, if so return that name
+         # Used for commands that were disabled but changed in an update
+         disable_list = await read_disable(kwargs['guild'])
+         if to_enable in disable_list:
+             function_name = to_enable
+         else:
+            raise Exception(bold("Enable") + ": " + bold(to_enable) + " is not a command in Lizard-BOT and cannot be enabled")
 
     try:
-        current_list = set_enable(kwargs['guild'], function_name)
+        return "{0} has been enabled. Current disabled commands are: **{1}**".format(to_enable, ', '.join(await set_enable(kwargs['guild'], function_name)))
     except Exception as e:
         if str(e) == "Command is not disabled.":
             raise Exception(bold("Enable") + ": Cannot enable a command that is not disabled.")
         elif str(e) == "There is nothing disabled.":
             raise Exception(bold("Enable") + ": There is currently nothing disabled.")
-
-    return "{0} has been enabled. Current disabled commands are: **{1}**".format(to_enable, ', '.join(current_list))
 
 @register('refresh')
 async def refresh(command, msg, user, channel, *args, **kwargs):
@@ -598,14 +445,14 @@ async def remind(command, msg, user, channel, *args, **kwargs):
 
 @register('reset')
 async def reset(command, msg, user, channel, *args, **kwargs):
-    save_db('channel', 'round', '', channel.id)
+    await save_db('channel', 'round', '', channel.id)
     return "Round has been reset."
 
 @register('round')
 async def round_lizard(command, msg, user, channel, *args, **kwargs):
     if len(msg) > 50:
         raise Exception(bold("Round_Lizard") + ": Custom round number must be less then 50 characters")
-    save_db('channel', 'round', msg, channel.id)
+    await save_db('channel', 'round', msg, channel.id)
     try:
         return await status('status', msg, user, channel)
     except:

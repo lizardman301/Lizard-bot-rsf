@@ -1,3 +1,5 @@
+import tormysql
+
 from discord.utils import escape_markdown # Regexing fun simplified
 from pymysql import connect as pymysql_connect # Use for DB connections
 from pymysql.cursors import DictCursor as pymysql_DictCursor # Use for DB connections
@@ -12,6 +14,21 @@ from commands.sheets.sheets import sheets # Talk to Google Sheets API
 
 _callbacks = {} # Yaksha
 
+# DB connection pool for every individual connection to the DB
+pool = tormysql.ConnectionPool(
+    max_connections = 20, #max open connections
+    idle_seconds = 60, #conntion idle timeout time, 0 is not timeout
+    wait_connection_timeout = 3, #wait connection timeout
+    host = sql_host,
+    port = sql_port,
+    user = sql_user,
+    passwd = sql_pw,
+    db = sql_db,
+    cursorclass=tormysql.cursor.DictCursor,
+    autocommit=True,
+    charset = "utf8"
+)
+
 # Yaksha
 def register(command):
     '''
@@ -20,6 +37,7 @@ def register(command):
     '''
     def decorator(func):
         print('Registering %s with command %s' % (func.__name__, command))
+        #print('Qual name: %s | Module: %s' % (func.__qualname__, func.__module__))
         _callbacks[command] = (func.__qualname__, func.__module__)
         return func
     return decorator
@@ -50,7 +68,7 @@ def get_chal_tour_id(bracket_msg):
     if matches:
         url = matches.group(0)
     else:
-        return tour_id
+        raise Exception("No bracket link set")
 
     # get the identifer from the back part of the url
     # should only be one slash so we split on that
@@ -67,8 +85,7 @@ def get_random_chars(game):
     return rs_info.get(game, []).copy()[0:-1], games
 
 # Get all users in a Discord
-def get_users(msg):
-    users = msg.guild.members
+def get_users(users):
     userDict = {}
 
     # Get their distinct name and their nickname
@@ -151,9 +168,6 @@ def seeding(sheet_id, parts, url, seed_num):
 
     # Get dict of associated players and their points
     players_to_points = sheets(sheet_id)
-    
-    if isinstance(players_to_points, str):
-        return players_to_points
 
     # Check each participant and if they have points
     for p in parts:
@@ -195,113 +209,85 @@ def seeding(sheet_id, parts, url, seed_num):
     return finished_seeding
 
 # Create a connection to the database
-def make_conn():
-    try:
-        return pymysql_connect(host=sql_host, port=sql_port, user=sql_user, password=sql_pw, db=sql_db, charset='utf8mb4', autocommit=True, cursorclass=pymysql_DictCursor)
-    except:
-        raise Exception("Unable to connect to SQL server. Is it turned on? Did you point the bot to the right IP address?")
+#def make_conn():
+#    try:
+#        return pymysql_connect(host=sql_host, port=sql_port, user=sql_user, password=sql_pw, db=sql_db, charset='utf8mb4', autocommit=True, cursorclass=pymysql_DictCursor)
+#    except:
+#        raise Exception("Unable to connect to SQL server. Is it turned on? Did you point the bot to the right IP address?")
 
 # Check if the guild/channel is in the table
 # If not, add it the guilds, channels, and settings tables
-def settings_exist(guild_id, chan_id):
-    conn = make_conn() # Make DB connection
+async def settings_exist(guild_id, chan_id):
+    async with await pool.Connection() as conn:
+        try:
+            async with conn.cursor() as cursor:
+                for level in ['guild','channel']:
+                    ids = [] # Store a list of all ids
+                    id = guild_id if level == 'guild' else chan_id # Set variable id based on what level of setting
 
-    try:
-        with conn.cursor() as cursor:
-            for level in ['guild','channel']:
-                ids = [] # Store a list of all ids
-                id = guild_id if level == 'guild' else chan_id # Set variable id based on what level of setting
+                    # Select all IDs in the DB for the given level
+                    sql = "SELECT " + level + "_id FROM " + level + "s"
+                    await cursor.execute(sql)
+                    for row in cursor:
+                        ids.append(row[level + '_id']) # Add IDs to the list
 
-                # Select all IDs in the DB for the given level
-                sql = "SELECT " + level + "_id FROM " + level + "s"
-                cursor.execute(sql)
-                for row in cursor:
-                    ids.append(row[level + '_id']) # Add IDs to the list
+                    # If the ID is not in the list
+                    # Add the ID to the guild/channel table
+                    # Add the ID to the guild/channel_settings table (This will initialize the default values)
+                    if id not in ids:
+                        sql = "INSERT INTO " + level + "s (" + level + "_id) VALUES (%s)"
+                        await cursor.execute(sql, (id,))
 
-                # If the ID is not in the list
-                # Add the ID to the guild/channel table
-                # Add the ID to the guild/channel_settings table (This will initialize the default values)
-                if id not in ids:
-                    sql = "INSERT INTO " + level + "s (" + level + "_id) VALUES (%s)"
-                    cursor.execute(sql, (id,))
+                        sql = "INSERT INTO " + level + "_settings (" + level + "_id) VALUES (%s)"
+                        await cursor.execute(sql, (id,))
+        except:
+            return 0 # Falsy value to fail
 
-                    sql = "INSERT INTO " + level + "_settings (" + level + "_id) VALUES (%s)"
-                    cursor.execute(sql, (id,))
-    except Exception:
-        return 0 # Falsy value to fail
-    finally:
-        conn.close() # Close the connection
-
-    return 1 # Return truthy value for checking
+        return 1 # Return truthy value for checking
 
 # Read a setting from database for a given guild/channel
-def read_db(level, setting, id):
-    conn = make_conn() # Make DB Connection
-
-    try:
-        with conn.cursor() as cursor:
-            # Select the desired setting from the DB for the given guild/channel
-            sql = "SELECT `" + setting + "` FROM " + level + "_settings WHERE " + level + "_id = %s"
-            cursor.execute(sql, (id))
-            return cursor.fetchone()[setting] # Return the value for the setting
-    except:
-        raise Exception("Column likely doesn't exist. Did you set up/update the database tables?")
-    finally:
-        conn.close() # Close the connection
+async def read_db(level, setting, id):
+    async with await pool.Connection() as conn:
+        try:
+            async with conn.cursor() as cursor:
+                # Select the desired setting from the DB for the given guild/channel
+                sql = "SELECT `" + setting + "` FROM " + level + "_settings WHERE " + level + "_id = %s"
+                await cursor.execute(sql, (id))
+                return cursor.fetchone()[setting] # Return the value for the setting
+        except:
+            raise Exception("Column likely doesn't exist. Did you set up/update the database tables?")
 
 # Save a setting for a given guild/channel to the database
-def save_db(level, setting, data, id, **kwargs):
-    conn = make_conn() # Make DB Connection
-
-    try:
-        with conn.cursor() as cursor:
-            # Update the desired setting in the DB for the given guild/channel
-            if kwargs:
-                id = kwargs['commandChannel']
-            sql = "UPDATE " + level + "_settings SET `" + setting + "` = %s WHERE " + level + "_id = %s"
-            cursor.execute(sql, (data, id))
-    except:
-        raise Exception("Column likely doesn't exist. Did you set up/update the database tables?")
-    finally:
-        conn.close() # Close the connection
-
-# Increment a command usage in the database
-def stat_up(command):
-    conn = make_conn() # Make DB Connection
-
-    try:
-        with conn.cursor() as cursor:
-            # Check to see if the command already has been used
-            sql = "SELECT used FROM stats WHERE command = %s"
-            cursor.execute(sql, (command))
-            result = cursor.fetchone()
-
-            # Check the result for how many times a command was used
-            if result:
-                # Add another use for an existing command
-                sql = "UPDATE stats SET used = %s WHERE command = %s"
-                cursor.execute(sql, (result['used']+1,command))
-            else:
-                # Add a command into the database
-                sql = "INSERT INTO stats (command) VALUES (%s)"
-                cursor.execute(sql, (command))
-    finally:
-        conn.close() # Close the connection
+async def save_db(level, setting, data, id, **kwargs):
+    async with await pool.Connection() as conn:
+        try:
+            async with conn.cursor() as cursor:
+                # Update the desired setting in the DB for the given guild/channel
+                if kwargs:
+                    id = kwargs['commandChannel']
+                sql = "UPDATE " + level + "_settings SET `" + setting + "` = %s WHERE " + level + "_id = %s"
+                await cursor.execute(sql, (data, id))
+        except:
+            raise Exception("Column likely doesn't exist. Did you set up/update the database tables?")
 
 # Read a stat from database for a given command
-def read_stat(command, func_map):
-    conn = make_conn() # Make DB Connection
+async def read_stat(command, func_map):
     stats = {}
 
-    try:
-        with conn.cursor() as cursor:
+    async with await pool.Connection() as conn:
+        async with conn.cursor() as cursor:
             # Update the desired setting in the DB for the given guild/channel
             if command:
+                if 'challonge' in command or 'edit' in command:
+                    function = command.split('_')[0]
+                else:
+                    function = func_map[command].__name__
+
                 sql = "SELECT command, used FROM stats WHERE command = %s"
-                cursor.execute(sql, (func_map[command].__name__))
+                await cursor.execute(sql, (function))
             else:
                 sql = "SELECT command, used FROM stats"
-                cursor.execute(sql)
+                await cursor.execute(sql)
             for row in cursor:
                 row_command = row['command']
                 if row_command in ['ping']:
@@ -313,37 +299,55 @@ def read_stat(command, func_map):
                 elif row_command in ['stats']:
                     row['used'] += 1
                 stats.update({row_command.replace('_', '-'):row['used']})
-    finally:
-        conn.close() # Close the connection
+
     return stats
 
-def read_disable(server):
+# Increment a command usage in the database
+async def stat_up(command):
+    if 'challonge' in command or 'edit' in command:
+        command = command.split('_')[0]
+
+    async with await pool.Connection() as conn:
+        async with conn.cursor() as cursor:
+            # Check to see if the command already has been used
+            sql = "SELECT used FROM stats WHERE command = %s"
+            await cursor.execute(sql, (command))
+            result = cursor.fetchone()
+
+            # Check the result for how many times a command was used
+            if result:
+                # Add another use for an existing command
+                sql = "UPDATE stats SET used = %s WHERE command = %s"
+                await cursor.execute(sql, (result['used']+1,command))
+            else:
+                # Add a command into the database
+                sql = "INSERT INTO stats (command) VALUES (%s)"
+                await cursor.execute(sql, (command))
+
+async def read_disable(server):
     #Get setting from DB
     disabled_list = []
-    conn = make_conn() # Make DB Connection
 
-    try:
-        with conn.cursor() as cursor:
+    async with await pool.Connection() as conn:
+        async with conn.cursor() as cursor:
             # Select the disabled list for the server from the table
             # Return as a python list
             sql = "SELECT `disabled_list` FROM guild_settings WHERE guild_id = %s"
-            cursor.execute(sql, (server))
+            await cursor.execute(sql, (server))
             disabled_list=json_loads(cursor.fetchone()['disabled_list']) # Return the value for the setting
-    finally:
-        conn.close() # Close the connection
 
     return disabled_list
 
-def set_disable(server, command):
+async def set_disable(server, command):
     # List of commands you cannot disable
     dont_disable =["disable","edit","enable","prefix"]
 
-    if command in dont_disable:
+    if command.split('_')[0] in dont_disable:
         # Command is one that is not allowed to be disabled
         raise Exception("Cannot disable important command.")
 
     # Get current disable list first
-    disabled_list = read_disable(server)
+    disabled_list = await read_disable(server)
 
     if command in disabled_list:
         # Already disabled, return error
@@ -355,24 +359,22 @@ def set_disable(server, command):
     disabled_list = sorted(disabled_list)
 
     # Set new list in db
-    conn = make_conn() # Make DB Connection
 
-    try:
-        with conn.cursor() as cursor:
-            # Update the table with the new disabled list as a json dump
-            sql = "UPDATE guild_settings SET disabled_list = %s WHERE guild_id = %s"
-            cursor.execute(sql, (json_dumps(disabled_list),server))
-    except:
-        # Something went completely wrong here if a new row wasn't created in disabled_list
-        raise Exception("Could not save list to table")
-    finally:
-        conn.close() # Close the connection
+    async with await pool.Connection() as conn:
+        try:
+            async with conn.cursor() as cursor:
+                # Update the table with the new disabled list as a json dump
+                sql = "UPDATE guild_settings SET disabled_list = %s WHERE guild_id = %s"
+                await cursor.execute(sql, (json_dumps(disabled_list),server))
+        except:
+            # Something went completely wrong here if a new row wasn't created in disabled_list
+            raise Exception("Could not save list to table")
 
     return disabled_list #in case you need it.
 
-def set_enable(server, command):
+async def set_enable(server, command):
     # Get current disable list first
-    disabled_list = read_disable(server)
+    disabled_list = await read_disable(server)
     if not disabled_list:
         # List is empty
         raise Exception("There is nothing disabled.")
@@ -382,19 +384,16 @@ def set_enable(server, command):
 
     # Remove command
     disabled_list.remove(command)
-    # Set new list in db
-    conn = make_conn() # Make DB Connection
 
-    try:
-        with conn.cursor() as cursor:
-            # Update the table with the new disabled list as a json dump
-            sql = "UPDATE guild_settings SET disabled_list = %s WHERE guild_id = %s"
-            cursor.execute(sql, (json_dumps(disabled_list),server))
-    except:
-        # Something went completely wrong here if a new row wasn't created in disabled_list
-        raise Exception("Could not save list to table")
-    finally:
-        conn.close() # Close the connection
+    # Set new list in db
+    async with await pool.Connection() as conn:
+        try:
+            async with conn.cursor() as cursor:
+                # Update the table with the new disabled list as a json dump
+                sql = "UPDATE guild_settings SET disabled_list = %s WHERE guild_id = %s"
+                await cursor.execute(sql, (json_dumps(disabled_list),server))
+        except:
+            # Something went completely wrong here if a new row wasn't created in disabled_list
+            raise Exception("Could not save list to table")
 
     return disabled_list #in case you need it.
-
