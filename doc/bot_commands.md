@@ -80,7 +80,7 @@ Conducts a card draw with the message sender and the user mentioned. Game will d
 First the other user must accept the draw. The player that goes first is randomly chosen by the bot.
 Then 7 random characters are drawn, 2 are banned and 4 are picked.  Everything is controlled by reactions with the order given by the bot.
 
-## `!edit [channel(s)] <setting> <value>`
+## `!edit <setting> [channel(s)] <value>`
 ![!edit example](/doc/assets/images/edit_example1.png)
 
 Restricted: Yes
