@@ -145,13 +145,13 @@ async def draw(command, msg, user, channel, *args, **kwargs):
                         reaction_read_emoji = None
                         card_embed.set_footer(text="{0}, that character is already banned, please choose another.".format(player.display_name))
                         await game_msg.edit(embed = card_embed)
-                except TimeoutError:
-                    # Took too much time, deletes message
-                    await game_msg.delete()
-                    raise Exception(bold("Draw") + ": {0} failed to ban a character.".format(player.display_name))
-                except:
-                    # As of right now, if something else goes wrong its because a reaction its not expecting was sent, go to the next loop
-                    continue
+                except Exception as ex:
+                    if type(ex).__name__ == "TimeoutError":
+                        await game_msg.delete()
+                        raise Exception(bold("Draw") + ": {0} failed to ban a character.".format(player.display_name))
+                    else:
+                        # As of right now, if something else goes wrong its because a reaction its not expecting was sent, go to the next loop
+                        continue
             # mark character as banned
             picks[number] = -1
             # Strikethrough char on embed
@@ -182,13 +182,13 @@ async def draw(command, msg, user, channel, *args, **kwargs):
                         reaction_read_emoji = None
                         card_embed.set_footer(text="{0}, that character is already chosen, please choose another.".format(player.display_name))
                         await game_msg.edit(embed = card_embed)
-                except TimeoutError:
-                    # Took too much time, deletes message
-                    await game_msg.delete()
-                    raise Exception(bold("Draw") + ": {0} failed to choose a character.".format(player.display_name))
-                except:
-                    # As of right now, if something else goes wrong its because a reaction its not expecting was sent, go to the next loop
-                    continue
+                except Exception as ex:
+                    if type(ex).__name__ == "TimeoutError":
+                        await game_msg.delete()
+                        raise Exception(bold("Draw") + ": {0} failed to choose a character.".format(player.display_name))
+                    else:
+                        # As of right now, if something else goes wrong its because a reaction its not expecting was sent, go to the next loop
+                        continue
             # mark character as picked
             picks[number] = 1
             # edit embed to bold character
