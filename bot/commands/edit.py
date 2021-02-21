@@ -1,13 +1,6 @@
-from asyncio import sleep as asyncio_sleep
-from discord import Embed, Colour
-from discord.utils import escape_markdown # Regexing fun simplified
-from pprint import pformat
-from random import random as random_random, choice as random_choice
 from re import compile as re_compile
-from requests import get as requests_get
 
 # Local imports
-from secret import api_key
 from commands.commands import (help_lizard)
 from commands.utilities import (register, bold, is_channel, pings_b_gone, save_db, settings_exist)
 

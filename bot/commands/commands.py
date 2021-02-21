@@ -1,13 +1,9 @@
 from asyncio import sleep as asyncio_sleep
 from discord import Embed, Colour
-from discord.utils import escape_markdown # Regexing fun simplified
-from pprint import pformat
 from random import random as random_random, choice as random_choice
 from re import compile as re_compile
-from requests import get as requests_get
 
 # Local imports
-from secret import api_key
 from commands.utilities import (register, bold, get_random_chars, read_db, read_disable, read_stat, save_db, set_disable, set_enable)
 
 # All @register decorators are a product of reviewing Yaksha
@@ -295,7 +291,6 @@ async def stats(command, msg, user, channel, *args, **kwargs):
     if len(msg.split(' ')) > 1:
         raise Exception(bold("Stats") + ": Too many arguments. " + await help_lizard('','','',''))
     elif cmd and cmd not in ['challonge', 'edit'] and cmd not in func_map:
-        print(cmd)
         raise Exception(bold("Stats") + ": Invalid Subcommand. " + await help_lizard('','','',''))
     stats = await read_stat(cmd,func_map)
 
