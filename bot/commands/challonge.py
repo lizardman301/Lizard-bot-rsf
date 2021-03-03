@@ -61,7 +61,7 @@ async def challonge_report(command, msg, user, channel, *args, **kwargs):
         if '200' in str(match_get.status_code) and match_get.json():
             for part in parts:
                 if part['participant']['checked_in']:
-                    match_parts.update({part['participant']['display_name']:part['participant']['id']})
+                    match_parts.update({part['participant']['display_name'].lower():part['participant']['id']})
 
             for match in match_get.json():
                 m = match['match']
@@ -72,11 +72,11 @@ async def challonge_report(command, msg, user, channel, *args, **kwargs):
         params = msg.split(' ')
         winner_name = ' '.join(params[1:])
 
-        if winner_name not in match_parts:
+        if winner_name.lower() not in match_parts:
             raise Exception(bold("Challonge_Report") + ": {0} is not in the tournament".format(bold(winner_name)))
 
         for match in matches:
-            if not (match['player1_id'] == match_parts[winner_name] or match['player2_id'] == match_parts[winner_name]):
+            if not (match['player1_id'] == match_parts[winner_name.lower()] or match['player2_id'] == match_parts[winner_name.lower()]):
                 if match == matches[-1]:
                     raise Exception(bold("Challonge_Report") + ": User: {0} does not have an open match to report".format(winner_name))
                 continue
@@ -87,12 +87,12 @@ async def challonge_report(command, msg, user, channel, *args, **kwargs):
                 raise Exception(bold("Challonge_Report") + ": {0} is not a valid score. Example score: 2-0".format(bold(params[0])))
 
             try:
-                if (match['player1_id'] == match_parts[winner_name] and int(scores[1]) > int(scores[0])) or (match['player2_id'] == match_parts[winner_name] and int(scores[0]) > int(scores[1])):
+                if (match['player1_id'] == match_parts[winner_name.lower()] and int(scores[1]) > int(scores[0])) or (match['player2_id'] == match_parts[winner_name.lower()] and int(scores[0]) > int(scores[1])):
                     scores.reverse()
             except:
                 raise Exception(bold("Challonge_Report") + ": {0} is not a valid score. Example score: 2-0".format(bold(params[0])))
 
-            match_put = requests_put(base_url + tour_url + "/matches/" + str(match['id']) +".json", params={'api_key':api_key, 'match[winner_id]':match_parts[winner_name], 'match[scores_csv]':'-'.join(scores)})
+            match_put = requests_put(base_url + tour_url + "/matches/" + str(match['id']) +".json", params={'api_key':api_key, 'match[winner_id]':match_parts[winner_name.lower()], 'match[scores_csv]':'-'.join(scores)})
             if '200' in str(match_put.status_code):
                 return "Lizard-BOT reported {0} won {1}!".format(bold(winner_name), bold('-'.join(scores)))
             elif '401' in str(match_put.status_code):
