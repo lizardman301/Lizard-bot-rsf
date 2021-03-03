@@ -1,6 +1,6 @@
 from discord.utils import escape_markdown # Regexing fun simplified
 from pprint import pformat
-from requests import get as requests_get
+from requests import get as requests_get, put as requests_put
 
 # Local imports
 from secret import api_key
@@ -46,6 +46,60 @@ async def challonge_checkin(command, msg, user, channel, *args, **kwargs):
 
         # Message showing who is not checked in and who is not in the Discord
         return"**NOT CHECKED IN:** {0}\n**NOT IN DISCORD:** {1}\n".format(', '.join(not_checked_in_parts), ', '.join(not_discord_parts)) + await not_in_discord(0,0,0,0)
+
+@register('challonge report')
+@register('chal report')
+async def challonge_report(command, msg, user, channel, *args, **kwargs):
+    match_parts = {}
+    matches = []
+
+    async with channel.typing():
+        parts, tour_url = await start_challonge(command, msg, channel, kwargs['guild'])
+        match_get = requests_get(base_url + tour_url + "/matches.json", params={'api_key':api_key, 'state':'open'})
+        
+
+        if '200' in str(match_get.status_code) and match_get.json():
+            for part in parts:
+                if part['participant']['checked_in']:
+                    match_parts.update({part['participant']['display_name']:part['participant']['id']})
+
+            for match in match_get.json():
+                m = match['match']
+                matches.append(m)
+        else:
+            raise Exception(bold("Challonge_Report") + ": Error fetching matches for <{0}>. Is the tournament started?".format(tour_url))
+
+        params = msg.split(' ')
+        winner_name = ' '.join(params[1:])
+
+        if winner_name not in match_parts:
+            raise Exception(bold("Challonge_Report") + ": {0} is not in the tournament".format(bold(winner_name)))
+
+        for match in matches:
+            if not (match['player1_id'] == match_parts[winner_name] or match['player2_id'] == match_parts[winner_name]):
+                if match == matches[-1]:
+                    raise Exception(bold("Challonge_Report") + ": User: {0} does not have an open match to report".format(winner_name))
+                continue
+
+            scores = params[0].split('-')
+
+            if not len(scores) == 2:
+                raise Exception(bold("Challonge_Report") + ": {0} is not a valid score. Example score: 2-0".format(bold(params[0])))
+
+            try:
+                if (match['player1_id'] == match_parts[winner_name] and int(scores[1]) > int(scores[0])) or (match['player2_id'] == match_parts[winner_name] and int(scores[0]) > int(scores[1])):
+                    scores.reverse()
+            except:
+                raise Exception(bold("Challonge_Report") + ": {0} is not a valid score. Example score: 2-0".format(bold(params[0])))
+
+            match_put = requests_put(base_url + tour_url + "/matches/" + str(match['id']) +".json", params={'api_key':api_key, 'match[winner_id]':match_parts[winner_name], 'match[scores_csv]':'-'.join(scores)})
+            if '200' in str(match_put.status_code):
+                return "Lizard-BOT reported {0} won {1}!".format(bold(winner_name), bold('-'.join(scores)))
+            elif '401' in str(match_put.status_code):
+                raise Exception(bold("Challonge_Report") + ": Lizard-BOT does not have access to that tournament")
+            else:
+                print(match_put.text)
+                raise Exception(bold("Challonge_Report") + "Unknown Challonge error for <" + tour_url + ">")
 
 @register('challonge seeding')
 @register('challonge seed')
