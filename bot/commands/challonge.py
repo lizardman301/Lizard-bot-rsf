@@ -53,16 +53,23 @@ async def challonge_report(command, msg, user, channel, *args, **kwargs):
     match_parts = {} # Stores active participants
     matches = [] # Stores all the match elements at their root [match_obj, etc] instead of {'match': match_obj, etc}
 
+    params = msg.split(' ') # grab the info from the user
+    winner_name = ' '.join(params[1:]) # First parameter should be the score. Everything else is the match winner's name
+    
+    # if not enough arguments, we end early
+    if len(params) < 2:
+        raise Exception(bold("Challonge_Report") + ": Not enough arguments. Please provide a score and a winner.")
+
     async with channel.typing():
         parts, tour_url = await start_challonge(command, msg, channel, kwargs['guild']) # Get all the participants and the tournament URL
         match_get = requests_get(base_url + tour_url + "/matches.json", params={'api_key':api_key, 'state':'open'}) # Grab all the active matches for the tournament
 
         # If we get a good response and there are matches (aka the tournament has been started)
         if '200' in str(match_get.status_code) and match_get.json():
-            # Grab every checked in participant and get the useful information (display name and id number)
+            # Grab every participant and get the useful information (display name and id number)
+            # Originally grabbed every checked in participant but this caused issues with tournies who had no check in
             for part in parts:
-                if part['participant']['checked_in']:
-                    match_parts.update({part['participant']['display_name'].lower():part['participant']['id']})
+                match_parts.update({part['participant']['display_name'].lower():part['participant']['id']})
             # Adjust the root of the match information and put it in an array
             for match in match_get.json():
                 m = match['match']
@@ -70,9 +77,6 @@ async def challonge_report(command, msg, user, channel, *args, **kwargs):
         else:
             # Error out if there are no active matches or if we can't get a good call to Challonge
             raise Exception(bold("Challonge_Report") + ": Error fetching matches for <{0}>. Is the tournament started?".format(tour_url))
-
-        params = msg.split(' ') # grab the info from the user
-        winner_name = ' '.join(params[1:]) # First parameter should be the score. Everything else is the match winner's name
 
         # Check to make sure the given winner is in the bracket
         if winner_name.lower() not in match_parts:
