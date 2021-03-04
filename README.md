@@ -18,29 +18,22 @@ If you have a pro-community, use your custom subdomain e.g., **redditfighting** 
 
 If you are **not** a pro-community in Challonge, you will have to find and copy the jumble of symbols that is your community's subdomain. Go to your Challonge community page, and go to community settings. Look for the part that says *Subdomain PRO* and look for the box beneath it. This is your community subdomain.
 
-If the Challonge community tournament does not add the ["LizardBOT" Challonge account](https://challonge.com/users/LizardBOT) as a collaborator or a tournament hosted by a Challonge user, the checkin command **WILL** work but the seeding command will **NOT** work.
-This is because tournaments are read-only by default. Any attempts by Lizard-BOT to updating seeding numbers will fail since "LizardBOT" doesn't have permissions.
+If the Challonge community tournament does not add the ["LizardBOT" Challonge account](https://challonge.com/users/LizardBOT) as a collaborator or a tournament hosted by a Challonge user, the **checkin** command **WILL** work but the **seeding** and **report** command will **NOT** work.
+This is because tournaments are read-only by default. Any attempts by Lizard-BOT to updating seeding numbers or match results will fail since "LizardBOT" doesn't have permissions.
 
 ## TO Commands
 
 These commands will only be available to be used by those with the role mentioned above.
 
-`!challonge <subcommand> [bracket URL identifier] [OPTIONALS]`
-Uses Challonge's API to pull data into Discord
+`!challonge checkin`
+Uses Challonge's API to pull participant data and checks the given bracket for users that are not checked in and users whose Challonge names are not in the server
 
-Bracket URL identifier is what comes at the end of the URL
-For example
-	redditfighting.challonge.com/wwyi8jhk
-	Bracket URL identifier = wwyi8jhk
+There must be a valid Challonge link in your `!bracket` command
 
-If you have a valid challonge link in your `!bracket` command, Lizard-BOT does not need the bracket URL identifier and will grab the first challonge link that exists in `!bracket`
-##### Subcommands
-**Subcommands are still actively being implemented**
+`!challonge seeding [number of players to seed(Must be integer greater than or equal to 1)]`
+Uses Challonge's API to pull participant data and uses Google Sheets API to seed the tournament based on points in the spreadsheet and the number of players to seed
 
- * checkin [bracket url ID]
-	 * Checks the given bracket for users that are not checked in and users whose Challonge names are not in the server
- * seeding [bracket url ID] [number of players to seed(Must be integer greater than or equal to 1)]
-	 * Seeds the tournament based on points in the spreadsheet and the number of players to seed
+There must be a valid Challonge link in your `!bracket` command
 
 `!disable [command]`
 Using this with any command (besides !disable, !edit, and !enable) in Lizard-BOT to disable its use throughout the server.
@@ -117,6 +110,11 @@ Returns the role that allows access to the administrator commands.
 
 `!bracket`
 Shows the current bracket set in the channel.
+
+`!challonge report <score> <winning player's Challonge display name>`
+Uses Challonge's API to pull data for the open matches to update the winner and score of one open match
+
+There must be a valid Challonge link in your `!bracket` command
 
 `!coin-flip`
 A coin is flipped and the result is returned. Either heads or tails.
