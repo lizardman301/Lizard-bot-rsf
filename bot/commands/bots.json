@@ -44,7 +44,7 @@
 		"challonge report":[
 			"challonge report",
 			"chal report",
-			"Allows users to report their score for the tournament configured in !bracket"
+			"Allows users to report their score for the tournament configured in !bracket. Requires a score and the winner's username."
 		],
 		"coin-flip": [
 			"coin-flip",

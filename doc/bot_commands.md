@@ -23,30 +23,61 @@ Shortcuts: None
 
 Shows the current bracket set in the channel. Can include text also besides just bracket link.  If a Challonge link is in the text, the `!challonge` commands can automatically use the links.
 
-## `!challonge <subcommand> [bracket URL identifier] [OPTIONALS] `
-![!challonge example](/doc/assets/images/challonge.png)
+## `!challonge checkin`
+![!challonge checkin example](/doc/assets/images/challonge_checkin.png)
 
 Restricted: Yes
 
-Shortcuts: `!chal`
+Shortcuts: `!chal checkin`
 
-This is the main command to interface with Challonge via their API. 
-If a valid Challonge link in the `!bracket` command, no bracket URL identifier is needed. It will look for the first possible link in that command.
+There must be a valid Challonge link in your `!bracket` command
 
 If you are a community you must set a subdomain using `!edit challonge <subdomain>`.
 If you have a pro-community, use your custom subdomain e.g., redditfighting of redditfighting.challonge.com.
 If you are not a pro-community in Challonge, you will have to find and copy the jumble of symbols that is your community's subdomain. Go to your Challonge community page, and go to community settings. Look for the part that says Subdomain PRO and look for the box beneath it. This is your community subdomain.
 
-There are two possible subcommands.
-* `checkin [bracket url ID]`
-	 * Checks the given bracket for users that are not checked in and users whose Challonge names are not in the Discord server
-	 * Players will be found based on their Challonge nickname existing as a Discord nickname
-	 * Tells players to change their Discord nickname to match their Challonge nick for best usage
-* `seeding [bracket url ID] <number of players to seed(Must be integer greater than or equal to 1)>`
-	 * Seeds the tournament based on points in the spreadsheet and the number of players to seed
-	 * Read more about setting up seeding [here]((https://github.com/lizardman301/Lizard-bot-rsf/blob/master/doc/seeding_with_sheets.md)
-If the Challonge community tournament does not add the ["LizardBOT" Challonge account](https://challonge.com/users/LizardBOT) as a collaborator or a tournament hosted by a Challonge user, the checkin command **WILL** work but the seeding command will **NOT** work.
-This is because tournaments are read-only by default. Any attempts by Lizard-BOT to updating seeding numbers will fail since "LizardBOT" doesn't have permissions.
+ * Checks the given bracket for users that are not checked in and users whose Challonge names are not in the Discord server
+ * Players will be found based on their Challonge nickname existing as a Discord nickname
+ * Tells players to change their Discord nickname to match their Challonge nick for best usage
+
+## `!challonge report <score> <winning player's Challonge display name>`
+![!challonge report example](/doc/assets/images/challonge_report.png)
+
+Restricted: No
+
+Shortcuts: `!chal report`
+
+There must be a valid Challonge link in your `!bracket` command
+
+If you are a community you must set a subdomain using `!edit challonge <subdomain>`.
+If you have a pro-community, use your custom subdomain e.g., redditfighting of redditfighting.challonge.com.
+If you are not a pro-community in Challonge, you will have to find and copy the jumble of symbols that is your community's subdomain. Go to your Challonge community page, and go to community settings. Look for the part that says Subdomain PRO and look for the box beneath it. This is your community subdomain.
+
+* Uses Challonge's API to pull data for the open matches to update the winner and score of one open match
+
+If the Challonge community tournament does not add the ["LizardBOT" Challonge account](https://challonge.com/users/LizardBOT) as a collaborator or a tournament hosted by a Challonge user, this command will **NOT** work.
+This is because tournaments are read-only by default. Any attempts by Lizard-BOT to update match results will fail since "LizardBOT" doesn't have permission to make changes.
+
+## `!challonge seeding [number of players to seed(Must be integer greater than or equal to 1)]`
+![!challonge seeding example](/doc/assets/images/challonge_seeding.png)
+
+Restricted: Yes
+
+Shortcuts: `!challonge seed, !chal seeding, !chal seed`
+
+There must be a valid Challonge link in your `!bracket` command
+
+If you are a community you must set a subdomain using `!edit challonge <subdomain>`.
+If you have a pro-community, use your custom subdomain e.g., redditfighting of redditfighting.challonge.com.
+If you are not a pro-community in Challonge, you will have to find and copy the jumble of symbols that is your community's subdomain. Go to your Challonge community page, and go to community settings. Look for the part that says Subdomain PRO and look for the box beneath it. This is your community subdomain.
+
+If the number of players to seed is not specified, this will seed the whole bracket.
+
+ * Seeds the tournament based on points in the spreadsheet and the number of players to seed
+ * Read more about setting up seeding [here]((https://github.com/lizardman301/Lizard-bot-rsf/blob/master/doc/seeding_with_sheets.md)
+
+If the Challonge community tournament does not add the ["LizardBOT" Challonge account](https://challonge.com/users/LizardBOT) as a collaborator or a tournament hosted by a Challonge user, this command will **NOT** work.
+This is because tournaments are read-only by default. Any attempts by Lizard-BOT to update the seeding will fail since "LizardBOT" doesn't have permission to make changes.
 
 ## `!coin-flip`
 ![!coin-flip example](/doc/assets/images/coin-flip.png)

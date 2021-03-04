@@ -208,13 +208,6 @@ def seeding(sheet_id, parts, url, seed_num):
     # Return seeding list
     return finished_seeding
 
-# Create a connection to the database
-#def make_conn():
-#    try:
-#        return pymysql_connect(host=sql_host, port=sql_port, user=sql_user, password=sql_pw, db=sql_db, charset='utf8mb4', autocommit=True, cursorclass=pymysql_DictCursor)
-#    except:
-#        raise Exception("Unable to connect to SQL server. Is it turned on? Did you point the bot to the right IP address?")
-
 # Check if the guild/channel is in the table
 # If not, add it the guilds, channels, and settings tables
 async def settings_exist(guild_id, chan_id):
