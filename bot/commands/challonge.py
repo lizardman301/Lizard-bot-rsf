@@ -1,6 +1,8 @@
 from discord.utils import escape_markdown # Regexing fun simplified
 from pprint import pformat
-from requests import get as requests_get, put as requests_put
+from requests import get as requests_get, put as requests_put, post as requests_post
+from fuzzywuzzy import fuzz as fuzzywuzzy_fuzz, process as fuzzywuzzy_process
+from json import loads as json_loads
 
 # Local imports
 from secret import api_key
@@ -46,6 +48,41 @@ async def challonge_checkin(command, msg, user, channel, *args, **kwargs):
 
         # Message showing who is not checked in and who is not in the Discord
         return"**NOT CHECKED IN:** {0}\n**NOT IN DISCORD:** {1}\n".format(', '.join(not_checked_in_parts), ', '.join(not_discord_parts)) + await not_in_discord(0,0,0,0)
+
+@register('challonge here')
+@register('chal here')
+async def challonge_here(command, msg, user, channel, *args, **kwargs):
+    here_parts = {}
+    if msg:
+        raise Exception(bold("Challonge_Here") + ": Too many arguments. " + await help_lizard('','','',''))
+
+    async with channel.typing():
+        parts, tour_url = await start_challonge(command, msg, channel, kwargs['guild'])
+
+        for part in parts:
+            here_parts.update({part['participant']['id']:part['participant']['display_name']})
+
+        here_name, ratio, here_id = fuzzywuzzy_process.extractOne(user.display_name, here_parts, scorer=fuzzywuzzy_fuzz.ratio)
+
+        checkin_post = requests_post(base_url + tour_url + "/participants/" + str(here_id) +"/check_in.json", params={'api_key':api_key})
+
+        # Check to make sure we get a good response
+        if '200' in str(checkin_post.status_code):
+            # Good response. Return that the score was updated
+            return "Checked in: {0} with a ratio of {1}".format(bold(here_name), bold(str(ratio)))
+        elif '401' in str(checkin_post.status_code):
+            # Permission error
+            raise Exception(bold("Challonge_Here") + ": Lizard-BOT does not have access to the tournament")
+        elif '422' in str(checkin_post.status_code):
+            # Checkin period not running
+            raise Exception(bold("Challonge_Here") + ": The check-in window hasn't started or is over for the tournament")
+        else:
+            # Some other challonge error. Print it to console and error with appropriate message
+            print(checkin_post.text)
+            raise Exception(bold("Challonge_Here") + ": Unknown Challonge error for <" + tour_url + ">")
+
+        # Message showing who is not checked in and who is not in the Discord
+        return 
 
 @register('challonge report')
 @register('chal report')
@@ -118,11 +155,11 @@ async def challonge_report(command, msg, user, channel, *args, **kwargs):
                 return "Lizard-BOT reported {0} won {1}!".format(bold(winner_name), bold('-'.join(scores)))
             elif '401' in str(match_put.status_code):
                 # Permission error
-                raise Exception(bold("Challonge_Report") + ": Lizard-BOT does not have access to that tournament")
+                raise Exception(bold("Challonge_Report") + ": Lizard-BOT does not have access to the tournament")
             else:
                 # Some other challonge error. Print it to console and error with appropriate message
                 print(match_put.text)
-                raise Exception(bold("Challonge_Report") + "Unknown Challonge error for <" + tour_url + ">")
+                raise Exception(bold("Challonge_Report") + ": Unknown Challonge error for <" + tour_url + ">")
 
 @register('challonge seeding')
 @register('challonge seed')
