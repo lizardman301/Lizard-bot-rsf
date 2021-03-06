@@ -55,10 +55,9 @@ async def challonge_here(command, msg, user, channel, *args, **kwargs):
     here_parts = {}
 
     params = msg.split(' ') # grab the info from the user
-    
     # if not enough arguments, we end early
-    if len(params) < 1:
-        raise Exception(bold("Challonge_Report") + ": Not enough arguments. Please provide a score and a winner.")
+    if len(params) < 1 or msg == '':
+        raise Exception(bold("Challonge_Here") + ": Not enough arguments. Please provide a user to checkin.")
 
     async with channel.typing():
         parts, tour_url = await start_challonge(command, msg, channel, kwargs['guild'])
@@ -66,7 +65,14 @@ async def challonge_here(command, msg, user, channel, *args, **kwargs):
         for part in parts:
             here_parts.update({part['participant']['display_name'].lower():part['participant']['id']})
 
-        checkin_post = requests_post(base_url + tour_url + "/participants/" + str(here_parts[msg]) +"/check_in.json", params={'api_key':api_key})
+        # Check to make sure that participant exists in tourney
+        checkin_id = ""
+        try:
+            checkin_id = str(here_parts[msg])
+        except KeyError:
+            raise Exception(bold("Challonge_Here") + ": Lizard-BOT cannot find **{0}** in the tournament.".format(msg))
+            
+        checkin_post = requests_post(base_url + tour_url + "/participants/" + checkin_id +"/check_in.json", params={'api_key':api_key})
 
         # Check to make sure we get a good response
         if '200' in str(checkin_post.status_code):

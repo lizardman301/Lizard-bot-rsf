@@ -44,7 +44,7 @@
 		"challonge here":[
 			"challonge here",
 			"chal here",
-			"Allows a user to check into the tournament configured in !bracket"
+			"Allows a user to check into the tournament configured in !bracket. Requires challonge username."
 		],
 		"challonge report":[
 			"challonge report",
