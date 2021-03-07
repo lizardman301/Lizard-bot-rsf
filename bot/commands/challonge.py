@@ -52,26 +52,27 @@ async def challonge_checkin(command, msg, user, channel, *args, **kwargs):
 @register('challonge here')
 @register('chal here')
 async def challonge_here(command, msg, user, channel, *args, **kwargs):
-    here_parts = {}
+    here_parts = {} # Stores active participants
 
-    params = msg.split(' ') # grab the info from the user
     # if not enough arguments, we end early
-    if len(params) < 1 or msg == '':
+    if not msg:
         raise Exception(bold("Challonge_Here") + ": Not enough arguments. Please provide a user to checkin.")
 
     async with channel.typing():
-        parts, tour_url = await start_challonge(command, msg, channel, kwargs['guild'])
+        parts, tour_url = await start_challonge(command, msg, channel, kwargs['guild']) # Get all the participants and the tournament URL
 
         for part in parts:
+            # Grab every participant and get the useful information (display name and id number)
             here_parts.update({part['participant']['display_name'].lower():part['participant']['id']})
 
         # Check to make sure that participant exists in tourney
-        checkin_id = ""
         try:
-            checkin_id = str(here_parts[msg])
+            checkin_id = str(here_parts[msg.lower()])
         except KeyError:
-            raise Exception(bold("Challonge_Here") + ": Lizard-BOT cannot find **{0}** in the tournament.".format(msg))
-            
+            # Tell the messenger that the user is not in the tournament
+            raise Exception(bold("Challonge_Here") + ": Lizard-BOT cannot find {0} in the tournament.".format(bold(msg)))
+
+        # Send the check in request to Challonge
         checkin_post = requests_post(base_url + tour_url + "/participants/" + checkin_id +"/check_in.json", params={'api_key':api_key})
 
         # Check to make sure we get a good response
