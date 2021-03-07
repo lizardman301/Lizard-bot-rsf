@@ -40,6 +40,24 @@ If you are not a pro-community in Challonge, you will have to find and copy the 
  * Players will be found based on their Challonge nickname existing as a Discord nickname
  * Tells players to change their Discord nickname to match their Challonge nick for best usage
 
+## `!challonge here <player's Challonge display name>`
+![!challonge here example](/doc/assets/images/challonge_here.png)
+
+Restricted: No
+
+Shortcuts: `!chal here`
+
+There must be a valid Challonge link in your `!bracket` command
+
+If you are a community you must set a subdomain using `!edit challonge <subdomain>`.
+If you have a pro-community, use your custom subdomain e.g., redditfighting of redditfighting.challonge.com.
+If you are not a pro-community in Challonge, you will have to find and copy the jumble of symbols that is your community's subdomain. Go to your Challonge community page, and go to community settings. Look for the part that says Subdomain PRO and look for the box beneath it. This is your community subdomain.
+
+* Uses Challonge's API to checkin the user provided.
+
+If the Challonge community tournament does not add the ["LizardBOT" Challonge account](https://challonge.com/users/LizardBOT) as a collaborator or a tournament hosted by a Challonge user, this command will **NOT** work.
+This is because tournaments are read-only by default. Any attempts by Lizard-BOT to check in a player will fail since "LizardBOT" doesn't have permission to make changes.
+
 ## `!challonge report <score> <winning player's Challonge display name>`
 ![!challonge report example](/doc/assets/images/challonge_report.png)
 

@@ -111,6 +111,9 @@ Returns the role that allows access to the administrator commands.
 `!bracket`
 Shows the current bracket set in the channel.
 
+`!challonge here <player's Challonge display name>`
+Uses Challonge's API to checkin the user provided.
+
 `!challonge report <score> <winning player's Challonge display name>`
 Uses Challonge's API to pull data for the open matches to update the winner and score of one open match
 

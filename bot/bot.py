@@ -136,13 +136,12 @@ async def on_message(message):
                     await message.channel.send(response)
                 break
     except Exception:
+        string_info = str(sys_exc_info()[1])
+        function_name = string_info.split(':')[0]
+
         # Expected error
         # Return friendly user message
         # Don't print error to console
-        
-        string_info = str(sys_exc_info()[1])
-        function_name = string_info.split(':')[0]
-        
         if client.interface._func_mapping[command].__name__ in function_name.strip("*").lower() or ('challonge' in client.interface._func_mapping[command].__name__ and 'challonge' in function_name.strip("*").lower()) or ('edit' in client.interface._func_mapping[command].__name__ and 'edit' in function_name.strip("*").lower()):
             await message.channel.send(function_name.replace('_', '-') + ': ' + ':'.join(string_info.split(':')[1:]))
         else:

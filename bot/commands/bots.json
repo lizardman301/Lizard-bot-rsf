@@ -41,10 +41,15 @@
 			"Returns the role that allows access to the administrator commands"
 		],
 		"bracket": ["bracket", "Shows the current bracket set in the channel"],
+		"challonge here":[
+			"challonge here",
+			"chal here",
+			"Allows a user to check into the tournament configured in !bracket. Requires Challonge display name."
+		],
 		"challonge report":[
 			"challonge report",
 			"chal report",
-			"Allows users to report their score for the tournament configured in !bracket. Requires a score and the winner's username."
+			"Allows users to report their score for the tournament configured in !bracket. Requires a score and the winner's Challonge display name."
 		],
 		"coin-flip": [
 			"coin-flip",
