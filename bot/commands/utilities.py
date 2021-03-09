@@ -16,9 +16,9 @@ _callbacks = {} # Yaksha
 
 # DB connection pool for every individual connection to the DB
 pool = tormysql.ConnectionPool(
-    max_connections = 20, #max open connections
-    idle_seconds = 60, #conntion idle timeout time, 0 is not timeout
-    wait_connection_timeout = 3, #wait connection timeout
+    max_connections = 30, #max open connections
+    idle_seconds = 60, #connection idle timeout time, 0 is not timeout
+    wait_connection_timeout = 10, #wait connection timeout
     host = sql_host,
     port = sql_port,
     user = sql_user,
