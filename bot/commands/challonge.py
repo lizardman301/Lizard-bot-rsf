@@ -2,7 +2,7 @@ from discord.utils import escape_markdown # Regexing fun simplified
 from pprint import pformat
 from requests import get as requests_get, put as requests_put, post as requests_post
 from fuzzywuzzy import fuzz as fuzzywuzzy_fuzz, process as fuzzywuzzy_process
-from json import loads as json_loads, dumps as json_dumps
+from json import loads as json_loads
 
 # Local imports
 from secret import api_key, chal_user
