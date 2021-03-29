@@ -35,8 +35,9 @@ sql_port = 3306 # DB Server port. Default is 3306
 sql_user = "root" # SQL user. root or admin work.
 sql_pw = "" # SQL user's password
 sql_db = "lizardbot" # DB to access. `lizardbot` is the DB 'create_db.sql' script creates
-token="your-discord-token-here" # Discord Bot token
-api_key="your-challonge-key-here" # Challonge api key
+token = "your-discord-token-here" # Discord Bot token
+api_key = "your-challonge-key-here" # Challonge api key
+chal_user = "your-challonge-username-here" # Challonge username
 ```
 Create a file named secret.py and place it in the the /bot folder with the following info changed to match your specific needs.  You can grab your Discord token from your bot application [here](https://discord.com/developers/applications) and your Challonge key [here](https://challonge.com/settings/developer).
 For more info on setting up API integration with Challonge (or Google Sheets), please review [this](https://github.com/lizardman301/Lizard-bot-rsf/blob/master/doc/api_integration.md)

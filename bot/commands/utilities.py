@@ -9,7 +9,7 @@ from re import search as re_search, compile as re_compile # Process strings
 from requests import put as requests_put # HTTP functions
 
 # Local imports
-from secret import (sql_host,sql_port,sql_user,sql_pw,sql_db, api_key) # Store secret information
+from secret import (sql_host,sql_port,sql_user,sql_pw,sql_db, api_key, chal_user) # Store secret information
 from commands.sheets.sheets import sheets # Talk to Google Sheets API
 
 _callbacks = {} # Yaksha
@@ -196,7 +196,7 @@ def seeding(sheet_id, parts, url, seed_num):
             # If Challonge user equals the username we have for seeding
             # Then, update seed number with their index location
             if p['challonge_username'] == finished_seeding[player].split(' ')[0]:
-                response = requests_put(url + "/participants/" + str(p['id']) + ".json", params={'api_key':api_key, 'participant[seed]':player})
+                response = requests_put(url + "/participants/" + str(p['id']) + ".json", headers={"User-Agent":"Lizard-BOT"}, auth=(chal_user, api_key), params={'participant[seed]':player})
                 if '200' in str(response.status_code):
                     continue
                 elif '401' in str(response.status_code):

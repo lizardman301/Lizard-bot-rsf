@@ -5,7 +5,7 @@ from fuzzywuzzy import fuzz as fuzzywuzzy_fuzz, process as fuzzywuzzy_process
 from json import loads as json_loads
 
 # Local imports
-from secret import api_key
+from secret import api_key, chal_user
 from commands.commands import (help_lizard, not_in_discord)
 from commands.utilities import (register, bold, get_chal_tour_id, get_users, checkin, seeding, read_db)
 
@@ -27,7 +27,7 @@ async def start_challonge(command, msg, channel, guild): # Base url to access Ch
         tour_url = subdomain + '-' + tour_url
 
     # Get the participants for the tournament
-    parts_get = requests_get(base_url + tour_url + "/participants.json", params={'api_key':api_key})
+    parts_get = requests_get(base_url + tour_url + "/participants.json", headers={"User-Agent":"Lizard-BOT"}, auth=(chal_user, api_key))
     if '200' in str(parts_get.status_code):
         return parts_get.json(), tour_url
     elif '404' in str(parts_get.status_code):
@@ -73,7 +73,7 @@ async def challonge_here(command, msg, user, channel, *args, **kwargs):
             raise Exception(bold("Challonge_Here") + ": Lizard-BOT cannot find {0} in the tournament.".format(bold(msg)))
 
         # Send the check in request to Challonge
-        checkin_post = requests_post(base_url + tour_url + "/participants/" + checkin_id +"/check_in.json", params={'api_key':api_key})
+        checkin_post = requests_post(base_url + tour_url + "/participants/" + checkin_id +"/check_in.json", headers={"User-Agent":"Lizard-BOT"}, auth=(chal_user, api_key))
 
         # Check to make sure we get a good response
         if '200' in str(checkin_post.status_code):
@@ -108,7 +108,7 @@ async def challonge_report(command, msg, user, channel, *args, **kwargs):
 
     async with channel.typing():
         parts, tour_url = await start_challonge(command, msg, channel, kwargs['guild']) # Get all the participants and the tournament URL
-        match_get = requests_get(base_url + tour_url + "/matches.json", params={'api_key':api_key, 'state':'open'}) # Grab all the active matches for the tournament
+        match_get = requests_get(base_url + tour_url + "/matches.json", headers={"User-Agent":"Lizard-BOT"}, auth=(chal_user, api_key), params={'state':'open'}) # Grab all the active matches for the tournament
 
         # If we get a good response and there are matches (aka the tournament has been started)
         if '200' in str(match_get.status_code) and match_get.json():
@@ -156,7 +156,7 @@ async def challonge_report(command, msg, user, channel, *args, **kwargs):
                 raise Exception(bold("Challonge_Report") + ": {0} is not a valid score. Example score: 2-0".format(bold(params[0])))
 
             # Time to send out the winner and the score
-            match_put = requests_put(base_url + tour_url + "/matches/" + str(match['id']) +".json", params={'api_key':api_key, 'match[winner_id]':match_parts[winner_name.lower()], 'match[scores_csv]':'-'.join(scores)})
+            match_put = requests_put(base_url + tour_url + "/matches/" + str(match['id']) +".json", headers={"User-Agent":"Lizard-BOT"}, auth=(chal_user, api_key), params={'match[winner_id]':match_parts[winner_name.lower()], 'match[scores_csv]':'-'.join(scores)})
 
             # Check to make sure we get a good response
             if '200' in str(match_put.status_code):
