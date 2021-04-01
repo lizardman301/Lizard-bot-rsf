@@ -4,7 +4,7 @@ from random import random as random_random, choice as random_choice
 from re import compile as re_compile
 
 # Local imports
-from commands.utilities import (register, bold, get_random_chars, read_db, read_disable, read_stat, save_db, set_disable, set_enable)
+from commands.utilities import (register, bold, get_randomselect_data, read_db, read_disable, read_stat, save_db, set_disable, set_enable)
 
 # All @register decorators are a product of reviewing Yaksha
 # See utilities.register for more information
@@ -55,7 +55,7 @@ async def draw(command, msg, user, channel, *args, **kwargs):
         # No game to be found so default to sfv
         game = 'sfv'
 
-    chars, games = get_random_chars(game)
+    chars, games = get_randomselect_data(game)
     if not chars:
         raise Exception(bold("Draw") + ": Invalid game: {0}. Valid games are: {1}".format(bold(game), bold(', '.join(games))))
 
@@ -262,27 +262,36 @@ async def prefix(command, msg, user, channel, *args, **kwargs):
 @register('randomselect')
 @register('random')
 @register('rs')
-@register('stageselect')
 async def randomselect(command, msg, user, channel, *args, **kwargs):
-    if (command == 'stageselect' and msg) or len(msg.split(' ')) > 1:
+    if len(msg.split(' ')) > 2:
         raise Exception(bold("RandomSelect") + ": Too many arguments. " + await help_lizard('','','',''))
     # Start with randomselect basis to get characters
-    # If using stageselect, make it t7stages
-    if command == 'stageselect':
-            game = 't7stages'
-    else:
-        if msg.split(' ')[0].lower() != '':
-            game = msg.split(' ')[0].lower()
-        else:
+    random_type = ''
+    game = msg.split(' ')[-1].lower()
+
+    if msg.split(' ')[0].lower() != '':
+        random_type = msg.split(' ')[0].lower()
+    if random_type == "char" or (random_type == game and random_type != 'stage'):
+        random_type = "character"
+
+    if random_type == "character":
+        if game in ["character", "char"]:
+            # No game to be found so default to sfv
+            game = 'sfv'
+        elif msg.split(' ')[-1].lower() != '':
+            game = msg.split(' ')[-1].lower()
+        elif msg.split(' ')[-1].lower() == '':
             # No game to be found so default to sfv
             game = 'sfv'
 
-    chars, games = get_random_chars(game)
-    if not chars:
+    data, games = get_randomselect_data(game, random_type=random_type)
+
+    if not data:
         raise Exception(bold("RandomSelect") + ": Invalid game: {0}. Valid games are: {1}".format(bold(game), bold(', '.join(games))))
-    if game == "t7stages":
-            return "{0} Your randomly selected stage is: {1}".format(user.mention, bold(random_choice(chars)))
-    return "{0} Your randomly selected character is: {1}".format(user.mention, bold(random_choice(chars)))
+
+    if random_type == "stage":
+            return "{0} Your randomly selected stage is: {1}".format(user.mention, bold(random_choice(data)))
+    return "{0} Your randomly selected character is: {1}".format(user.mention, bold(random_choice(data)))
 
 @register('stats')
 async def stats(command, msg, user, channel, *args, **kwargs):
