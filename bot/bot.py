@@ -1,22 +1,22 @@
-#import asyncio
-import discord
+import discord # Discord bot needs discord library
 
-from asyncio import sleep as asyncio_sleep
-from json import loads as json_loads
-from os import path as os_path
-from random import choice as random_choice
-from traceback import print_exc as traceback_print_exc
-from sys import exc_info as sys_exc_info
+from asyncio import sleep as asyncio_sleep # For sleeping specific threads
+from json import loads as json_loads # For bringing in config file
+from os import path as os_path # For bringing in config file
+from random import choice as random_choice # For randomizing arrays
+from traceback import print_exc as traceback_print_exc # For printing error messages
+from sys import exc_info as sys_exc_info # For grabbing error information
 
 # Local imports
-from commands.utilities import (read_db, settings_exist)
-import interface
-from secret import token
+from commands.utilities import (read_db, settings_exist) # Add some utility commands to help get guild info
+import interface # The selector between bot.py and commands
+from secret import token # Discord token
 
 # New intents feature (needed to count members)
 intents = discord.Intents.default()
 intents.members = True
 
+# Create the Discord client
 client = discord.Client(intents=intents)
 
 # Once bot is fully logged in, print the guilds it is in
@@ -40,11 +40,14 @@ async def change_status():
         total = len(client.guilds)
         status = "lizard-bot.com | In {} servers!"
 
+        # If only one server, change message to be gramatically correct
         if total == 1:
             status = status[:-2] + "!"
 
+        # Sets the game message used to change the status
         game = discord.Game(name=status.format(total))
 
+        # Try to change the status
         try:
             await client.change_presence(activity=game)
         except discord.HTTPException:
@@ -57,7 +60,7 @@ async def change_status():
 # When message is typed in any channel the bot has access to, check to see if the bot needs to respond
 @client.event
 async def on_message(message):
-    command = 'bracket'
+    command = 'bracket' # Pre-setting the variable for use in the try/except block below (L78)
     # If the bot is the user, do not respond
     if message.author == client.user:
         return
@@ -80,7 +83,6 @@ async def on_message(message):
 
         # Get prefix for the guild
         prefix = await read_db('guild', 'prefix-lizard', message.guild.id)
-        # get list of disabled commands
 
         # Check if the attempted_cmd is !prefix-lizard and has too many args
         if (message.content.split(' ')[0] == "!prefix-lizard" or message.content.split(' ')[0] == "!prefliz") and len(message.content.split()) > 1:
@@ -100,6 +102,7 @@ async def on_message(message):
             await message.channel.send("Too many arguments. Check help-lizard for more info")
             return
 
+        # Rotate through commands to see if the message matches
         for command in client.commands:
             command = command.lower() # Lower the command for easier matching
             msg = message.content # The message
@@ -116,6 +119,7 @@ async def on_message(message):
                 # Remove the command from the start
                 msg = msg[len(command)+1:].strip()
 
+                # Check command to see if we need keyword args
                 if command in ['challonge checkin', 'chal checkin']:
                     kwargs['guild_members'] = message.guild.members
                 elif command in ['edit botrole', 'edit role']:
@@ -136,26 +140,26 @@ async def on_message(message):
                     await message.channel.send(response)
                 break
     except Exception:
-        string_info = str(sys_exc_info()[1])
-        function_name = string_info.split(':')[0]
+        string_info = str(sys_exc_info()[1]) # Error message
+        function_name = string_info.split(':')[0] # The command the error message came from
 
         # Expected error
         # Return friendly user message
-        # Don't print error to console
+        # Additional checks needed for challonge and edit commands that have multiple subcommands
         if client.interface._func_mapping[command].__name__ in function_name.strip("*").lower() or ('challonge' in client.interface._func_mapping[command].__name__ and 'challonge' in function_name.strip("*").lower()) or ('edit' in client.interface._func_mapping[command].__name__ and 'edit' in function_name.strip("*").lower()):
             await message.channel.send(function_name.replace('_', '-') + ': ' + ':'.join(string_info.split(':')[1:]))
         else:
             # Print error to console
             traceback_print_exc()
             # If we get this far and something breaks
-            # Something is very wrong
+            # Something is very wrong. Send user generic error message
             await message.channel.send("I is broken.\nBuff Rashid and submit an issue via <https://github.com/lizardman301/Lizard-bot-rsf/issues>\nOr just tell Lizardman301. That's what I do.")
 
 # Yaksha
 # Main thread the kicks off the initial setup and starts the bot
 def main():
-    client.commands, client.admin_commands, client.no_arg_cmds = [], [], []
-    client.help = {}
+    client.commands, client.admin_commands, client.no_arg_cmds = [], [], [] # Init
+    client.help = {} # Init
 
     # Pull in a separate config
     config = json_loads(open(os_path.join(os_path.dirname(__file__), 'commands/bots.json')).read())
@@ -181,6 +185,7 @@ def main():
             # Add the command and aliases as valid commands
             client.commands.append(alias)
 
+    # Admin commands
     commands = config.get('admin_commands', {}).copy().values()
 
     # For every admin command in commands loop over the child array

@@ -1,6 +1,6 @@
 # Local imports
-from commands import commands, challonge, edit
-from commands.utilities import (get_callbacks, read_db, stat_up, read_disable)
+from commands import commands, challonge, edit # Bring in all commands
+from commands.utilities import (get_callbacks, read_db, stat_up, read_disable) # Bring in some utilities to help the process
 
 # Yaksha
 class Interface():
@@ -60,19 +60,21 @@ class Interface():
         # Second check if the user is allowed to call this
         # function.
         if await self.user_has_permission(user, command, kwargs['guild']):
+            # Keyword args that could be deferred until now
             if self._func_mapping[command].__name__ == 'help_lizard':
                 kwargs['help'] = self.help
-            elif self._func_mapping[command].__name__ == 'edit':
-                kwargs['edit_subs'] = self.edit_subcommands.keys()
             elif self._func_mapping[command].__name__ in ['disable','enable','stats']:
                 kwargs['func_map'] = self._func_mapping
+
+            # Try to complete the command's function
             try:
                 result = await self._func_mapping[command](command, msg, user, channel, *args, **kwargs)
-                await stat_up(self._func_mapping[command].__name__)
+                await stat_up(self._func_mapping[command].__name__) # Increment command's stat after it is successful
                 return result
             except:
-                raise
+                raise # Re-raise same error
         else:
+            # No permission
             return "You do not have permissions to access the command: " + command
 
     async def user_has_permission(self, user, command, id):

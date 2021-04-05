@@ -1,19 +1,20 @@
 from discord.utils import escape_markdown # Regexing fun simplified
-from pprint import pformat
-from requests import get as requests_get, put as requests_put, post as requests_post
-from fuzzywuzzy import fuzz as fuzzywuzzy_fuzz, process as fuzzywuzzy_process
-from json import loads as json_loads
+from pprint import pformat # For formatting user list
+from requests import get as requests_get, put as requests_put, post as requests_post # For accessing endpoints
 
 # Local imports
-from secret import api_key, chal_user
-from commands.commands import (help_lizard, not_in_discord)
-from commands.utilities import (register, bold, get_chal_tour_id, get_users, checkin, seeding, read_db)
+from secret import api_key, chal_user # Challonge API key and username
+from commands.commands import (help_lizard, not_in_discord) # Needed for some user messages
+from commands.utilities import (register, bold, get_chal_tour_id, get_users, checkin, seeding, read_db) # Bring in some utilities to help the process
 
 # All @register decorators are a product of reviewing Yaksha
 # See utilities.register for more information
 
+# Challonge's base API endpoint
 base_url = "https://api.challonge.com/v1/tournaments/"
 
+# Initial processing for all Challonge commands
+# Grabs initial participants and tournament url
 async def start_challonge(command, msg, channel, guild): # Base url to access Challonge's API
     try:
         tour_url = get_chal_tour_id(await read_db('channel', 'bracket', channel.id)) # Grab tour_url from bracket command
@@ -28,22 +29,32 @@ async def start_challonge(command, msg, channel, guild): # Base url to access Ch
 
     # Get the participants for the tournament
     parts_get = requests_get(base_url + tour_url + "/participants.json", headers={"User-Agent":"Lizard-BOT"}, auth=(chal_user, api_key))
+
+    # Check the status codes
+    # Anything but a 200 is bad
     if '200' in str(parts_get.status_code):
         return parts_get.json(), tour_url
+    # 404 usually means a bad bracket link
     elif '404' in str(parts_get.status_code):
         raise Exception(bold("Challonge") + ": Lizard-BOT can not find tournament: " + tour_url)
+    # Challonge error
+    # Usually a 5xx error
     else:
-        print(parts_get.text)
+        print(parts_get.text) # Print raw text to console
         raise Exception(bold("Challonge") + ": Unknown Challonge error for " + tour_url)
 
 @register('challonge checkin')
 @register('chal checkin')
 async def challonge_checkin(command, msg, user, channel, *args, **kwargs):
+    # checkin takes no arguments
     if msg:
         raise Exception(bold("Challonge_Checkin") + ": Too many arguments. " + await help_lizard('','','',''))
 
+    # Do a fancy "Lizard-BOT is typing..." message as we query Challonge
     async with channel.typing():
+        # Grab the participants and tournament url
         parts, tour_url = await start_challonge(command, msg, channel, kwargs['guild'])
+        # Get the users that aren't checked in or in Discord
         not_checked_in_parts, not_discord_parts = checkin(parts, get_users(kwargs['guild_members']))
 
         # Message showing who is not checked in and who is not in the Discord
@@ -180,11 +191,12 @@ async def challonge_seeding(command, msg, user, channel, *args, **kwargs):
 
     async with channel.typing():
         parts, tour_url = await start_challonge(command, msg, channel, kwargs['guild'])
-        # If msg has 3 params left 3rd one must be seed number
-        # Else, seed whole bracket
+        # If there is no message, seed whole bracket msg
+        # Else, grab the first param
         try:
             if not msg:
                 seed_num = 0
+            # Error on negative number
             elif int(msg.split(' ')[-1]) <= 0:
                 raise
             else:
@@ -199,6 +211,7 @@ async def challonge_seeding(command, msg, user, channel, *args, **kwargs):
         if not sheet_id:
             raise Exception(bold("Challonge_Seeding") + ": There is no seeding sheet for this channel. Please view <https://github.com/lizardman301/Lizard-bot-rsf/blob/master/doc/seeding_with_sheets.md> for a walkthrough")
 
+        # Grab what the seeds were
         seeds = seeding(sheet_id, parts, base_url + '/' + tour_url, seed_num)
 
         # Seeding takes place in different method

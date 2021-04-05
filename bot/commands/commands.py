@@ -1,10 +1,10 @@
-from asyncio import sleep as asyncio_sleep
-from discord import Embed, Colour
-from random import random as random_random, choice as random_choice
-from re import compile as re_compile
+from asyncio import sleep as asyncio_sleep # For sleeping specific threads
+from discord import Embed, Colour # For setting up Embeds
+from random import choice as random_choice # For randomizing arrays
+from re import compile as re_compile # Regexing fun not simplified
 
 # Local imports
-from commands.utilities import (register, bold, get_randomselect_data, read_db, read_disable, read_stat, save_db, set_disable, set_enable)
+from commands.utilities import (register, bold, get_randomselect_data, read_db, read_disable, read_stat, save_db, set_disable, set_enable) # Bring in some utilities to help the process
 
 # All @register decorators are a product of reviewing Yaksha
 # See utilities.register for more information
@@ -17,17 +17,15 @@ async def botrole(command, msg, user, channel, *args, **kwargs):
 
 @register('bracket')
 async def bracket(command, msg, user, channel, *args, **kwargs):
+    # Custom message for setting a bracket
     return await read_db('channel', 'bracket', channel.id)
 
 @register('coin-flip')
 @register('flip')
 @register('cf')
 async def coin_flip(command, msg, user, channel, *args, **kwargs):
-    flip = "The coin landed on: {0}"
-    # Flip a coin
-    if int(round(random_random()*10*2)) % 2 == 0:
-        return flip.format(bold("Heads"))
-    return flip.format(bold("Tails"))
+    # Randomize the list for coin flip
+    return "The coin landed on: {0}".format(bold(random_choice(["Heads", "Tails"])))
 
 @register('draw')
 async def draw(command, msg, user, channel, *args, **kwargs):
@@ -209,25 +207,31 @@ async def draw(command, msg, user, channel, *args, **kwargs):
 @register('github')
 @register('lizardbot')
 async def github(command, msg, user, channel, *args, **kwargs):
+    # Static message for the Lizard-BOT Github
     return await help_lizard('', '', '', '')
 
 @register('help-lizard')
 @register('helpliz')
 async def help_lizard(command, msg, user, channel, *args, **kwargs):
+    # Message should only have two args at most
     if len(msg.split(' ')) > 2:
         raise Exception(bold("Help_Lizard") + ": Too many arguments. " + await help_lizard('','','',''))
-    help_commands = kwargs.get('help', False)
+    help_commands = kwargs.get('help', False) # Get all the commands for the help message
 
     split = msg.lower().split(' ')
     cmd = ' '.join(split[0:2]) if len(split) > 1 else split[0]
 
+    # Probably internal query from another command
     if not help_commands:
         return "For more information about the bot and its commands: <https://github.com/lizardman301/Lizard-bot-rsf>"
+    # No command specified
     elif not split[0]:
         return ('Allows you to get help on a command. '
                 '\nThe available commands are ```%s```' % ', '.join(list(help_commands.keys())))
+    # Return the help message
     elif cmd in help_commands.keys():
         return help_commands[cmd]
+    # Invalid argument
     else:
         raise Exception(bold("Help_Lizard") + ": Invalid command: " + bold(cmd) + ". Ensure you are using the full command name."
                 '\nThe available commands are ```%s```' % ', '.join(list(help_commands.keys())))
@@ -235,28 +239,33 @@ async def help_lizard(command, msg, user, channel, *args, **kwargs):
 @register('lizardbot-discord')
 @register('lizdiscord')
 async def lizdiscord(command, msg, user, channel, *args, **kwargs):
+    # Static message for the our help discord
     return "To reach out and ask questions about the bot, join https://discord.gg/94Pyh6KZTw"
 
 @register('not-in-discord')
 @register('nid')
 async def not_in_discord(command, msg, user, channel, *args, **kwargs):
+    # Static message for why a user would be reported as not in Discord for a Challonge tournament
     return bold("Your Discord nickname must match your challonge. If it does *NOT*, you will show as *NOT IN DISCORD*")
 
 @register('lizardman')
 @register('ping')
 @register('liz')
 async def ping(command, msg, user, channel, *args, **kwargs):
+    # Lizard-BOT's version of an !ping command
     print("Pinged by {0}".format(user))
     return "Fuck you, Lizardman"
 
 @register('pingtest')
 @register('pt')
 async def pingtest(command, msg, user, channel, *args, **kwargs):
+    # Custom message used to teach users how to do a ping test
     return await read_db('channel', 'pingtest', channel.id)
 
 @register('prefix-lizard')
 @register('prefliz')
 async def prefix(command, msg, user, channel, *args, **kwargs):
+    # Gets the prefix set for a guild
     return "The prefix is: {0}".format(await read_db('guild', 'prefix-lizard', kwargs['guild']))
 
 @register('randomselect')
@@ -331,6 +340,7 @@ async def status(command, msg, user, channel, *args, **kwargs):
 
 @register('stream')
 async def stream(command, msg, user, channel, *args, **kwargs):
+    # Custom message for a stream
     return await read_db('channel', 'stream', channel.id)
 
 @register('tos')
@@ -412,13 +422,16 @@ async def enable(command, msg, user, channel, *args, **kwargs):
 
 @register('refresh')
 async def refresh(command, msg, user, channel, *args, **kwargs):
+    # Static message to yell at users to refresh
     return bold("REFRESH YOUR BRACKETS\nREFRESH YOUR BRACKETS\nREFRESH YOUR BRACKETS\nREFRESH YOUR BRACKETS")
 
 @register('remind')
 async def remind(command, msg, user, channel, *args, **kwargs):
     params = msg.split(' ')
     try:
-        time = int(params[0]) #time is in minutes
+        time = int(params[0]) # time is in minutes
+
+        # Time must be positive
         if time < 1:
             raise
     except:
@@ -449,11 +462,13 @@ async def remind(command, msg, user, channel, *args, **kwargs):
 
 @register('reset')
 async def reset(command, msg, user, channel, *args, **kwargs):
+    # Reset the round command
     await save_db('channel', 'round', '', channel.id)
     return "Round has been reset."
 
 @register('round')
 async def round_lizard(command, msg, user, channel, *args, **kwargs):
+    # Message must be less than 50 characters
     if len(msg) > 50:
         raise Exception(bold("Round_Lizard") + ": Custom round number must be less then 50 characters")
     await save_db('channel', 'round', msg, channel.id)
