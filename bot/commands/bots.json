@@ -90,7 +90,6 @@
 			"randomselect",
 			"random",
 			"rs",
-			"stageselect",
 			"Returns a randomly selected character from the game in the arguments. Will return a SFV character if no game is given."
 		],
 		"stats": ["stats", "Returns the usage for Lizard-BOT commands"],
