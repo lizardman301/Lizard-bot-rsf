@@ -257,16 +257,15 @@ Shortcuts: `!prefliz`
 
 Prints the prefix currently in use for Lizard-BOT. Will always respond to the "!" prefix.
 
-## `!randomselect [game]`
+## `!randomselect [char/stage] [game]`
 ![!randomselect example](/doc/assets/images/randomselect.png)
 
 Restricted: No
 
-Shortcuts: `!random` `!rs` `!stageselect`
+Shortcuts: `!random` `!rs`
 
-Returns a randomly selected character from the game in the arguments. Will return a SFV character if no game is given.
+Returns a randomly selected character or stage from the game in the arguments. Will return a SFV character if no game is given.
 If a game that does not exist is provided as an argument, it will return the list of acceptable games.
-!stageselect is a shortcut to !randomselect t7stages
 
 ## `!refresh`
 ![!refresh example](/doc/assets/images/refresh.png)
