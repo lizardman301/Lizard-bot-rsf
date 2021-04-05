@@ -147,9 +147,10 @@ Explains how to run a ping test using <https://testmyspeed.onl/>. Can be edited 
 `!prefix-lizard`
 Prints the prefix currently in use for Lizard-BOT.
 
-`!randomselect [game]`
-Returns a randomly selected character from the current the specified game. Assumes SFV if no game is given.
-Current games are **3s, footsies, gbvs, mk11, samsho, sfv, t7, t7stages, uni, xrd, +r**
+`!randomselect [character/stage] [game]`
+Returns a randomly selected character or stage from the current the specified game. Assumes SFV if no game is given. Assumes character if character or stage is not specified.
+Current games are **3s, footsies, gbvs, mk11, samsho, sfv, t7, uni, xrd, +r**
+Current stages are **llb, t7**
 
 `!stats [command]`
 Returns the list of all commands and the amount of times they have been used across all servers.  Add a command in the argument to return the count for only that command.

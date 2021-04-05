@@ -76,13 +76,13 @@ def get_chal_tour_id(bracket_msg):
     tour_id = url.split("/", 1)[-1]
     return tour_id # return it
 
-def get_random_chars(game):
+def get_randomselect_data(game, random_type='character'):
     rs_info = json_loads(open(os_path.join(os_path.dirname(__file__), 'rs.json')).read())
-    games = list(rs_info.copy().keys())
+    games = list(rs_info[random_type].copy().keys())
 
     if game not in games:
         return [], games
-    return rs_info.get(game, []).copy()[0:-1], games
+    return rs_info[random_type].get(game, []).copy()[0:-1], games
 
 # Get all users in a Discord
 def get_users(users):
