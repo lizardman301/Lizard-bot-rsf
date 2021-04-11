@@ -41,7 +41,7 @@ async def start_challonge(command, msg, channel, guild): # Base url to access Ch
     # Usually a 5xx error
     else:
         print(parts_get.text) # Print raw text to console
-        raise Exception(bold("Challonge") + ": Unknown Challonge error for " + tour_url)
+        raise Exception(bold("Challonge") + ": Unknown Challonge error for <" + tour_url + "> initializing connection to Challonge")
 
 @register('challonge checkin')
 @register('chal checkin')
@@ -99,7 +99,7 @@ async def challonge_here(command, msg, user, channel, *args, **kwargs):
         else:
             # Some other challonge error. Print it to console and error with appropriate message
             print(checkin_post.text)
-            raise Exception(bold("Challonge_Here") + ": Unknown Challonge error for <" + tour_url + ">")
+            raise Exception(bold("Challonge_Here") + ": Unknown Challonge error for <" + tour_url + "> while checking in: " + msg)
 
         # Message showing who is not checked in and who is not in the Discord
         return 
@@ -179,7 +179,7 @@ async def challonge_report(command, msg, user, channel, *args, **kwargs):
             else:
                 # Some other challonge error. Print it to console and error with appropriate message
                 print(match_put.text)
-                raise Exception(bold("Challonge_Report") + ": Unknown Challonge error for <" + tour_url + ">")
+                raise Exception(bold("Challonge_Report") + ": Unknown Challonge error for <" + tour_url + "> while submitting a match")
 
 @register('challonge seeding')
 @register('challonge seed')
@@ -212,7 +212,7 @@ async def challonge_seeding(command, msg, user, channel, *args, **kwargs):
             raise Exception(bold("Challonge_Seeding") + ": There is no seeding sheet for this channel. Please view <https://github.com/lizardman301/Lizard-bot-rsf/blob/master/doc/seeding_with_sheets.md> for a walkthrough")
 
         # Grab what the seeds were
-        seeds = seeding(sheet_id, parts, base_url + '/' + tour_url, seed_num)
+        seeds = seeding(sheet_id, parts, base_url + tour_url, seed_num)
 
         # Seeding takes place in different method
         await channel.send("**SEEDING:**\n {0}".format(',\n'.join(escape_markdown(pformat(seeds))[1:-1].split(', '))))

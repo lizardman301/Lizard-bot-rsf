@@ -6,7 +6,7 @@ from pymysql.cursors import DictCursor as pymysql_DictCursor # Use for DB connec
 from json import loads as json_loads, dumps as json_dumps
 from os import path as os_path
 from re import search as re_search, compile as re_compile # Process strings
-from requests import put as requests_put # HTTP functions
+from requests import put as requests_put, post as requests_post # HTTP functions
 
 # Local imports
 from secret import (sql_host,sql_port,sql_user,sql_pw,sql_db, api_key, chal_user) # Store secret information
@@ -188,6 +188,14 @@ def seeding(sheet_id, parts, url, seed_num):
     for x in range(len(player_points)):
         finished_seeding.update({x+1: player_points[x]})
 
+    # Randomize the seeding to ensure a fairer bracket
+    response = requests_post(url + "/participants/randomize.json", headers={"User-Agent":"Lizard-BOT"}, auth=(chal_user, api_key))
+    if '401' in str(response.status_code):
+        raise Exception(bold("Challonge") + ": Lizard-BOT does not have access to that tournament")
+    elif '200' not in str(response.status_code):
+        print(response.text)
+        raise Exception(bold("Challonge") + "Unknown Challonge error for <" + url + "> while randomizing seeds")
+
     # Check if player is in sorted, truncated list and update their seed number
     for player in finished_seeding:
         for p in parts:
@@ -203,7 +211,7 @@ def seeding(sheet_id, parts, url, seed_num):
                     raise Exception(bold("Challonge") + ": Lizard-BOT does not have access to that tournament")
                 else:
                     print(response.text)
-                    raise Exception(bold("Challonge") + "Unknown Challonge error for <" + url + ">")
+                    raise Exception(bold("Challonge") + "Unknown Challonge error for <" + url + "> while seeding: " + player)
 
     # Return seeding list
     return finished_seeding
