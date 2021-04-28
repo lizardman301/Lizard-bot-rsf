@@ -12,8 +12,14 @@ from commands.utilities import (register, bold, get_randomselect_data, read_db, 
 @register('botrole')
 @register('role')
 async def botrole(command, msg, user, channel, *args, **kwargs):
+    botrole = await read_db('guild', 'botrole', kwargs['guild'])
+    try:
+        botrole_name = channel.guild.get_role(botrole).name
+    except:
+        botrole_name = '@everyone'
+
     # Pull the role name from the guild's roles
-    return "The bot role is {0}".format(bold(channel.guild.get_role(await read_db('guild', 'botrole', kwargs['guild'])).name))
+    return "The bot role is {0}".format(bold(botrole_name))
 
 @register('bracket')
 async def bracket(command, msg, user, channel, *args, **kwargs):
