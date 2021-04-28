@@ -16,7 +16,7 @@ async def botrole(command, msg, user, channel, *args, **kwargs):
     try:
         botrole_name = channel.guild.get_role(botrole).name
     except:
-        botrole_name = '@everyone'
+        botrole_name = 'everyone'
 
     # Pull the role name from the guild's roles
     return "The bot role is {0}".format(bold(botrole_name))
