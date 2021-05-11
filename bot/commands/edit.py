@@ -7,7 +7,6 @@ from commands.utilities import (register, bold, is_channel, pings_b_gone, save_d
 # All @register decorators are a product of reviewing Yaksha
 # See utilities.register for more information
 
-
 def channel_processing(params, channel_mentions):
     command_channels = {} # Stores channels to iterate over
 
@@ -32,83 +31,6 @@ def channel_processing(params, channel_mentions):
 
     return params, command_channels
 
-#@register('edit')
-async def edit(command, msg, user, channel, *args, **kwargs):
-    params = msg.split(' ')
-    full_msg = kwargs['full_msg'] # Allows us to access the role_mentions
-    command_channels = {} # Stores channels to iterate over
-
-    # Check for multi-channel changes at message start
-    # Check for channel mentions
-    if full_msg.channel_mentions:
-        # for each parameter in the msg
-        for param in params:
-            # Check if that parameter is a channel
-            if is_channel(param):
-                # for each channel in the channel mentions
-                for chnl in full_msg.channel_mentions:
-                    # Check if the param channel id is the same as the channel mention id and that it is a text channel
-                    if chnl.id == is_channel(param) and 'text' in chnl.type:
-                        # Add the id and mention value to loop over later
-                        command_channels.update({chnl.id: chnl.mention}) # Save channel for later
-            else:
-                break
-        # For all the channels remove them from parameters
-        for chnl in command_channels:
-            params.remove(command_channels[chnl]) # Remove the channel from the params
-            
-    params[0] = params[0].lower() # Make sure the command we are editing is in lowercase
-    editable_command = params[0] # The command we are editing
-    if editable_command not in kwargs['edit_subs']:
-        raise Exception(bold("Edit") + ": Invalid Subcommand. " + await help_lizard('','','',''))
-
-    params.remove(editable_command) # Remove the command from the params
-    # Rejoin the rest of the parameters with spaces
-    db_message = ' '.join(params) # The message we send to the Database
-    channel_message = ' '.join(params) # The message that gets sent
-
-    # Grab just the BigInt part of bot_role
-    if editable_command in ['botrole']:
-        return "fuck"
-    elif editable_command in ['tos'] and (not full_msg.mentions and params):
-            raise Exception(bold("Edit") + ": Invalid user mention. Try @'ing somebody")
-    # Remove the bot pinging TOs on the confirmation message
-    elif editable_command in ['tos']:
-        mentions = pings_b_gone(full_msg.mentions)
-        db_message = ' '.join(mentions.values()) # Put mention values into the database
-        channel_message = ' '.join(mentions.keys()) # Send usernames back to the channel
-    # Check if the Sheets ID matches what Google specified
-    elif editable_command in ['seeding']:
-        reg = re_compile('[a-zA-Z0-9-_]+')
-        if not params:
-            pass
-        elif not reg.fullmatch(params[0]) or len(params[0]) > 80:
-            raise Exception(bold("Edit") + ": Invalid Sheets spreadsheet ID. Please view <https://github.com/lizardman301/Lizard-bot-rsf/blob/master/doc/seeding_with_sheets.md> for a walkthrough")
-    # Check if prefix is a singular character
-    elif editable_command in ['prefix-lizard'] and not len(db_message) == 1:
-        raise Exception(bold("Edit") + ": Lizard-BOT prefix must be a singular character.")
-    # Check if the status message contains {0}
-    elif editable_command in ['status'] and not db_message.count('{0}') > 0:
-        raise Exception(bold("Edit") + ": Status message must include {0} to substitute the round number")
-    # Check if bracket, pingtest, status, and stream are small enough to store and send into Discord channels
-    elif editable_command in ['bracket','pingtest','status','stream'] and len(db_message) > 1945:
-        raise Exception(bold("Edit") + ": Message is too long to be stored. Shorten your message to 1945 characters or less")
-
-    # Check for guild settings, channel settings, or multi channel settings
-    if editable_command in ['botrole', 'challonge','prefix-lizard']:
-        await save_db('guild', editable_command, db_message, kwargs['guild']) # Save the new message to the proper setting in a given guild
-    elif command_channels:
-        # For each channel, save the setting
-        for chnl in command_channels: 
-            # We have to double check that the channel is in the DB
-            if await settings_exist(kwargs['guild'], chnl):
-                await save_db('channel', editable_command, db_message, chnl) # Save the new message to the proper setting in a given channel
-        return "All listed channels had the {0} updated to {1}".format(bold(editable_command), bold(channel_message))
-    else:
-        await save_db('channel', editable_command, db_message, channel.id) # Save the new message to the proper setting in a given channel
-
-    return "The new {0} is: {1}".format(bold(editable_command), bold(channel_message)) # Print the new message for a given setting
-
 @register('edit botrole')
 @register('edit role')
 async def edit_botrole(command, msg, user, channel, *args, **kwargs):
@@ -131,7 +53,7 @@ async def edit_botrole(command, msg, user, channel, *args, **kwargs):
         db_message = str(role_mentions[0].id)
         channel_message = role_mentions[0].name
 
-    await save_db('guild', editable_command, db_message, kwargs['guild'])
+    save_db('guild', editable_command, db_message, kwargs['guild'])
     return "The new {0} is: {1}".format(bold(editable_command), bold(channel_message)) # Print the new message for a given setting
 
 @register('edit bracket')
@@ -157,11 +79,11 @@ async def edit_channel_strings(command, msg, user, channel, *args, **kwargs):
         # For each channel, save the setting
         for chnl in command_channels: 
             # We have to double check that the channel is in the DB
-            if await settings_exist(kwargs['guild'], chnl):
-                await save_db('channel', editable_command, message, chnl) # Save the new message to the proper setting in a given channel
+            if settings_exist(kwargs['guild'], chnl):
+                save_db('channel', editable_command, message, chnl) # Save the new message to the proper setting in a given channel
         return "All listed channels had the {0} updated to {1}".format(bold(editable_command), bold(message))
     else:
-        await save_db('channel', editable_command, message, channel.id) # Save the new message to the proper setting in a given channel
+        save_db('channel', editable_command, message, channel.id) # Save the new message to the proper setting in a given channel
     return "The new {0} is: {1}".format(bold(editable_command), bold(message)) # Print the new message for a given setting
 
 @register('edit challonge')
@@ -172,7 +94,7 @@ async def edit_challonge(command, msg, user, channel, *args, **kwargs):
     if len(msg) > 60:
         raise Exception(bold("Edit") + ": Challonge Subdomain is too long. Are you sure that is a challonge subdomain?")
 
-    await save_db('guild', editable_command, msg, kwargs['guild'])
+    save_db('guild', editable_command, msg, kwargs['guild'])
     return "The new {0} is: {1}".format(bold(editable_command), bold(msg)) # Print the new message for a given setting
 
 @register('edit prefix-lizard')
@@ -183,7 +105,7 @@ async def edit_prefix(command, msg, user, channel, *args, **kwargs):
     if not len(msg) == 1:
         raise Exception(bold("Edit") + ": Lizard-BOT prefix must be a singular character.")
 
-    await save_db('guild', editable_command, msg, kwargs['guild'])
+    save_db('guild', editable_command, msg, kwargs['guild'])
     return "The new {0} is: {1}".format(bold(editable_command), bold(msg)) # Print the new message for a given setting
 
 @register('edit seeding')
@@ -207,11 +129,11 @@ async def edit_seeding(command, msg, user, channel, *args, **kwargs):
         # For each channel, save the setting
         for chnl in command_channels: 
             # We have to double check that the channel is in the DB
-            if await settings_exist(kwargs['guild'], chnl):
-                await save_db('channel', editable_command, message, chnl) # Save the new message to the proper setting in a given channel
+            if settings_exist(kwargs['guild'], chnl):
+                save_db('channel', editable_command, message, chnl) # Save the new message to the proper setting in a given channel
         return "All listed channels had the {0} updated to {1}".format(bold(editable_command), bold(message))
     else:
-        await save_db('channel', editable_command, message, channel.id) # Save the new message to the proper setting in a given channel
+        save_db('channel', editable_command, message, channel.id) # Save the new message to the proper setting in a given channel
     return "The new {0} is: {1}".format(bold(editable_command), bold(message)) # Print the new message for a given setting
 
 @register('edit tos')
@@ -234,9 +156,9 @@ async def edit_tos(command, msg, user, channel, *args, **kwargs):
         # For each channel, save the setting
         for chnl in command_channels: 
             # We have to double check that the channel is in the DB
-            if await settings_exist(kwargs['guild'], chnl):
-                await save_db('channel', editable_command, db_message, chnl) # Save the new message to the proper setting in a given channel
+            if settings_exist(kwargs['guild'], chnl):
+                save_db('channel', editable_command, db_message, chnl) # Save the new message to the proper setting in a given channel
         return "All listed channels had the {0} updated to {1}".format(bold(editable_command), bold(channel_message))
     else:
-        await save_db('channel', editable_command, db_message, channel.id) # Save the new message to the proper setting in a given channel
+        save_db('channel', editable_command, db_message, channel.id) # Save the new message to the proper setting in a given channel
     return "The new {0} is: {1}".format(bold(editable_command), bold(channel_message)) # Print the new message for a given setting

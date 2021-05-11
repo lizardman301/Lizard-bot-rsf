@@ -17,11 +17,11 @@ base_url = "https://api.challonge.com/v1/tournaments/"
 # Grabs initial participants and tournament url
 async def start_challonge(command, msg, channel, guild): # Base url to access Challonge's API
     try:
-        tour_url = get_chal_tour_id(await read_db('channel', 'bracket', channel.id)) # Grab tour_url from bracket command
+        tour_url = get_chal_tour_id(read_db('channel', 'bracket', channel.id)) # Grab tour_url from bracket command
     except:
         raise Exception(bold("Challonge") + ": Bracket link is missing. Try setting the bracket command")
 
-    subdomain = await read_db('guild', 'challonge', guild) # Server's subdomain with Challonge
+    subdomain = read_db('guild', 'challonge', guild) # Server's subdomain with Challonge
 
     # Properly add the subdomain to the bracket url
     if subdomain:
@@ -205,7 +205,7 @@ async def challonge_seeding(command, msg, user, channel, *args, **kwargs):
             raise Exception(bold("Challonge_Seeding") + ": Seeding number must be a positive integer or 0 for everybody")
 
         # Get Google Sheets ID
-        sheet_id = await read_db('channel', 'seeding', channel.id)
+        sheet_id = read_db('channel', 'seeding', channel.id)
 
         # If seeding hasn't been set, inform user
         if not sheet_id:

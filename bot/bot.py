@@ -78,11 +78,11 @@ async def on_message(message):
     try:
         # Check if the channel is in the DB
         # Add it if it isn't
-        if not await settings_exist(message.guild.id, message.channel.id):
+        if not settings_exist(message.guild.id, message.channel.id):
             raise Exception("Lizard-BOT failed to create DB entry for: " + message.guild.name + ". Guild ID: " + message.guild.id)
 
         # Get prefix for the guild
-        prefix = await read_db('guild', 'prefix-lizard', message.guild.id)
+        prefix = read_db('guild', 'prefix-lizard', message.guild.id)
 
         # Check if the attempted_cmd is !prefix-lizard and has too many args
         if (message.content.split(' ')[0] == "!prefix-lizard" or message.content.split(' ')[0] == "!prefliz") and len(message.content.split()) > 1:
