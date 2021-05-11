@@ -12,7 +12,7 @@ from commands.utilities import (register, bold, get_randomselect_data, read_db, 
 @register('botrole')
 @register('role')
 async def botrole(command, msg, user, channel, *args, **kwargs):
-    botrole = await read_db('guild', 'botrole', kwargs['guild'])
+    botrole = read_db('guild', 'botrole', kwargs['guild'])
     try:
         botrole_name = channel.guild.get_role(botrole).name
     except:
@@ -24,7 +24,7 @@ async def botrole(command, msg, user, channel, *args, **kwargs):
 @register('bracket')
 async def bracket(command, msg, user, channel, *args, **kwargs):
     # Custom message for setting a bracket
-    return await read_db('channel', 'bracket', channel.id)
+    return read_db('channel', 'bracket', channel.id)
 
 @register('coin-flip')
 @register('flip')
@@ -266,13 +266,13 @@ async def ping(command, msg, user, channel, *args, **kwargs):
 @register('pt')
 async def pingtest(command, msg, user, channel, *args, **kwargs):
     # Custom message used to teach users how to do a ping test
-    return await read_db('channel', 'pingtest', channel.id)
+    return read_db('channel', 'pingtest', channel.id)
 
 @register('prefix-lizard')
 @register('prefliz')
 async def prefix(command, msg, user, channel, *args, **kwargs):
     # Gets the prefix set for a guild
-    return "The prefix is: {0}".format(await read_db('guild', 'prefix-lizard', kwargs['guild']))
+    return "The prefix is: {0}".format(read_db('guild', 'prefix-lizard', kwargs['guild']))
 
 @register('randomselect')
 @register('random')
@@ -316,7 +316,7 @@ async def stats(command, msg, user, channel, *args, **kwargs):
         raise Exception(bold("Stats") + ": Too many arguments. " + await help_lizard('','','',''))
     elif cmd and cmd not in ['challonge', 'edit'] and cmd not in func_map:
         raise Exception(bold("Stats") + ": Invalid Subcommand. " + await help_lizard('','','',''))
-    stats = await read_stat(cmd,func_map)
+    stats = read_stat(cmd,func_map)
 
     embed = Embed(title="Stats!", colour=Colour(0x0fa1dc))
     embed.set_author(name="Lizard-BOT", url="https://github.com/lizardman301/Lizard-bot-rsf", icon_url="https://raw.githubusercontent.com/lizardman301/Lizard-bot-rsf/master/doc/assets/images/cmface.png")
@@ -333,12 +333,12 @@ async def stats(command, msg, user, channel, *args, **kwargs):
 
 @register('status')
 async def status(command, msg, user, channel, *args, **kwargs):
-    currentRound = await read_db('channel', 'round', channel.id)
+    currentRound = read_db('channel', 'round', channel.id)
     if currentRound:
         # Read the status message for a channel and make it bold
         # Currently the message must have {0} so it can fill in the current round
         try:
-            message = await read_db('channel', 'status', channel.id)
+            message = read_db('channel', 'status', channel.id)
             return bold(message.format(currentRound))
         except:
             raise Exception(bold("Status") + ": Round message includes invalid {}. Please correct the status message to include only {0}")
@@ -347,11 +347,11 @@ async def status(command, msg, user, channel, *args, **kwargs):
 @register('stream')
 async def stream(command, msg, user, channel, *args, **kwargs):
     # Custom message for a stream
-    return await read_db('channel', 'stream', channel.id)
+    return read_db('channel', 'stream', channel.id)
 
 @register('tos')
 async def TOs(command, msg, user, channel, *args, **kwargs):
-    tos = await read_db('channel', 'tos', channel.id)
+    tos = read_db('channel', 'tos', channel.id)
     # If we get a value back, return TOs
     if tos:
         return tos
@@ -373,7 +373,7 @@ async def disable(command, msg, user, channel, *args, **kwargs):
         raise Exception(bold("Disable") + ": No command provided")
     elif to_disable == "list":
         # Optional arg to list disabled commands
-        current_list = await read_disable(kwargs['guild'])
+        current_list = read_disable(kwargs['guild'])
         return "Current disabled commands are: **{0}**".format(", ".join(current_list))
 
     try:
@@ -385,7 +385,7 @@ async def disable(command, msg, user, channel, *args, **kwargs):
 
     try:
         # Disable function name
-        current_list = await set_disable(kwargs['guild'],function_name)
+        current_list = set_disable(kwargs['guild'],function_name)
     except Exception as e:
         if str(e) == "Command already disabled.":
             raise Exception(bold("Disable") + ": Cannot disable an already disabled command")
@@ -412,14 +412,14 @@ async def enable(command, msg, user, channel, *args, **kwargs):
     except:
          # Check if command is in the disable list, if so return that name
          # Used for commands that were disabled but changed in an update
-         disable_list = await read_disable(kwargs['guild'])
+         disable_list = read_disable(kwargs['guild'])
          if to_enable in disable_list:
              function_name = to_enable
          else:
             raise Exception(bold("Enable") + ": " + bold(to_enable) + " is not a command in Lizard-BOT and cannot be enabled")
 
     try:
-        return "{0} has been enabled. Current disabled commands are: **{1}**".format(to_enable, ', '.join(await set_enable(kwargs['guild'], function_name)))
+        return "{0} has been enabled. Current disabled commands are: **{1}**".format(to_enable, ', '.join(set_enable(kwargs['guild'], function_name)))
     except Exception as e:
         if str(e) == "Command is not disabled.":
             raise Exception(bold("Enable") + ": Cannot enable a command that is not disabled.")
@@ -469,7 +469,7 @@ async def remind(command, msg, user, channel, *args, **kwargs):
 @register('reset')
 async def reset(command, msg, user, channel, *args, **kwargs):
     # Reset the round command
-    await save_db('channel', 'round', '', channel.id)
+    save_db('channel', 'round', '', channel.id)
     return "Round has been reset."
 
 @register('round')
@@ -477,7 +477,7 @@ async def round_lizard(command, msg, user, channel, *args, **kwargs):
     # Message must be less than 50 characters
     if len(msg) > 50:
         raise Exception(bold("Round_Lizard") + ": Custom round number must be less then 50 characters")
-    await save_db('channel', 'round', msg, channel.id)
+    save_db('channel', 'round', msg, channel.id)
     try:
         return await status('status', msg, user, channel)
     except:

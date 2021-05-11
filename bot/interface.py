@@ -54,7 +54,7 @@ class Interface():
         dict using the command arg as the key.
         '''
         # First check if the command is disabled
-        if self._func_mapping[command].__name__ in await read_disable(kwargs['guild']):
+        if self._func_mapping[command].__name__ in read_disable(kwargs['guild']):
             return "**{0}** has been disabled in this server.".format(command)
 
         # Second check if the user is allowed to call this
@@ -69,7 +69,7 @@ class Interface():
             # Try to complete the command's function
             try:
                 result = await self._func_mapping[command](command, msg, user, channel, *args, **kwargs)
-                await stat_up(self._func_mapping[command].__name__) # Increment command's stat after it is successful
+                stat_up(self._func_mapping[command].__name__) # Increment command's stat after it is successful
                 return result
             except:
                 raise # Re-raise same error
@@ -85,7 +85,7 @@ class Interface():
         # Check if the user is an admin and
         # if the command is an admin command.
         if command in self.admin_commands:
-            botrole = await read_db('guild', 'botrole', id)
+            botrole = read_db('guild', 'botrole', id)
 
             # If botrole is not set, allow the command
             if not botrole:
