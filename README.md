@@ -129,6 +129,9 @@ Conducts a card draw with the message sender and the user mentioned. Game will d
 `!github`
 Displays the link to the GitHub repository for Lizard-BOT
 
+`!glossary <term>`
+Looks up a term using the https://glossary.infil.net/ glossary. Returns the homepage if no term is provided.
+
 `!help-lizard`
 Displays a list of all commands.
 

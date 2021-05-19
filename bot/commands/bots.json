@@ -59,6 +59,7 @@
 		],
 		"draw": ["draw", "Draws 7 random characters and conducts a ban pick system. Must mention a user. Will use SFV characters if no game is specified."],
 		"github": ["github", "lizardbot", "Links to the GitHub repository for Lizard-BOT"],
+		"glossary": ["glossary", "g", "Links to the fgc glossary site. Uses search team if applicable."],
 		"help-lizard": [
 			"help-lizard",
 			"helpliz",
