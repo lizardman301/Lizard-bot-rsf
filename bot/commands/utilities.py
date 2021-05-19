@@ -246,6 +246,7 @@ def dev_db(sql):
     try:
         with conn.cursor() as cursor:
             cursor.execute(sql)
+            info.append("Number of rows affected/returned: {}".format(cursor.rowcount))
             for row in cursor:
                 info.append(row)
         return info
