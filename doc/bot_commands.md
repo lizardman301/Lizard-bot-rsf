@@ -194,6 +194,15 @@ Shortcuts: None
 
 Using this with any command in Lizard-BOT to enable a previously disabled command.
 
+## `!glossary <term>`
+![!glossary example](/doc/assets/images/glossary.png)
+
+Restricted: No
+
+Shortcuts: `!g`
+
+Looks up a term using the https://glossary.infil.net/ glossary. Returns the homepage if no term is provided.
+
 ## `!github`
 ![!github example](/doc/assets/images/github.png)
 
