@@ -98,6 +98,9 @@
 		"stream": ["stream", "Returns the stream link if one is set"],
 		"TOs": ["TOs", "Sends a message back with all the Tournament Organizers pinged once set"]
 	},
+	"dev_commands": [
+		"dev"
+	],
 	"no_arg_commands": [
 		"botrole",
 		"bracket",

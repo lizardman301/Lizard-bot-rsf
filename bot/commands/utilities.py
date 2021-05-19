@@ -239,6 +239,23 @@ def settings_exist(guild_id, chan_id):
 
     return 1 # Return truthy value for checking
 
+def dev_db(sql):
+    conn = make_conn() # Make DB Connection
+    info = []
+
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute(sql)
+            info.append("Number of rows affected/returned: {}".format(cursor.rowcount))
+            for row in cursor:
+                info.append(row)
+        return info
+    except:
+        raise
+    finally:
+        conn.close() # Close the connection
+
+
 # Read a setting from database for a given guild/channel
 def read_db(level, setting, id):
     conn = make_conn() # Make DB Connection
