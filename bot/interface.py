@@ -1,17 +1,19 @@
 # Local imports
 from commands import commands, challonge, edit # Bring in all commands
 from commands.utilities import (get_callbacks, read_db, stat_up, read_disable) # Bring in some utilities to help the process
+from secret import dev_ids, dev_guild
 
 # Yaksha
 class Interface():
 
     # Yaksha
     # Initialize Interface with all our nice defaults
-    def __init__(self, admin_commands, help):
+    def __init__(self, admin_commands, dev_commands, help):
         self._func_mapping = {} # Map for future reference
         self._modules = [commands, challonge, edit] # Stores the reference to each .py we have command functions in
         self.remap_functions() # Map functions for reference by command name
         self.admin_commands = admin_commands # Bring over the admin commands
+        self.dev_commands = dev_commands # Bring over the dev commands
         self.help = help # Bring over help info
 
     # Yaksha
@@ -82,6 +84,7 @@ class Interface():
         Performs various checks on the user and the
         command to determine if they're allowed to use it.
         '''
+        
         # Check if the user is an admin and
         # if the command is an admin command.
         if command in self.admin_commands:
@@ -95,6 +98,12 @@ class Interface():
             for role in user.roles:
                 if role.id == botrole:
                     return True
+            return False
+        # Check if the command is a dev command 
+        elif command in self.dev_commands:
+            # If the user is a dev and that the command was sent from the proper server, give access to the dev commands
+            if user.id in dev_ids and id in dev_guild:
+                return True
             return False
 
         # User passed all the tests so they're allowed to

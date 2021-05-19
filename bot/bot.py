@@ -1,10 +1,11 @@
 import discord # Discord bot needs discord library
+from discord.utils import escape_markdown # Regexing fun simplified
 
 from asyncio import sleep as asyncio_sleep # For sleeping specific threads
 from json import loads as json_loads # For bringing in config file
 from os import path as os_path # For bringing in config file
 from random import choice as random_choice # For randomizing arrays
-from traceback import print_exc as traceback_print_exc # For printing error messages
+from traceback import print_exc as traceback_print_exc, format_exc as traceback_format_exc # For printing error messages
 from sys import exc_info as sys_exc_info # For grabbing error information
 
 # Local imports
@@ -110,7 +111,7 @@ async def on_message(message):
 
             if attempted_cmd in ['challonge', 'chal', 'edit'] and len(msg.split(' ')) > 1:
                 attempted_cmd += ' ' + msg.split(' ')[1].lower()
-            
+
             # Check if the message begins with a command
             if attempted_cmd and attempted_cmd == command:
                 user = message.author # The author
@@ -148,6 +149,11 @@ async def on_message(message):
         # Additional checks needed for challonge and edit commands that have multiple subcommands
         if client.interface._func_mapping[command].__name__ in function_name.strip("*").lower() or ('challonge' in client.interface._func_mapping[command].__name__ and 'challonge' in function_name.strip("*").lower()) or ('edit' in client.interface._func_mapping[command].__name__ and 'edit' in function_name.strip("*").lower()):
             await message.channel.send(function_name.replace('_', '-') + ': ' + ':'.join(string_info.split(':')[1:]))
+        elif command == 'dev':
+            # Return user message
+            await message.channel.send(escape_markdown(traceback_format_exc()))
+            # Print error to console
+            traceback_print_exc()
         else:
             # Print error to console
             traceback_print_exc()
@@ -194,8 +200,14 @@ def main():
         for alias in aliases:
             # Add the command and aliases as admin commands
             client.admin_commands.append(alias)
+
+    # Dev commands
+    client.dev_commands = list(config.get('dev_commands', []).copy())
+    for command in client.dev_commands:
+        client.commands.append(command)
+
     # Start our interface for our commands and Discord
-    client.interface = interface.Interface(client.admin_commands, client.help)
+    client.interface = interface.Interface(client.admin_commands, client.dev_commands, client.help)
 
     # Start loop for status change
     client.loop.create_task(change_status())

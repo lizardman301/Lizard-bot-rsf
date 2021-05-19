@@ -1,10 +1,12 @@
 from asyncio import sleep as asyncio_sleep # For sleeping specific threads
 from discord import Embed, Colour # For setting up Embeds
+from discord.utils import escape_markdown # Regexing fun simplified
+from pprint import pformat # For formatting user list
 from random import choice as random_choice # For randomizing arrays
 from re import compile as re_compile # Regexing fun not simplified
 
 # Local imports
-from commands.utilities import (register, bold, get_randomselect_data, read_db, read_disable, read_stat, save_db, set_disable, set_enable) # Bring in some utilities to help the process
+from commands.utilities import (register, bold, dev_db, get_randomselect_data, read_db, read_disable, read_stat, save_db, set_disable, set_enable) # Bring in some utilities to help the process
 
 # All @register decorators are a product of reviewing Yaksha
 # See utilities.register for more information
@@ -493,3 +495,12 @@ async def round_lizard(command, msg, user, channel, *args, **kwargs):
         return await status('status', msg, user, channel)
     except:
         raise Exception(bold("Round_Lizard") + ": Round message includes invalid {}. Please correct the status message to include only {0}")
+
+# Dev commands
+
+@register('dev')
+async def dev(command, msg, user, channel, *args, **kwargs):
+    try:
+        return escape_markdown(pformat(dev_db(msg)))
+    except:
+        raise
