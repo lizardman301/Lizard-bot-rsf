@@ -216,6 +216,17 @@ async def github(command, msg, user, channel, *args, **kwargs):
     # Static message for the Lizard-BOT Github
     return await help_lizard('', '', '', '')
 
+@register('glossary')
+@register('g')
+async def glossary(command, msg, user, channel, *args, **kwargs):
+    base_url = "https://glossary.infil.net/"
+    if msg == '':
+        return base_url
+    else:
+        params = msg.split(' ')
+        term = "%20".join(params)
+        return base_url + "?t=" + term
+
 @register('help-lizard')
 @register('helpliz')
 async def help_lizard(command, msg, user, channel, *args, **kwargs):
