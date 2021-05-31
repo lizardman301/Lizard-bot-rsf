@@ -312,7 +312,10 @@ async def randomselect(command, msg, user, channel, *args, **kwargs):
             # No game to be found so default to sfv
             game = 'sfv'
 
-    data, games = get_randomselect_data(game, random_type=random_type)
+    try:
+        data, games = get_randomselect_data(game, random_type=random_type)
+    except:
+        raise Exception(bold("RandomSelect") + ": Invalid parameters. " + await help_lizard('','','',''))
 
     if not data:
         raise Exception(bold("RandomSelect") + ": Invalid game: {0}. Valid games are: {1}".format(bold(game), bold(', '.join(games))))
