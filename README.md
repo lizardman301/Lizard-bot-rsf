@@ -152,7 +152,7 @@ Prints the prefix currently in use for Lizard-BOT.
 
 `!randomselect [character/stage] [game]`
 Returns a randomly selected character or stage from the current the specified game. Assumes SFV if no game is given. Assumes character if character or stage is not specified.
-Current games are **3s, footsies, gbvs, mk11, samsho, sfv, t7, uni, xrd, +r**
+Current games are **3s, footsies, gbvs, mk11, samsho, sfv, strive, t7, uni, xrd, +r**
 Current stages are **llb, t7**
 
 `!stats [command]`
