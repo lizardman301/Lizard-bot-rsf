@@ -275,7 +275,7 @@ Shortcuts: `!random` `!rs`
 
 Returns a randomly selected character or stage from the game in the arguments. Will return a SFV character if no game is given. Assumes character if character or stage is not specified.
 If a game that does not exist is provided as an argument, it will return the list of acceptable games.
-Current games are **3s, footsies, gbvs, mk11, samsho, sfv, t7, uni, xrd, +r**
+Current games are **3s, footsies, gbvs, mk11, samsho, sfv, strive, t7, uni, xrd, +r**
 Current stages are **llb, t7**
 
 ## `!refresh`
