@@ -79,8 +79,8 @@ async def on_message(message):
     try:
         # Check if the channel is in the DB
         # Add it if it isn't
-        if not settings_exist(message.guild.id, message.channel.id):
-            raise Exception("Lizard-BOT failed to create DB entry for: " + message.guild.name + ". Guild ID: " + message.guild.id)
+        if not settings_exist(message.guild.id, message.channel.id, message.channel.name):
+            raise Exception("Lizard-BOT failed to create DB entry for: " + message.guild.name + ". Guild ID: " + str(message.guild.id))
 
         # Get prefix for the guild
         prefix = read_db('guild', 'prefix-lizard', message.guild.id)

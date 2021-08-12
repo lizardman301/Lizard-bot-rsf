@@ -208,7 +208,7 @@ def make_conn():
 
 # Check if the guild/channel is in the table
 # If not, add it the guilds, channels, and settings tables
-def settings_exist(guild_id, chan_id):
+def settings_exist(guild_id, chan_id, chan_name):
     conn = make_conn() # Make DB connection
 
     try:
@@ -227,12 +227,18 @@ def settings_exist(guild_id, chan_id):
                 # Add the ID to the guild/channel table
                 # Add the ID to the guild/channel_settings table (This will initialize the default values)
                 if id not in ids:
-                    sql = "INSERT INTO " + level + "s (" + level + "_id) VALUES (%s)"
-                    cursor.execute(sql, (id,))
+                    if level == 'guild':
+                        sql = "INSERT INTO " + level + "s (" + level + "_id) VALUES (%s)"
+                        cursor.execute(sql, (id,))
+
+                    elif level == 'channel':
+                        sql = "INSERT INTO " + level + "s (" + level + "_id, guild_id, channel_name) VALUES (%s, %s, %s)"
+                        cursor.execute(sql, (id, guild_id, chan_name,))
 
                     sql = "INSERT INTO " + level + "_settings (" + level + "_id) VALUES (%s)"
                     cursor.execute(sql, (id,))
     except Exception:
+        raise
         return 0 # Falsy value to fail
     finally:
         conn.close() # Close the connection
