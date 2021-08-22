@@ -6,7 +6,7 @@ from random import choice as random_choice # For randomizing arrays
 from re import compile as re_compile # Regexing fun not simplified
 
 # Local imports
-from commands.utilities import (register, bold, dev_db, get_randomselect_data, read_db, read_disable, read_stat, save_db, set_disable, set_enable) # Bring in some utilities to help the process
+from commands.utilities import (register, bold, dev_db, fix_link_regex, get_glossary, get_randomselect_data, read_db, read_disable, read_stat, save_db, search_terms, set_disable, set_enable) # Bring in some utilities to help the process
 
 # All @register decorators are a product of reviewing Yaksha
 # See utilities.register for more information
@@ -222,12 +222,60 @@ async def github(command, msg, user, channel, *args, **kwargs):
 @register('g')
 async def glossary(command, msg, user, channel, *args, **kwargs):
     base_url = "https://glossary.infil.net/"
+    client = kwargs['client']
+    sender = user
+    infil_glossary = get_glossary()
+    searched_terms = search_terms(msg, infil_glossary)
+    number_emojis = {'1':"1⃣",'2':"2⃣",'3':"3⃣",'4':"4⃣",'5':"5⃣",'6':"6⃣",'7':"7⃣",'8':"8⃣",'9':"9⃣",'0':"0⃣"}
+
     if msg == '':
         return base_url
+
+    params = msg.split(' ')
+    user_term = "%20".join(params)
+
+    st_dict = {}
+    for x in range(1,len(searched_terms)+1):
+        st_dict[x] = searched_terms[x-1]
+
+    if len(searched_terms) == 1:
+        for term in infil_glossary:
+            if term['term'] == st_dict[1][0]:
+                return "{} - <{}?t={}>\n{}".format(bold(term['term']), base_url, user_term, fix_link_regex(term['def']).split('<br>')[0])
+    elif len(searched_terms) > 1:
+        pick_embed = Embed(title="", colour=Colour(0x0fa1dc))
+        pick_embed.set_footer(text="Which term did you mean, {0}?".format(sender.display_name))
+        for x in range(1,len(searched_terms)):
+            pick_embed.add_field(name=x, value=searched_terms[x-1][0])
+        try:
+            pick_msg = await channel.send(embed=pick_embed)
+        except:
+            raise Exception(bold("Glossary") + ": Error sending embed to chat. Give Lizard-BOT the permission: " + bold("Embed Links"))
+        for x in range(1,len(searched_terms)):
+            await pick_msg.add_reaction(number_emojis[str(x)])
+
+        user_to_check = None
+        msg_to_check = None
+        reaction_read_emoji = None
+
+        while not(user_to_check == sender) or not(msg_to_check == pick_msg) or reaction_read_emoji not in number_emojis.values():
+            try:
+                reaction_read, user_to_check  = await client.wait_for('reaction_add', timeout=60.0)
+                msg_to_check = reaction_read.message
+                if msg_to_check == pick_msg and user_to_check == sender:
+                    reaction_read_emoji = reaction_read.emoji
+                    if reaction_read_emoji in number_emojis.values():
+                        for key,value in number_emojis.items():
+                            if value == reaction_read_emoji:
+                                for term in infil_glossary:
+                                    if term['term'] == st_dict[int(key)][0]:
+                                        await pick_msg.delete()
+                                        return "{} - <{}?t={}>\n{}".format(bold(term['term']), base_url, user_term, fix_link_regex(term['def']).split('<br>')[0])
+            except :
+                await pick_msg.delete()
+                raise Exception(bold("Glossary") + ": Issue with the terms")
     else:
-        params = msg.split(' ')
-        term = "%20".join(params)
-        return base_url + "?t=" + term
+        return bold("Glossary") + ": No terms found"
 
 @register('help-lizard')
 @register('helpliz')
