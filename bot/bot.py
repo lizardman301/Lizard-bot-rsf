@@ -130,7 +130,7 @@ async def on_message(message):
                     kwargs['channel_mentions'] = message.channel_mentions
                     if command in ['edit tos']:
                         kwargs['mentions'] = message.mentions
-                elif command in ['draw']:
+                elif command in ['draw', 'glossary', 'g']:
                     kwargs['full_msg'] = message
                     kwargs['client'] = client
 
