@@ -5,6 +5,7 @@ from json import loads as json_loads, dumps as json_dumps
 from os import path as os_path
 from re import search as re_search, compile as re_compile, sub as re_sub # Process strings
 from requests import get as requests_get,put as requests_put, post as requests_post # HTTP functions
+from requests_cache import CachedSession as requests_CachedSession # HTTP functions
 from fuzzywuzzy import fuzz as fuzzywuzzy_fuzz, process as fuzzywuzzy_process
 
 # Local imports
@@ -12,6 +13,7 @@ from secret import (sql_host,sql_port,sql_user,sql_pw,sql_db, api_key, chal_user
 from commands.sheets.sheets import sheets # Talk to Google Sheets API
 
 _callbacks = {} # Yaksha
+cached_glossary = requests_CachedSession('glossary_cache', expire_after=604800)
 
 # Yaksha
 def register(command):
@@ -100,7 +102,7 @@ def pings_b_gone(mentions):
     return mention_list
 
 def get_glossary():
-    req = requests_get("https://glossary.infil.net/json/glossary.json")
+    req = cached_glossary.get("https://glossary.infil.net/json/glossary.json")
     if req.status_code == 200:
         terms = req.json()
         for term in terms:
@@ -140,7 +142,7 @@ def fix_link_regex(definition):
         definition = definition.replace(definition[start_index:end_index+1], def_list[-1].strip('\''))
         start_index = definition.find('!<')
 
-    definition = re_sub(r'<[^>]+>', '', definition)
+    definition = re_sub(r'<[^>]+>', '', definition.split('<br>')[0])
 
     return definition
 
