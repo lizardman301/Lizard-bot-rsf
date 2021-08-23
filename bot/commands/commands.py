@@ -241,7 +241,7 @@ async def glossary(command, msg, user, channel, *args, **kwargs):
     if len(searched_terms) == 1:
         for term in infil_glossary:
             if term['term'] == st_dict[1][0]:
-                return "{} - <{}?t={}>\n{}".format(bold(term['term']), base_url, user_term, fix_link_regex(term['def']).split('<br>')[0])
+                return "{} - <{}?t={}>\n{}".format(bold(term['term']), base_url, user_term, fix_link_regex(term['def']))
     elif len(searched_terms) > 1:
         pick_embed = Embed(title="", colour=Colour(0x0fa1dc))
         pick_embed.set_footer(text="Which term did you mean, {0}?".format(sender.display_name))
@@ -270,7 +270,7 @@ async def glossary(command, msg, user, channel, *args, **kwargs):
                                 for term in infil_glossary:
                                     if term['term'] == st_dict[int(key)][0]:
                                         await pick_msg.delete()
-                                        return "{} - <{}?t={}>\n{}".format(bold(term['term']), base_url, user_term, fix_link_regex(term['def']).split('<br>')[0])
+                                        return "{} - <{}?t={}>\n{}".format(bold(term['term']), base_url, user_term, fix_link_regex(term['def']))
             except :
                 await pick_msg.delete()
                 raise Exception(bold("Glossary") + ": Issue with the terms")
