@@ -6,7 +6,7 @@ from random import choice as random_choice # For randomizing arrays
 from re import compile as re_compile # Regexing fun not simplified
 
 # Local imports
-from commands.utilities import (register, bold, dev_db, fix_link_regex, get_glossary, get_randomselect_data, read_db, read_disable, read_stat, save_db, search_terms, set_disable, set_enable) # Bring in some utilities to help the process
+from commands.utilities import (register, bold, dev_db, fix_link_regex, get_glossary, get_randomselect_data, read_db, read_disable, read_stat, save_db, search_terms, set_disable, set_enable, def_embed_factory) # Bring in some utilities to help the process
 
 # All @register decorators are a product of reviewing Yaksha
 # See utilities.register for more information
@@ -222,14 +222,13 @@ async def github(command, msg, user, channel, *args, **kwargs):
 @register('g')
 async def glossary(command, msg, user, channel, *args, **kwargs):
     base_url = "https://glossary.infil.net/"
+    if msg == '':
+        return base_url
     client = kwargs['client']
     sender = user
     infil_glossary = get_glossary()
     searched_terms = search_terms(msg, infil_glossary)
     number_emojis = {'1':"1⃣",'2':"2⃣",'3':"3⃣",'4':"4⃣",'5':"5⃣",'6':"6⃣",'7':"7⃣",'8':"8⃣",'9':"9⃣",'0':"0⃣"}
-
-    if msg == '':
-        return base_url
 
     params = msg.split(' ')
     user_term = "%20".join(params)
@@ -241,7 +240,11 @@ async def glossary(command, msg, user, channel, *args, **kwargs):
     if len(searched_terms) == 1:
         for term in infil_glossary:
             if term['term'] == st_dict[1][0]:
-                return "{} - <{}?t={}>\n{}".format(bold(term['term']), base_url, user_term, fix_link_regex(term['def']))
+                def_embed = Embed(title=bold(term['term']), colour=Colour(0x0fa1dc))
+                def_embed.add_field(name="Definition", value=fix_link_regex(term['def']))
+                def_embed.add_field(name="Link", value="[Glossary Page For Term]({}?t={})".format(base_url, user_term), inline=False)
+                await channel.send(embed=def_embed)
+                return
     elif len(searched_terms) > 1:
         pick_embed = Embed(title="", colour=Colour(0x0fa1dc))
         pick_embed.set_footer(text="Which term did you mean, {0}?".format(sender.display_name))
@@ -270,7 +273,11 @@ async def glossary(command, msg, user, channel, *args, **kwargs):
                                 for term in infil_glossary:
                                     if term['term'] == st_dict[int(key)][0]:
                                         await pick_msg.delete()
-                                        return "{} - <{}?t={}>\n{}".format(bold(term['term']), base_url, user_term, fix_link_regex(term['def']))
+                                        def_embed = Embed(title=bold(term['term']), colour=Colour(0x0fa1dc))
+                                        def_embed.add_field(name="Definition", value=fix_link_regex(term['def']))
+                                        def_embed.add_field(name="Link", value="[Glossary Page For Term]({}?t={})".format(base_url, user_term), inline=False)
+                                        await channel.send(embed=def_embed)
+                                        return
             except :
                 await pick_msg.delete()
                 raise Exception(bold("Glossary") + ": Issue with the terms")
