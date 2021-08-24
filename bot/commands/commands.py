@@ -6,7 +6,7 @@ from random import choice as random_choice # For randomizing arrays
 from re import compile as re_compile # Regexing fun not simplified
 
 # Local imports
-from commands.utilities import (register, bold, dev_db, fix_link_regex, get_glossary, get_randomselect_data, read_db, read_disable, read_stat, save_db, search_terms, set_disable, set_enable, def_embed_factory) # Bring in some utilities to help the process
+from commands.utilities import (register, bold, dev_db, fix_link_regex, get_glossary, get_randomselect_data, read_db, read_disable, read_stat, save_db, search_terms, set_disable, set_enable) # Bring in some utilities to help the process
 
 # All @register decorators are a product of reviewing Yaksha
 # See utilities.register for more information
@@ -230,7 +230,14 @@ async def glossary(command, msg, user, channel, *args, **kwargs):
     searched_terms = search_terms(msg, infil_glossary)
     number_emojis = {'1':"1⃣",'2':"2⃣",'3':"3⃣",'4':"4⃣",'5':"5⃣",'6':"6⃣",'7':"7⃣",'8':"8⃣",'9':"9⃣",'0':"0⃣"}
 
+    videoFlag = False
     params = msg.split(' ')
+
+    if params[-1] == "-v":
+        #Set video to true and remove video flag
+        videoFlag = True
+        params.pop()
+
     user_term = "%20".join(params)
 
     st_dict = {}
@@ -244,7 +251,13 @@ async def glossary(command, msg, user, channel, *args, **kwargs):
                 def_embed.add_field(name="Definition", value=fix_link_regex(term['def']))
                 def_embed.add_field(name="Link", value="[Glossary Page For Term]({}?t={})".format(base_url, user_term), inline=False)
                 await channel.send(embed=def_embed)
-                return
+                try:
+                    if(videoFlag):
+                        return "https://gfycat.com/{0}".format(term['video'][0])
+                    return
+                except:
+                    #no video,
+                    return "No video available"
     elif len(searched_terms) > 1:
         pick_embed = Embed(title="", colour=Colour(0x0fa1dc))
         pick_embed.set_footer(text="Which term did you mean, {0}?".format(sender.display_name))
@@ -277,7 +290,13 @@ async def glossary(command, msg, user, channel, *args, **kwargs):
                                         def_embed.add_field(name="Definition", value=fix_link_regex(term['def']))
                                         def_embed.add_field(name="Link", value="[Glossary Page For Term]({}?t={})".format(base_url, user_term), inline=False)
                                         await channel.send(embed=def_embed)
-                                        return
+                                        try:
+                                            if(videoFlag):
+                                                return "https://gfycat.com/{0}".format(term['video'][0])
+                                            return
+                                        except:
+                                            #no video,
+                                            return "No video available"
             except :
                 await pick_msg.delete()
                 raise Exception(bold("Glossary") + ": Issue with the terms")
