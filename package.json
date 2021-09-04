@@ -1,0 +1,30 @@
+{
+  "name": "lizard-bot-rsf",
+  "version": "1.0.0",
+  "description": "Simple discord bot originally built for the [Online Local](https://twitter.com/theonlinelocal) (formerly r/StreetFighter) East Coast SFV weekly tournament to help players see current round and with some commands for TOs. Support for multiple channels to run multiple tournaments at once and allows for custom prefixes, round flavor text, and more. Requires discord.py and pymysql.",
+  "main": "./bot/bot.js",
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lizardman301/Lizard-bot-rsf.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lizardman301/Lizard-bot-rsf/issues"
+  },
+  "homepage": "https://github.com/lizardman301/Lizard-bot-rsf#readme",
+  "dependencies": {
+    "discord.js": "^13.1.0",
+    "fs": "^0.0.1-security"
+  },
+  "devDependencies": {
+    "eslint": "^7.32.0"
+  }
+}
