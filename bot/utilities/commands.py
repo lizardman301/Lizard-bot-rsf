@@ -6,7 +6,7 @@ from random import choice as random_choice # For randomizing arrays
 from re import compile as re_compile # Regexing fun not simplified
 
 # Local imports
-from commands.utilities import (register, bold, dev_db, fix_link_regex, get_glossary, get_randomselect_data, read_db, read_disable, read_stat, save_db, search_terms, set_disable, set_enable) # Bring in some utilities to help the process
+from utilities.utilities import (register, bold, dev_db, fix_link_regex, get_glossary, get_randomselect_data, read_db, read_disable, read_stat, save_db, search_terms, set_disable, set_enable) # Bring in some utilities to help the process
 
 # All @register decorators are a product of reviewing Yaksha
 # See utilities.register for more information

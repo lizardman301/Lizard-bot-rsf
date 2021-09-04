@@ -1,7 +1,10 @@
 .vs
+.vscode
 __pycache__
-secret.py
+secret.*
 credentials.json
 Pipfile.lock
 Pipfile
 *.sqlite
+package-lock.json
+node_modules

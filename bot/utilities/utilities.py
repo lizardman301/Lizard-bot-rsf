@@ -10,7 +10,7 @@ from fuzzywuzzy import fuzz as fuzzywuzzy_fuzz, process as fuzzywuzzy_process
 
 # Local imports
 from secret import (sql_host,sql_port,sql_user,sql_pw,sql_db, api_key, chal_user) # Store secret information
-from commands.sheets.sheets import sheets # Talk to Google Sheets API
+from utilities.sheets.sheets import sheets # Talk to Google Sheets API
 
 _callbacks = {} # Yaksha
 cached_glossary = requests_CachedSession('glossary_cache', expire_after=604800)
@@ -140,7 +140,7 @@ def fix_link_regex(definition):
         def_list = definition[start_index+2:end_index].split(',')
 
         definition = definition.replace(definition[start_index:end_index+1], def_list[-1].strip('\''))
-        start_index = definition.find('!<')
+        start_index = definition.find('?<')
 
     definition = re_sub(r'<[^>]+>', '', definition.split('<br>')[0])
 
