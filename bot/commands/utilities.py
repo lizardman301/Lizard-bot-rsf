@@ -3,14 +3,17 @@ from pymysql import connect as pymysql_connect # Use for DB connections
 from pymysql.cursors import DictCursor as pymysql_DictCursor # Use for DB connections
 from json import loads as json_loads, dumps as json_dumps
 from os import path as os_path
-from re import search as re_search, compile as re_compile # Process strings
-from requests import put as requests_put, post as requests_post # HTTP functions
+from re import search as re_search, compile as re_compile, sub as re_sub # Process strings
+from requests import get as requests_get,put as requests_put, post as requests_post # HTTP functions
+from requests_cache import CachedSession as requests_CachedSession # HTTP functions
+from fuzzywuzzy import fuzz as fuzzywuzzy_fuzz, process as fuzzywuzzy_process
 
 # Local imports
 from secret import (sql_host,sql_port,sql_user,sql_pw,sql_db, api_key, chal_user) # Store secret information
 from commands.sheets.sheets import sheets # Talk to Google Sheets API
 
 _callbacks = {} # Yaksha
+cached_glossary = requests_CachedSession('glossary_cache', expire_after=604800)
 
 # Yaksha
 def register(command):
@@ -97,6 +100,64 @@ def pings_b_gone(mentions):
         mention_list.update({mention.name: mention.mention})
 
     return mention_list
+
+def get_glossary():
+    req = cached_glossary.get("https://glossary.infil.net/json/glossary.json")
+    if req.status_code == 200:
+        terms = req.json()
+        for term in terms:
+            term['termStripped'] = strip_special_chars(term['term'])
+            if 'altterm' in term:
+                for alt in term['altterm']:
+                    term['termStripped'] += strip_special_chars(alt)
+            term['defStripped'] = strip_special_chars(term['def'])
+            if 'jp' in term:
+                term['defStripped'] += strip_special_chars(term['jp'])
+        return terms
+    return False
+
+def strip_special_chars(string):
+    once = re_sub(r'[^\w]', '', string)
+    twice = re_sub(r'[^\S]', '', once)
+    return twice
+
+def fix_link_regex(definition):
+    start_index = definition.find('!<')
+    while start_index >= 0:
+        end_index = definition.find('>',start_index)
+        if end_index < 0:
+            break
+        def_list = definition[start_index+2:end_index].split(',')
+
+        definition = definition.replace(definition[start_index:end_index+1], def_list[-1].strip('\''))
+        start_index = definition.find('!<')
+
+    start_index = definition.find('?<')
+    while start_index >= 0:
+        end_index = definition.find('>',start_index)
+        if end_index < 0:
+            break
+        def_list = definition[start_index+2:end_index].split(',')
+
+        definition = definition.replace(definition[start_index:end_index+1], def_list[-1].strip('\''))
+        start_index = definition.find('!<')
+
+    definition = re_sub(r'<[^>]+>', '', definition.split('<br>')[0])
+
+    return definition
+
+def search_terms(search_term, glossary):
+    stripped_search = strip_special_chars(search_term.lower())
+    in_term = []
+    for term in glossary:
+        split_term = term['termStripped'].split()
+        extraction = fuzzywuzzy_process.extractBests(stripped_search, split_term, scorer=fuzzywuzzy_fuzz.partial_ratio, score_cutoff=80)
+        if extraction:
+            list_extract = list(extraction[0])
+            list_extract[0] = term['term']
+            in_term.append(list_extract)
+
+    return sorted(in_term, key=lambda term: term[1], reverse=True)[:9]
 
 def checkin(parts, users):
     users = list(users.values()) # Discord server usernames and mentions

@@ -4,3 +4,4 @@ secret.py
 credentials.json
 Pipfile.lock
 Pipfile
+*.sqlite
