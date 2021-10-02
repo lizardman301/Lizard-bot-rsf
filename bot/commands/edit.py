@@ -57,6 +57,7 @@ async def edit_botrole(command, msg, user, channel, *args, **kwargs):
     return "The new {0} is: {1}".format(bold(editable_command), bold(channel_message)) # Print the new message for a given setting
 
 @register('edit bracket')
+@register('edit lobby')
 @register('edit pingtest')
 @register('edit status')
 @register('edit stream')
