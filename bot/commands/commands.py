@@ -350,7 +350,7 @@ async def ping(command, msg, user, channel, *args, **kwargs):
     return "Fuck you, Lizardman"
 
 @register('lobby')
-async def bracket(command, msg, user, channel, *args, **kwargs):
+async def lobby(command, msg, user, channel, *args, **kwargs):
     # Custom message for setting a lobby code
     return read_db('channel', 'lobby', channel.id)
 
