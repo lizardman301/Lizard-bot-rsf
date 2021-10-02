@@ -49,6 +49,7 @@ CREATE TABLE IF NOT EXISTS `channel_settings` (
   `status` VARCHAR(1953) NULL DEFAULT 'Winner\'s Round {0} can play! Losers can play till top 8 losers side. If you have a bye Round {0}, Please Wait!',
   `stream` VARCHAR(2000) NULL DEFAULT 'There are no streams set for this channel',
   `bracket` VARCHAR(2000) NULL DEFAULT 'There is no bracket set for this channel',
+  `lobby` VARCHAR(2000) NULL DEFAULT 'There is no lobby information set for this channel',
   `pingtest` VARCHAR(2000) NULL DEFAULT 'Use <https://testmyspeed.onl/> for ping tests.',
   `seeding` VARCHAR(80) NULL DEFAULT '',
   PRIMARY KEY (`setting_id`),
