@@ -160,6 +160,10 @@ Server-wide edit commands do not require a channel to be specified.
 	 * Allows you to add a link to a bracket for users to view
 	 * Unique for each channel
 	 * Default value: 'There is no bracket set for this channel'
+ * lobby <string>
+	 * Allows you to add lobby information (like for a Strive tourney)
+	 * Unique for each channel
+	 * Default value: 'There is no lobby information set for this channel
  * pingtest <string>
 	 * Allows you to add a link to a speedtest and instructions for how to prefer a speedtest
 	 * Unique for each channel
@@ -238,6 +242,16 @@ Restricted: No
 Shortcuts: `!ping` `!liz`
 
 Ping! Pong! with some zest.  Used to check if Lizard-BOT is currently running and to leave feedback for Lizardman.
+
+## `!lobby`
+![!lobby example](/doc/assets/images/lobby.png)
+
+Restricted: No
+
+Shortcuts: None
+
+Displays set lobby information for the channel.
+
 
 ## `!not-in-discord`
 ![!not-in-discord example](/doc/assets/images/not-in-discord.png)

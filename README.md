@@ -62,6 +62,10 @@ If multiple channels are listed, the setting will be updated to the same value a
 	 * Allows you to add a link to a bracket for users to view
 	 * Unique for each channel
 	 * Default value: 'There is no bracket set for this channel'
+ * lobby <string>
+	 * Allows you to add lobby information (like for a Strive tourney)
+	 * Unique for each channel
+	 * Default value: 'There is no lobby information set for this channel
  * pingtest <string>
 	 * Allows you to add a link to a speedtest and instructions for how to prefer a speedtest
 	 * Unique for each channel
@@ -140,6 +144,9 @@ Displays the invite link to join the Lizard-BOT Discord Server for additional he
 
 `!lizardman`
 Ping! Pong!
+
+`!lobby`
+Shows lobby information.
 
 `!not-in-discord`
 Repeats last part of challonge checkin command. Tells people discord nick must match challonge name.

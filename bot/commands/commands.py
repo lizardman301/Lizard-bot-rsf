@@ -349,6 +349,11 @@ async def ping(command, msg, user, channel, *args, **kwargs):
     print("Pinged by {0}".format(user))
     return "Fuck you, Lizardman"
 
+@register('lobby')
+async def lobby(command, msg, user, channel, *args, **kwargs):
+    # Custom message for setting a lobby code
+    return read_db('channel', 'lobby', channel.id)
+
 @register('pingtest')
 @register('pt')
 async def pingtest(command, msg, user, channel, *args, **kwargs):
