@@ -3,56 +3,62 @@ function bold(string) {
 }
 
 function get_chal_tour_id(bracket_msg) {
-    // designed to return the tournament identifier if it exists in the database bracket text
-    // returns empty string otherwise
-    const regex = new RegExp("[-a-zA-Z0-9@:%._\+~#=]{0,256}\.?challonge\.com\/[a-zA-Z0-9_]+"); // regex for <community_url>.challonge.com/<tournament identifier> or challonge.com/<tournament identifier>
-    let url = "";
-    let tour_id = "";
+	// designed to return the tournament identifier if it exists in the database bracket text
+	// returns empty string otherwise
 
-    // find first match and make that the url to work off of
-    // if no match, return empty string immediately
-    let matches = regex.exec(bracket_msg);
-    if (matches !== null) {
-        url = matches[0];
+	// regex for <community_url>.challonge.com/<tournament identifier> or challonge.com/<tournament identifier>
+	const regex = new RegExp('[-a-zA-Z0-9@:%._+~#=]{0,256}.challonge.com/[a-zA-Z0-9_]+');
+	let url = '';
+	let tour_id = '';
+
+	// find first match and make that the url to work off of
+	// if no match, return empty string immediately
+	const matches = regex.exec(bracket_msg);
+	if (matches !== null) {
+		url = matches[0];
 	}
-    else {
-        throw "No bracket link set";
+	else {
+		throw 'No bracket link set';
 	}
 
-    // get the identifer from the back part of the url
-    // should only be one slash so we split on that
-    // get the last group in order to get the tournament identifier
-    tour_id = url.split("/", 1)[-1];
-    return tour_id; // return it
+	// get the identifer from the back part of the url
+	// should only be one slash so we split on that
+	// get the last group in order to get the tournament identifier
+	tour_id = url.split('/').pop();
+	return tour_id;
 }
 
 function get_randomselect_data(game, random_type='character'){ 
-    rs_info = json_loads(open(os_path.join(os_path.dirname(__file__), 'rs.json')).read())
-    games = list(rs_info[random_type].copy().keys())
+    const rs_info = require('./bot/commands/rs.json');
+    let games = Object.keys(rs_info[random_type]);
 
-    if game not in games:
+    if(!games.includes(game)){
         return [], games
-    return rs_info[random_type].get(game, []).copy()[0:-1], games
+    }
+    let values = Object.values(rs_info[random_type][game]);
+    return values.splice(0, values.length - 1), games
 }
 
 // Get all users in a Discord
 function get_users(users) {
-    let userDict = {};
+	const userDict = {};
 
-    // Get their distinct name and their nickname
-    for (user in users) {
-        userDict[user.name + '#' + str(user.discriminator)] = [user.display_name.lower(), user.mention];
-    }
+	// Get their distinct name and their nickname
+	users.forEach(user => {
+		userDict[user['name'] + '#' + String(user['discriminator'])] = [user['display_name'].toLowerCase(), user['mention']];
+	});
 
-    return userDict;
+	return userDict;
 }
 
 // Perform regex to find out if a string is a Discord channel
 function is_channel(channel) {
-    reg = re_compile('<#\d*>')
-    if reg.fullmatch(channel):
-        return int(channel[2:][:-1]) // Return only the channel ID
-    return 0
+	const regex = new RegExp('<#[0-9]*>');
+	if (channel.match(regex)) {
+		return BigInt(channel.slice(2, -1));
+		// Return only the channel ID
+	}
+	return 0;
 }
 
 // Simplify removing pings more

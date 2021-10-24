@@ -1,6 +1,6 @@
 const { Client, Intents } = require('discord.js');
 const util = require('util');
-const token = '';
+const secrets = require('./secret.json');
 
 // Create a new client instance
 const intentions = new Intents(Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_BANS, Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS, Intents.FLAGS.GUILD_INTEGRATIONS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Intents.FLAGS.GUILD_MESSAGE_TYPING);
@@ -35,4 +35,4 @@ client.on('interactionCreate', async interaction => {
 });
 
 // Login to Discord with your client's token
-client.login(token);
+client.login(secrets.token);
