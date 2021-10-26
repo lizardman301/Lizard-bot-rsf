@@ -23,7 +23,9 @@
   "homepage": "https://github.com/lizardman301/Lizard-bot-rsf#readme",
   "dependencies": {
     "discord.js": "^13.1.0",
-    "fs": "^0.0.1-security"
+    "fs": "^0.0.1-security",
+    "mariadb": "^2.5.5",
+    "sequelize": "^6.8.0"
   },
   "devDependencies": {
     "eslint": "^7.32.0"

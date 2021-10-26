@@ -63,17 +63,20 @@ function is_channel(channel) {
 
 // Simplify removing pings more
 function pings_b_gone(mentions) {
-    mention_list = {} // Empty dict to store values in
+	let mention_list = {};
+	// Empty dict to store values in
 
-    // For each mention, get the name and the mention value
-    for mention in mentions:
-        // Check for nickname
-        if mention.display_name:
-            mention_list.update({mention.display_name: mention.mention})
-            continue
-        mention_list.update({mention.name: mention.mention})
+	// For each mention, get the name and the mention value
+	mentions.forEach(mention => {
+		let ping = '<@!' + String(mention.id) + '>';
+		if (mention.nick) {
+			mention_list[mention.nick] = ping;
+			return;
+		}
+		mention_list[mention.name] = ping;
+	});
 
-    return mention_list
+	return mention_list;
 }
 
 function checkin(parts, users) {
@@ -179,100 +182,6 @@ function seeding(sheet_id, parts, url, seed_num) {
 
     // Return seeding list
     return finished_seeding
-}
-
-// Create a connection to the database
-function make_conn() {
-    try:
-        return pymysql_connect(host=sql_host, port=sql_port, user=sql_user, password=sql_pw, db=sql_db, charset='utf8mb4', autocommit=True, cursorclass=pymysql_DictCursor)
-    except:
-        raise Exception("Unable to connect to SQL server. Is it turned on? Did you point the bot to the right IP address?")
-}
-
-// Check if the guild/channel is in the table
-// If not, add it the guilds, channels, and settings tables
-function settings_exist(guild_id, chan_id) {
-    conn = make_conn() # Make DB connection
-
-    try:
-        with conn.cursor() as cursor:
-            for level in ['guild','channel']:
-                ids = [] // Store a list of all ids
-                id = guild_id if level == 'guild' else chan_id // Set variable id based on what level of setting
-
-                // Select all IDs in the DB for the given level
-                sql = "SELECT " + level + "_id FROM " + level + "s"
-                cursor.execute(sql)
-                for row in cursor:
-                    ids.append(row[level + '_id']) // Add IDs to the list
-
-                /*
-				If the ID is not in the list
-                # Add the ID to the guild/channel table
-                # Add the ID to the guild/channel_settings table (This will initialize the default values)
-				*/
-                if id not in ids:
-                    sql = "INSERT INTO " + level + "s (" + level + "_id) VALUES (%s)"
-                    cursor.execute(sql, (id,))
-
-                    sql = "INSERT INTO " + level + "_settings (" + level + "_id) VALUES (%s)"
-                    cursor.execute(sql, (id,))
-    except Exception:
-        return 0 // Falsy value to fail
-    finally:
-        conn.close() // Close the connection
-
-    return 1 // Return truthy value for checking
-}
-
-function dev_db(sql) {
-    conn = make_conn() // Make DB Connection
-    info = []
-
-    try:
-        with conn.cursor() as cursor:
-            cursor.execute(sql)
-            info.append("Number of rows affected/returned: {}".format(cursor.rowcount))
-            for row in cursor:
-                info.append(row)
-        return info
-    except:
-        raise
-    finally:
-        conn.close() // Close the connection
-}
-
-// Read a setting from database for a given guild/channel
-function read_db(level, setting, id) {
-    conn = make_conn() // Make DB Connection
-
-    try:
-        with conn.cursor() as cursor:
-            // Select the desired setting from the DB for the given guild/channel
-            sql = "SELECT `" + setting + "` FROM " + level + "_settings WHERE " + level + "_id = %s"
-            cursor.execute(sql, (id))
-            return cursor.fetchone()[setting] // Return the value for the setting
-    except:
-        raise Exception("Column likely doesn't exist. Did you set up/update the database tables?")
-    finally:
-        conn.close() // Close the connection
-}
-
-// Save a setting for a given guild/channel to the database
-function save_db(level, setting, data, id, **kwargs) {
-    conn = make_conn() // Make DB Connection
-
-    try:
-        with conn.cursor() as cursor:
-            // Update the desired setting in the DB for the given guild/channel
-            if kwargs:
-                id = kwargs['commandChannel']
-            sql = "UPDATE " + level + "_settings SET `" + setting + "` = %s WHERE " + level + "_id = %s"
-            cursor.execute(sql, (data, id))
-    except:
-        raise Exception("Column likely doesn't exist. Did you set up/update the database tables?")
-    finally:
-        conn.close() // Close the connection
 }
 
 // Read a stat from database for a given command
