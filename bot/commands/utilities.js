@@ -80,52 +80,50 @@ function pings_b_gone(mentions) {
 }
 
 function checkin(parts, users) {
-    users = list(users.values()) # Discord server usernames and mentions
-    not_discord_parts = [] # Used for people missing from the server
-    not_checked_in_parts = [] # Used for people not checked in
-    usernames = [] # Discord server usernames
-    mentions = [] # Discord server mentions
+	// Discord server usernames and mentions
+	users = Object.values(users);
+	// Used for people missing from the server
+	const not_discord_parts = [];
+	// Used for people not checked in
+	const not_checked_in_parts = [];
+	// Discord server usernames
+	const usernames = [];
+	// Discord server mentions
+	const mentions = [];
 
-    for user in users:
-        usernames.append(user[0])
-        mentions.append(user[1])
+	users.forEach(user => {
+		const userValues = Object.values(user)[0];
+		usernames.push(userValues[0]);
+		mentions.push(userValues[1]);
+	});
 
-    // Check each participant to see if they are in the server and checked in
-    for p in parts:
-        p = p['participant']
+	// Check each participant to see if they are in the server and checked in
+	parts.forEach(p => {
+		p = p['participant'];
 
-        name_lower = p['display_name'].lower() // Participant name in lowercase
-        name_escaped = escape_markdown(p['display_name']) // Participant name with escaped markdown characters
-        challonge_name_lower = p['challonge_username'].lower() if p['challonge_username'] else p['display_name'].lower() // Challonge user name in lowercase
+		const name_lower = p['display_name'].toLowerCase();
+		const name_escaped = Util.escapeMarkdown(p['display_name']);
+		const challonge_name_lower = p['challonge_username'] ? p['challonge_username'].toLowerCase() : name_lower;
 
-        // If participant not checked in, add them to the bad list
-        if not p['checked_in']:
-            not_checked_in_parts.append(name_escaped)
+		if (!p['checked_in']) {
+			not_checked_in_parts.push(name_escaped);
+		}
 
-        // If participant not in the Discord, add them to the bad list
-        // We check to see if the name exists in any PART of the user list
-        if not (any(name_lower in u for u in usernames)) and not (any(challonge_name_lower in u for u in usernames)):
-            not_discord_parts.append(name_escaped)
+		if (!(usernames.find(elem => { return elem.toLowerCase().includes(name_lower); })) && !( usernames.find(elem => { return elem.toLowerCase().includes(challonge_name_lower); }))) {
+			not_discord_parts.push(name_escaped);
+		}
 
-        /*
-        (IF name is in Discord server
-        AND name is not checked_in)
-        AND
-        (IF the name or challonge name exists in any part of a Users name)
-        Ping the first user
-        */
+		if ((!(not_discord_parts.includes(name_escaped)) && (not_checked_in_parts.includes(name_escaped))) && ((usernames.find(elem => { return elem.toLowerCase().includes(name_lower); })) || (usernames.find(elem => { return elem.toLowerCase().includes(challonge_name_lower); })))) {
+			const match = usernames.filter(elem => { elem = elem.toLowerCase(); if (elem.includes(name_lower) || elem.includes(challonge_name_lower)) { return true; } else { return false; } });
 
-        if (name_escaped not in not_discord_parts and name_escaped in not_checked_in_parts) and (any(name_lower in u for u in usernames) or any(challonge_name_lower in u for u in usernames)):
-            // Get the match for the user if they exist in the discord
-            match = [u for u in usernames if (name_lower in u) or (challonge_name_lower in u)]
-            // Update the not_checked_in list  to use the user @mention instead of their name
-            not_checked_in_parts[not_checked_in_parts.index(name_escaped)] = mentions[usernames.index(match[0])]
+			not_checked_in_parts[not_checked_in_parts.indexOf(name_escaped)] = mentions[usernames.indexOf(match[0])];
+		}
+	});
 
-    // Sort alphabetically
-    not_checked_in_parts.sort()
-    not_discord_parts.sort()
+	not_checked_in_parts.sort();
+	not_discord_parts.sort();
 
-    return not_checked_in_parts, not_discord_parts
+	return [not_checked_in_parts, not_discord_parts];
 }
 
 function seeding(sheet_id, parts, url, seed_num) {

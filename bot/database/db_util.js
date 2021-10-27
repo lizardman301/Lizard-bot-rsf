@@ -11,16 +11,11 @@ exports.settingsExist = async function(guild_id, chan_id) {
 		const id = level[0].name === 'guild' ? guild_id : chan_id;
 
 		level.forEach(async model => {
-			console.log(sequelize.where(sequelize.col(level[0].name + '_id'), {
-				[sequelize.Op.eq]: id,
-			}));
-			const [lev, created] = await model.findOrCreate({
-				where: sequelize.where(sequelize.col(level[0].name + '_id'), {
-					[sequelize.Op.eq]: String(id),
-				}),
+			const sql = 'INSERT IGNORE INTO `' + model.name + 's` (`' + level[0].name + '_id`) VALUES ((SELECT CAST(? AS INT)))';
+
+			await seq.query(sql, {
+				replacements: [String(id)],
 			});
-			console.log(lev);
-			console.log(created);
 		});
 	});
 };
@@ -47,7 +42,7 @@ exports.setSetting = async function(level, setting, id, data, options = {}) {
 	});
 };
 
-exports.readStat = async function(command, func_map) {
+/* exports.readStat = async function(command, func_map) {
 	let stats = {};
 	let sql = '';
 
@@ -67,4 +62,4 @@ exports.readStat = async function(command, func_map) {
 	else {
 		sql = 'SELECT command, used FROM stats';
 	}
-};
+}; */
