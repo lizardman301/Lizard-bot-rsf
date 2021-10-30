@@ -22,8 +22,10 @@
   },
   "homepage": "https://github.com/lizardman301/Lizard-bot-rsf#readme",
   "dependencies": {
+    "axios": "^0.24.0",
     "discord.js": "^13.1.0",
     "fs": "^0.0.1-security",
+    "googleapis": "^89.0.0",
     "mariadb": "^2.5.5",
     "sequelize": "^6.8.0"
   },
