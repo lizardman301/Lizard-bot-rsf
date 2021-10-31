@@ -1,4 +1,4 @@
-const secrets = require('../../secret.json');
+const secrets = require('../../../secret.json');
 const sequelize = require('sequelize');
 const guildModel = require('./guild');
 const guild_settingModel = require('./guild_setting');

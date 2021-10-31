@@ -1,7 +1,7 @@
 const { Util } = require('discord.js');
 const axios = require('axios');
-const secrets = require('./secret.json');
-const { sheets } = require('./commands/sheets/sheets');
+const secrets = require('../secret.json');
+const { sheets } = require('./sheets/sheets');
 
 function bold(string) {
 	return '**' + string + '**';
@@ -34,7 +34,7 @@ exports.get_chal_tour_id = function(bracket_msg) {
 };
 
 exports.get_randomselect_data = function(game, random_type = 'character') {
-	const rs_info = require('./bot/commands/rs.json');
+	const rs_info = require('./bot/utilities/rs.json');
 	const games = Object.keys(rs_info[random_type]);
 
 	if (!games.includes(game)) {
@@ -265,4 +265,8 @@ exports.seeding = async function(sheet_id, parts, url, seed_num) {
 	}
 
 	return finished_seeding;
+};
+
+module.exports = {
+	bold,
 };
