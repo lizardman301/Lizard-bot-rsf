@@ -33,8 +33,8 @@ exports.get_chal_tour_id = function(bracket_msg) {
 	return tour_id;
 };
 
-exports.get_randomselect_data = function(game, random_type = 'character') {
-	const rs_info = require('./bot/utilities/rs.json');
+function get_randomselect_data(game, random_type) {
+	const rs_info = require('./rs.json');
 	const games = Object.keys(rs_info[random_type]);
 
 	if (!games.includes(game)) {
@@ -42,8 +42,7 @@ exports.get_randomselect_data = function(game, random_type = 'character') {
 	}
 	const values = Object.values(rs_info[random_type][game]);
 	return [values.slice(0, values.length - 1), games];
-};
-
+}
 
 // Get all users in a Discord
 exports.get_users = function(users) {
@@ -269,4 +268,5 @@ exports.seeding = async function(sheet_id, parts, url, seed_num) {
 
 module.exports = {
 	bold,
+	get_randomselect_data,
 };
