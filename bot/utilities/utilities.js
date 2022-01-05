@@ -1,13 +1,16 @@
 const { Util } = require('discord.js');
+
 const axios = require('axios');
+
 const secrets = require('../secret.json');
 const { sheets } = require('./sheets/sheets');
+const { getSetting } = require('./database/db_util');
 
 function bold(string) {
 	return '**' + string + '**';
 }
 
-exports.get_chal_tour_id = function(bracket_msg) {
+function get_chal_tour_id(bracket_msg) {
 	// designed to return the tournament identifier if it exists in the database bracket text
 	// returns empty string otherwise
 
@@ -31,7 +34,7 @@ exports.get_chal_tour_id = function(bracket_msg) {
 	// get the last group in order to get the tournament identifier
 	tour_id = url.split('/').pop();
 	return tour_id;
-};
+}
 
 function get_randomselect_data(game, random_type) {
 	const rs_info = require('./rs.json');
@@ -45,16 +48,21 @@ function get_randomselect_data(game, random_type) {
 }
 
 // Get all users in a Discord
-exports.get_users = function(users) {
+function get_users(users) {
 	const userDict = {};
 
 	// Get their distinct name and their nickname
 	users.forEach(user => {
-		userDict[user['name'] + '#' + String(user['discriminator'])] = [user['display_name'].toLowerCase(), user['mention']];
+		try {
+			userDict[user['user']['username'] + '#' + String(user['user']['discriminator'])] = [user['nickname'].toLowerCase(), user['user']['id']];
+		}
+		catch (err) {
+			userDict[user['user']['username'] + '#' + String(user['user']['discriminator'])] = [user['user']['username'].toLowerCase(), '<@' + user['user']['id'] + '>'];
+		}
 	});
 
 	return userDict;
-};
+}
 
 // Perform regex to find out if a string is a Discord channel
 exports.is_channel = function(channel) {
@@ -85,7 +93,7 @@ exports.pings_b_gone = function(mentions) {
 	return mention_list;
 };
 
-exports.checkin = function(parts, users) {
+function checkin(parts, users) {
 	// Discord server usernames and mentions
 	users = Object.values(users);
 	// Used for people missing from the server
@@ -98,7 +106,7 @@ exports.checkin = function(parts, users) {
 	const mentions = [];
 
 	users.forEach(user => {
-		const userValues = Object.values(user)[0];
+		const userValues = Object.values(user);
 		usernames.push(userValues[0]);
 		mentions.push(userValues[1]);
 	});
@@ -157,7 +165,7 @@ exports.checkin = function(parts, users) {
 	not_discord_parts.sort();
 
 	return [not_checked_in_parts, not_discord_parts];
-};
+}
 
 exports.seeding = async function(sheet_id, parts, url, seed_num) {
 	// Stores "player point_value" for sorting later
@@ -266,7 +274,54 @@ exports.seeding = async function(sheet_id, parts, url, seed_num) {
 	return finished_seeding;
 };
 
+async function start_challonge(channelId, guildId) {
+	const baseUrl = 'https://api.challonge.com/v1/tournaments/';
+	let tourUrl;
+	try {
+		tourUrl = get_chal_tour_id(await getSetting('channel', 'bracket', channelId));
+	}
+	catch (err) {
+		console.log(err);
+	}
+
+	const subdomain = await getSetting('guild', 'challonge', guildId);
+
+	if (subdomain) {
+		tourUrl = subdomain + '-' + tourUrl;
+	}
+
+	try {
+		const res = await axios.get(baseUrl + tourUrl + '/participants.json', {
+			headers: {
+				'User-Agent': 'Lizard-BOT',
+			},
+			auth: {
+				username: secrets.chal_user,
+				password: secrets.api_key,
+			},
+		});
+		return [res.data, tourUrl];
+	}
+	catch (err) {
+		if (err.response.status === 401) {
+			console.log(err);
+			console.log(bold('Challonge') + ': Lizard-BOT does not have access to that tournament');
+		}
+		else if (err.response.status === 404) {
+			console.log(err);
+			console.log(bold('Challonge') + ': Lizard-BOT can not find tournament: ' + tourUrl);
+		}
+		else {
+			console.log(err);
+			console.log(bold('Challonge') + 'Unknown Challonge error for <' + err.config.url + '> initializing connection to Challonge');
+		}
+	}
+}
+
 module.exports = {
 	bold,
+	checkin,
 	get_randomselect_data,
+	get_users,
+	start_challonge,
 };

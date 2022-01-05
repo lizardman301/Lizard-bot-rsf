@@ -10,7 +10,7 @@ from fuzzywuzzy import fuzz as fuzzywuzzy_fuzz, process as fuzzywuzzy_process
 
 # Local imports
 from secret import (sql_host,sql_port,sql_user,sql_pw,sql_db, api_key, chal_user) # Store secret information
-from commands.sheets.sheets import sheets # Talk to Google Sheets API
+from utilities.sheets.sheets import sheets # Talk to Google Sheets API
 
 _callbacks = {} # Yaksha
 cached_glossary = requests_CachedSession('glossary_cache', expire_after=604800)
