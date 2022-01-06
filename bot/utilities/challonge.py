@@ -101,9 +101,6 @@ async def challonge_here(command, msg, user, channel, *args, **kwargs):
             print(checkin_post.text)
             raise Exception(bold("Challonge_Here") + ": Unknown Challonge error for <" + tour_url + "> while checking in: " + msg)
 
-        # Message showing who is not checked in and who is not in the Discord
-        return 
-
 @register('challonge report')
 @register('chal report')
 async def challonge_report(command, msg, user, channel, *args, **kwargs):

@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const utilities = require('util');
-const { bold, checkin, get_users, start_challonge } = require('../utilities/utilities');
+const { bold } = require('../utilities/utilities');
+const { checkin, get_users, start_challonge } = require('../utilities/chal_util');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -10,7 +11,7 @@ module.exports = {
 		const all_members = await interaction.guild.members.fetch();
 		await interaction.deferReply();
 		// eslint-disable-next-line no-unused-vars
-		const [parts, tour_url] = await start_challonge(interaction.channelId, interaction.guildId);
+		const [parts, tourUrl] = await start_challonge(interaction.channelId, interaction.guildId);
 
 		const [not_checked_in_parts, not_discord_parts] = checkin(parts, get_users(all_members));
 

@@ -2,7 +2,7 @@ const { google } = require('googleapis');
 
 exports.sheets = async function(sheet_id) {
 	const auth = new google.auth.GoogleAuth({
-		keyFile: './bot/commands/sheets/credentials.json',
+		keyFile: './bot/utilities/sheets/credentials.json',
 		scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
 	});
 	const creds = await auth.getClient();
