@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const utilities = require('util');
 
-// const db_util = require('./database/db_util');
+const { addStat, settingsExist } = require('./utilities/database/db_util');
 
 const { token } = require('./secret.json');
 
@@ -56,7 +56,9 @@ client.on('interactionCreate', async interaction => {
 	if (!command) return;
 
 	try {
+		await settingsExist(interaction.guildId, interaction.channelId);
 		await command.execute(interaction);
+		await addStat(interaction.commandName);
 	}
 	catch (error) {
 		console.error(error);

@@ -1,5 +1,5 @@
 const sequelize = require('sequelize');
-const { guild, guild_setting, channel, channel_setting, seq } = require('./models/seq');
+const { guild, guild_setting, channel, channel_setting, seq, stats } = require('./models/seq');
 const model_references = {
 	'guild': [guild, guild_setting],
 	'channel': [channel, channel_setting],
@@ -42,24 +42,41 @@ exports.setSetting = async function(level, setting, id, data, options = {}) {
 	});
 };
 
-/* exports.readStat = async function(command, func_map) {
-	let stats = {};
+exports.addStat = async function(command) {
+	const res = await stats.findAll({
+		attributes: ['used'],
+		where: sequelize.where(sequelize.col('command'), {
+			[sequelize.Op.eq]: command,
+		}),
+	});
+
+	if (res.length > 0) {
+		await stats.update({
+			used: res[0].dataValues['used'] + 1,
+		},
+		{
+			where: {
+				command: command,
+			},
+		});
+	}
+	else {
+		await stats.create({
+			command: command,
+		});
+	}
+};
+
+exports.readStat = async function(command) {
 	let sql = '';
 
 	if (command) {
-		let func = '';
-		if (command.includes('challonge') || command.includes('edit')) {
-			func = command.split('_')[0];
-		}
-		else {
-			func = '';
-		}
 		sql = 'SELECT command, used FROM stats WHERE command = ?';
 		await seq.query(sql, {
-			replacements: [func],
+			replacements: command,
 		});
 	}
 	else {
 		sql = 'SELECT command, used FROM stats';
 	}
-}; */
+};

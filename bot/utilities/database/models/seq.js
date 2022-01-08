@@ -4,6 +4,7 @@ const guildModel = require('./guild');
 const guild_settingModel = require('./guild_setting');
 const channelModel = require('./channel');
 const channel_settingModel = require('./channel_setting');
+const statsModel = require('./stats');
 
 // This is our connection to the database
 const seq = new sequelize({
@@ -32,6 +33,7 @@ const guild = guildModel(seq, sequelize);
 const guild_setting = guild_settingModel(seq, sequelize);
 const channel = channelModel(seq, sequelize);
 const channel_setting = channel_settingModel(seq, sequelize);
+const stats = statsModel(seq, sequelize);
 
 // Our connections between the tables
 guild_setting.belongsTo(guild, { foreignKey: 'guild_id' });
@@ -42,5 +44,6 @@ module.exports = {
 	guild_setting,
 	channel,
 	channel_setting,
+	stats,
 	seq,
 };
