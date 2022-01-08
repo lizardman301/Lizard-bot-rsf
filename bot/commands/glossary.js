@@ -1,11 +1,12 @@
 const { SlashCommandBuilder, Embed } = require('@discordjs/builders');
-// const { setup } = require('axios-cache-adapter');
+const cachios = require('cachios');
 const { bold } = require('../utilities/utilities');
 
-// const cache_days = 28;
-/* const cached_glossary = setup({
+const cache_days = 28;
+/*
+const cached_glossary = setup({
 	// `axios` options
-	url: 'https://glossary.infil.net/json/glossary.json',
+	url: 'https://glossary.infil.net/json',
 
 	// `axios-cache-adapter` options
 	cache: {
@@ -85,9 +86,11 @@ function searchForTerm(termString, terms) {
 	return inTerm;
 }
 
-function prepareData() {
+async function prepareData() {
 	const terms = {};
-	const data = ['', ''];
+	const res = await cachios.get('https://glossary.infil.net/json/glossary.json', { ttl: cache_days * 24 * 60 * 60 });
+	const data = res.data;
+
 	data.forEach(function(d) {
 		if (d.term.length > 0) {
 			terms[d.term.toLowerCase()] = d;
@@ -102,9 +105,13 @@ function prepareData() {
 			d.defStripped = stripPuncAndSpace(d.def) + (Object.prototype.hasOwnProperty.call(d, 'jp') ? stripPuncAndSpace(d.jp) : '');
 		}
 	});
+	return terms;
 }
 
-function doLinkReplacement(str, terms) {
+// Changed from Infil's original to clear links to make Discord look better
+function doLinkReplacement(str) {
+	str = str.split('<br>')[0];
+
 	// parse out the in-glossary links from the definition and assign them as actual working hyperlinks
 	let sind = str.indexOf('!<');
 	while (sind >= 0) {
@@ -113,12 +120,8 @@ function doLinkReplacement(str, terms) {
 			// something bad happened and we didn't format the link properly
 			break;
 		}
-		// index [0] is the code term name, [1] is the text to display (unless we only have one term, then [0] is for both)
-		const tokens = str.substring(sind + 3, eind - 1).split('\',\'');
-		const one = tokens[0].replace('\'', '\\\''), two = tokens.length > 1 ? tokens[1] : tokens[0];
-		const lower = tokens[0].toLowerCase();
-		const properTerm = lower in terms ? terms[lower].term.replace('\'', '&apos;') : '[broken link]';
-		const s = '<a href="/?t=' + properTerm + '" onclick="event.preventDefault(); addClickedTerm(\'' + one + '\',this)" class=\'glossary-link\' title=\'See Term: ' + properTerm + '\'>' + two + '</a>';
+		const def_list = str.substring(sind + 3, eind - 1).split(',');
+		const s = def_list.slice(-1)[0].replace(/'/g, '');
 
 		str = str.substring(0, sind) + s + str.substring(eind + 1);
 		sind = str.indexOf('!<');
@@ -132,9 +135,8 @@ function doLinkReplacement(str, terms) {
 			// something bad happened and we didn't format the link properly
 			break;
 		}
-		// index [1] is the code term name, [3] is the text to display
-		const tokens = str.substring(sind, eind + 1).split('\'');
-		const s = '<a href=\'' + tokens[1] + '\' target=\'new\' class=\'external\'>' + tokens[3] + '</a>';
+		const def_list = str.substring(sind + 3, eind - 1).split(',');
+		const s = def_list.slice(-1)[0].replace(/'/g, '');
 
 		str = str.substring(0, sind) + s + str.substring(eind + 1);
 		sind = str.indexOf('?<');
@@ -152,24 +154,31 @@ module.exports = {
 	async execute(interaction) {
 		const base_url = 'https://glossary.infil.net/';
 		const term = interaction.options.getString('term');
-		const videoFlag = interaction.options.getBoolean('video');
-
-		const sender = interaction.user;
 
 		if (!term) {
 			await interaction.reply(base_url);
 			return;
 		}
+		await interaction.deferReply();
+		const infil_glossary = await prepareData();
+		const searched_terms = searchForTerm(term, infil_glossary);
 
-		const infil_glossary = prepareData();
-		const searched_terms = searchForTerm(infil_glossary);
-		const number_emojis = { '1': '1⃣', '2': '2⃣', '3': '3⃣', '4': '4⃣', '5': '5⃣', '6': '6⃣', '7': '7⃣', '8': '8⃣', '9': '9⃣', '0': '0⃣' };
+		if (searched_terms) {
+			await interaction.editReply(bold(searched_terms[0].term) + ': ' + doLinkReplacement(searched_terms[0].def, infil_glossary));
+		}
+		else {
+			await interaction.editReply('Term not found');
+		}
 
+		// Everything here is basically what is left from a 1:1 translation from the python version but it doesn't work
+		// First Embed attempt (searched_terms === 1) is closer to the discord.js implementation
+		// ---------------------------------------
 		/*
-		*	if params[-1] == "-v":
-		*   videoFlag = True
-		*   params.pop()
-		*/
+		// This gets the True/False flag for a video clip
+		const videoFlag = interaction.options.getBoolean('video');
+
+		const sender = interaction.user;
+		const number_emojis = { '1': '1⃣', '2': '2⃣', '3': '3⃣', '4': '4⃣', '5': '5⃣', '6': '6⃣', '7': '7⃣', '8': '8⃣', '9': '9⃣', '0': '0⃣' };
 
 		const user_term = term.split(' ').join('%20');
 
@@ -266,7 +275,7 @@ module.exports = {
 					await pick_msg.reply(bold('Glossary') + ': Issue with the terms');
 				});
 
-			/*
+
 			let user_to_check;
 			let msg_to_check;
 			let reaction_read_emoji;
@@ -299,10 +308,10 @@ module.exports = {
 					raise Exception(bold("Glossary") + ": Issue with the terms")
 				}
 			}
-			*/
 		}
 		else {
 			await interaction.reply(bold('Glossary') + ': No terms found');
 		}
+		*/
 	},
 };

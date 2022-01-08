@@ -6,6 +6,12 @@ module.exports = {
 		.setName('lobby')
 		.setDescription('Returns lobby information'),
 	async execute(interaction) {
-		await interaction.reply(await getSetting('channel', 'lobby', interaction.channelId));
+		let lobby = await getSetting('channel', 'lobby', interaction.channelId);
+
+		if (!lobby) {
+			lobby = 'There is no lobby command set for this channel';
+		}
+
+		await interaction.reply(lobby);
 	},
 };

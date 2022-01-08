@@ -9,7 +9,9 @@ module.exports = {
 		.setDescription('Edit the role that can access privileged commands'),
 	async execute(interaction) {
 		const botrole = interaction.options.getRole('botrole');
+
 		await setSetting('guild', 'botrole', interaction.guildId, botrole.id);
+
 		await interaction.reply('The new **botrole** is: ' + botrole.name);
 	},
 };

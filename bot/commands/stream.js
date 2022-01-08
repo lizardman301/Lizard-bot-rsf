@@ -6,6 +6,11 @@ module.exports = {
 		.setName('stream')
 		.setDescription('Returns stream information'),
 	async execute(interaction) {
-		await interaction.reply(await getSetting('channel', 'stream', interaction.channelId));
+		let stream = await getSetting('channel', 'stream', interaction.channelId);
+
+		if (!stream) {
+			stream = 'There are no streams set for this channel';
+		}
+		await interaction.reply(stream);
 	},
 };

@@ -6,6 +6,12 @@ module.exports = {
 		.setName('bracket')
 		.setDescription('Returns bracket information'),
 	async execute(interaction) {
-		await interaction.reply(await getSetting('channel', 'bracket', interaction.channelId));
+		let bracket = await getSetting('channel', 'bracket', interaction.channelId);
+
+		if (!bracket) {
+			bracket = 'There is no bracket set for this channel';
+		}
+
+		await interaction.reply(bracket);
 	},
 };

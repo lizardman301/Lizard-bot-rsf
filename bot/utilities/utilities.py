@@ -140,7 +140,7 @@ def fix_link_regex(definition):
         def_list = definition[start_index+2:end_index].split(',')
 
         definition = definition.replace(definition[start_index:end_index+1], def_list[-1].strip('\''))
-        start_index = definition.find('!<')
+        start_index = definition.find('?<')
 
     definition = re_sub(r'<[^>]+>', '', definition.split('<br>')[0])
 
