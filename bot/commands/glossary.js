@@ -148,8 +148,8 @@ function doLinkReplacement(str) {
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('glossary')
-		.setDescription('No Description at the moment')
-		.addStringOption(option => option.setName('term').setDescription('Use a term to help search the glossary'))
+		.setDescription('Searches https://glossary.infil.net/')
+		.addStringOption(option => option.setName('term').setDescription('Use a term to help search the glossary').setRequired(true))
 		.addBooleanOption(option => option.setName('video').setDescription('Set to True to add an example gif to the term (if available)')),
 	async execute(interaction) {
 		const base_url = 'https://glossary.infil.net/';
@@ -163,7 +163,7 @@ module.exports = {
 		const infil_glossary = await prepareData();
 		const searched_terms = searchForTerm(term, infil_glossary);
 
-		if (searched_terms) {
+		if (searched_terms.length > 0) {
 			await interaction.editReply(bold(searched_terms[0].term) + ': ' + doLinkReplacement(searched_terms[0].def, infil_glossary));
 		}
 		else {
