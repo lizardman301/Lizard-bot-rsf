@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, Embed } = require('@discordjs/builders');
 const cachios = require('cachios');
+const { MessageEmbed } = require('discord.js');
 const { bold } = require('../utilities/utilities');
 
 const cache_days = 28;
@@ -164,7 +165,12 @@ module.exports = {
 		const searched_terms = searchForTerm(term, infil_glossary);
 
 		if (searched_terms.length > 0) {
-			await interaction.editReply(bold(searched_terms[0].term) + ': ' + doLinkReplacement(searched_terms[0].def, infil_glossary));
+			const exampleEmbed = new MessageEmbed()
+			.setColor('#0fa1dc')
+			.setTitle(searched_terms[0].term)
+			.setDescription(doLinkReplacement(searched_terms[0].def, infil_glossary)
+			+ '\n\n[Glossary Page For Term](https://glossary.infil.net/?t=' + searched_terms[0].term + ')');
+			await interaction.editReply({embeds: [exampleEmbed]});
 		}
 		else {
 			await interaction.editReply('Term not found');
