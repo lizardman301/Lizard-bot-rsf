@@ -1,5 +1,21 @@
+const { getSetting } = require('../utilities/database/db_util');
+
 function bold(string) {
 	return '**' + string + '**';
+}
+
+async function get_bot_role(interaction) {
+	const botrole = await getSetting('guild', 'botrole', interaction.guildId);
+	let botrole_name;
+
+	try {
+		botrole_name = interaction.guild.roles.cache.get(String(botrole)).name;
+	}
+	catch {
+		botrole_name = 'everyone';
+	}
+
+	return botrole_name;
 }
 
 function get_randomselect_data(game, random_type) {
@@ -77,4 +93,5 @@ module.exports = {
 	bold,
 	occurrences,
 	get_randomselect_data,
+	get_bot_role
 };

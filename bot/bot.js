@@ -2,8 +2,11 @@ const { Client, Collection, Intents } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
 const utilities = require('util');
+const { getSetting, addStat, settingsExist } = require('./utilities/database/db_util');
+const { get_bot_role } = require('./utilities/utilities');
+const all_commands = require('./utilities/bots.json');
 
-const { addStat, settingsExist } = require('./utilities/database/db_util');
+const admin_commands = Object.keys(Object.values(all_commands)[1]).filter(function(obj) { return Object.keys(Object.values(all_commands)[1]).indexOf(obj) >= -1; });
 
 const { token } = require('./secret.json');
 
@@ -53,12 +56,28 @@ client.on('interactionCreate', async interaction => {
 
 	const command = client.commands.get(interaction.commandName);
 
+	const botrole_name = await get_bot_role(interaction);
+	
 	if (!command) return;
 
 	try {
 		await settingsExist(interaction.guildId, interaction.channelId);
-		await command.execute(interaction);
-		await addStat(interaction.commandName);
+
+		if (admin_commands.some(command => command === interaction.commandName)) {
+			if (interaction.member.roles.cache.some(role => role.name === botrole_name)) {
+				// has admin bot role
+				await command.execute(interaction);
+				await addStat(interaction.commandName);	
+			} else {
+				// regular user attempting admin command
+				interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
+			}
+		} else {
+			// regular command
+			await command.execute(interaction);
+			await addStat(interaction.commandName);
+		}
+		
 	}
 	catch (error) {
 		console.error(error);
