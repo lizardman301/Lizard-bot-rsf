@@ -2,11 +2,11 @@ const { Client, Collection, Intents } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
 const utilities = require('util');
-const { getSetting, addStat, settingsExist } = require('./utilities/database/db_util');
+const { addStat, settingsExist } = require('./utilities/database/db_util');
 const { get_bot_role } = require('./utilities/utilities');
 const all_commands = require('./utilities/bots.json');
 
-const admin_commands = Object.keys(Object.values(all_commands)[1]).filter(function(obj) { return Object.keys(Object.values(all_commands)[1]).indexOf(obj) >= -1; });
+const admin_commands = Object.values(all_commands)[0];
 
 const { token } = require('./secret.json');
 
