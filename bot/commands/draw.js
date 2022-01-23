@@ -15,7 +15,9 @@ Object.keys(raw_rs).forEach(type => {
 });
 
 init_games.forEach(game => {
-	supported_games.push([game, game]);
+    if (raw_rs['character'][game].length - 1 >= 7) {
+        supported_games.push([game, game]);
+    }
 });
 
 module.exports = {
