@@ -46,11 +46,15 @@ module.exports = {
                     .setLabel('Yes')
                     .setStyle('SUCCESS'),
                 new MessageButton()
-                .setCustomId('no')
-                .setLabel('No')
-                .setStyle('DANGER')
+                    .setCustomId('no')
+                    .setLabel('No')
+                    .setStyle('DANGER')
             );
-        const message = await interaction.reply({ content: 'Do you agree to draw ' + player2.displayName , components: [row], fetchReply: true });
+        const message = await interaction.reply({
+            content: 'Do you agree to draw <@' + player2.id + '>',
+            components: [row],
+            fetchReply: true
+        });
 
         const collector = message.createMessageComponentCollector({time: 1000 * 5});
 
@@ -168,21 +172,25 @@ module.exports = {
             
 
             collector.on('end', async (collection) => {
-                await message.delete(); // delete the initial challenge
-                if (!accepted) {
-                    interaction.followUp({content: 'The draw was not accepted.', ephemeral: true});
-                }
-                if ( p1Chars.length < 2 || p2Chars < 2 ) {
-                    interaction.followUp({content: 'The draw was not completed in time.', ephemeral: true});
-                } else {
-                    embed = new MessageEmbed()
-                            .setColor('#0fa1dc')
-                            .setTitle('Card Draw Finished')
-                            .setFields(
-                                {name: player1.displayName, value: '\u200b' + p1Chars, inline: true},
-                                {name: player2.displayName, value: '\u200b' + p2Chars, inline: true}
-                            );
-                    interaction.followUp({embeds: [embed]});
+                try {
+                    await message.delete(); // delete the initial challenge
+                    if (!accepted) {
+                        interaction.followUp({content: 'The draw was not accepted.', ephemeral: true});
+                    } else if ( p1Chars.length < 2 || p2Chars < 2 ) {
+                        interaction.followUp({content: 'The draw was not completed in time.', ephemeral: true});
+                    } else {
+                        embed = new MessageEmbed()
+                                .setColor('#0fa1dc')
+                                .setTitle('Card Draw Finished')
+                                .setFields(
+                                    {name: player1.displayName, value: '\u200b' + p1Chars, inline: true},
+                                    {name: player2.displayName, value: '\u200b' + p2Chars, inline: true}
+                                );
+                        interaction.followUp({embeds: [embed]});
+                    }
+                } catch(e) {
+                    // someone deleted the initial challenge before everything was finished
+                    console.log(e.stack);
                 }
             });
         }
