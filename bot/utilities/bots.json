@@ -1,127 +1,21 @@
 {
-	"admin_commands": {
-		"challonge checkin": [
-			"challonge checkin",
-			"chal checkin",
-			"Checks the given bracket for users that are not checked in and users whose Challonge names are not in the server"
-		],
-		"challonge seeding": [
-			"challonge seeding",
-			"challonge seed",
-			"chal seeding",
-			"chal seed",
-			"Seeds the tournament based on points in the spreadsheet and the number of players to seed"
-		],
-		"disable": [
-			"disable",
-			"Takes the given argument and disables that command for the entire discord. Use enable to make it work again"
-		],
-		"edit botrole": ["edit botrole", "edit role", "This role determines what role is needed to access the TO Commands\nNew value must be a ping to the role desired\nDefault value: @everyone"],
-		"edit bracket": ["edit bracket", "Allows you to add a link to a bracket for users to view\nUnique for each channel\nDefault value: 'There is no bracket set for this channel'"],
-		"edit challonge": ["edit challonge", "Specifies the challonge subdomain to check for tournaments\nNecessary for Challonge integration\nDefault Value:"],
-		"edit lobby": ["edit lobby", "Allows you to add lobby information (like for a Strive tourney)\nUnique for each channel\nDefault value: 'There is no lobby information set for this channel'"],
-		"edit pingtest": ["edit pingtest", "Allows you to set a message for players to do a ping test\nDefault Value: Use <https://testmyspeed.onl/> for ping tests."],
-		"edit prefix-lizard": ["edit prefix-lizard", "Allows you to change the prefix for commands\nUseful if you use multiple bots that may have similar commands and prefixes\nDefault Value: !"],
-		"edit seeding": ["edit seeding", "Allows you to set the Google Sheets spreadsheet ID to be used to check points\nPlease see: [Our Documentation](https://github.com/lizardman301/Lizard-bot-rsf/blob/master/doc/seeding_with_sheets.md) for instructions on creating/adapting a spreadsheet\nUnique for each channel\nDefault value:"],
-		"edit status": ["edit status", "Allows you to change the flavor text of the !round and !status commands for individual channels\nText uses {0} as a marker for where the round count will be added\nUnique for each channel\nDefault value: Winner's Round {0} can play! Losers can play till top 8 losers side. If you have a bye Round {0}, Please Wait!"],
-		"edit stream": ["edit stream", "Allows you to add a stream link that users can ping to get a link of\nUnique for each channel\nDefault value: There are no streams set for this channel"],
-		"edit tos": ["edit tos", "Allows you to list all Tournament Organizers involved\nRecommended to make it ping each individual TO\nUnique for each channel\nDefault value:"],
-		"enable": [
-			"enable",
-			"Takes the given argument and if it is disabled in the server, enables it for use again"
-		],
-		"refresh": ["refresh", "Sends a \"REFRESH THE BRACKET\" reminder into the chat."],
-		"remind": ["remind", "Allows the admin to set a timed reminder"],
-		"reset": ["reset", "Resets the round count back to its default value"],
-		"round": ["round", "Changes the current round number to the new value. Immediately sends a status update in the chat."]
-	},
-	"common_commands": {
-		"botrole": [
-			"botrole",
-			"role",
-			"Returns the role that allows access to the administrator commands"
-		],
-		"bracket": ["bracket", "Shows the current bracket set in the channel"],
-		"challonge here":[
-			"challonge here",
-			"chal here",
-			"Allows a user to check into the tournament configured in !bracket. Requires Challonge display name."
-		],
-		"challonge report":[
-			"challonge report",
-			"chal report",
-			"Allows users to report their score for the tournament configured in !bracket. Requires a score and the winner's Challonge display name."
-		],
-		"coin-flip": [
-			"coin-flip",
-			"flip",
-			"cf",
-			"A coin is flipped and the result is returned, either heads or tails."
-		],
-		"draw": ["draw", "Draws 7 random characters and conducts a ban pick system. Must mention a user. Will use SFV characters if no game is specified."],
-		"github": ["github", "lizardbot", "Links to the GitHub repository for Lizard-BOT"],
-		"glossary": ["glossary", "g", "Links to the fgc glossary site. Uses search team if applicable."],
-		"help-lizard": [
-			"help-lizard",
-			"helpliz",
-			"For more information about the bot and its commands: <https://github.com/lizardman301/Lizard-bot-rsf>"
-		],
-		"lizardbot-discord": [
-			"lizardbot-discord",
-			"lizdiscord",
-			"Displays the invite link to join the Lizard-BOT Discord Server for additional help"
-		],
-		"lizardman": [
-			"lizardman",
-			"ping",
-			"liz",
-			"Ping! Pong! with some zest"
-		],
-		"lobby":[
-			"lobby",
-			"Shows the current set lobby information."
-		],
-		"not-in-discord": ["not-in-discord", "nid", "Explains why somebody's name appears on the NOT IN DISCORD list"],
-		"pingtest": [
-			"pingtest",
-			"pt",
-			"Explains how to run a ping test. Can be edited to give specific instructions on how to preform a test."
-		],
-		"prefix-lizard": [
-			"prefix-lizard",
-			"prefliz",
-			"Prints the prefix currently in use for Lizard-BOT"
-		],
-		"randomselect": [
-			"randomselect",
-			"random",
-			"rs",
-			"Returns a randomly selected character from the game in the arguments. Will return a SFV character if no game is given."
-		],
-		"stats": ["stats", "Returns the usage for Lizard-BOT commands"],
-		"status": ["status", "Returns the current round number in a message that can be customized"],
-		"stream": ["stream", "Returns the stream link if one is set"],
-		"TOs": ["TOs", "Sends a message back with all the Tournament Organizers pinged once set"]
-	},
-	"dev_commands": [
-		"dev"
-	],
-	"no_arg_commands": [
+	"admin_commands": [
 		"botrole",
-		"bracket",
-		"challonge checkin",
-		"coin-flip",
-		"github",
-		"lizardbot-discord",
-		"lizardman",
-		"lobby",
-		"not-in-discord",
-		"pingtest",
-		"prefix-lizard",
+		"challonge-checkin",
+		"challonge-here",
+		"challonge-seeding",
+		"edit-botrole",
+		"edit-bracket",
+		"edit-challonge",
+		"edit-lobby",
+		"edit-pingtest",
+		"edit-seeding",
+		"edit-status",
+		"edit-stream",
+		"edit-tos",
 		"refresh",
+		"remind",
 		"reset",
-		"status",
-		"stream",
-		"TOs"
+		"round"
 	]
 }
