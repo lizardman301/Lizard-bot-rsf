@@ -1,6 +1,5 @@
 const { SlashCommandBuilder, bold } = require('@discordjs/builders');
-const { MessageButton, MessageEmbed } = require('discord.js');
-const paginationEmbed = require('discordjs-button-pagination');
+const { MessageButton, MessageEmbed, MessageActionRow } = require('discord.js');
 
 const { readStat } = require('../utilities/database/db_util');
 
@@ -29,7 +28,7 @@ module.exports = {
 				.setColor('#0fa1dc')
 				.setTitle('Page: ' + String(count))
 				.setDescription('Stats!')
-				.setAuthor('Lizard-BOT', 'https://raw.githubusercontent.com/lizardman301/Lizard-bot-rsf/master/doc/assets/images/cmface.png', 'https://github.com/lizardman301/Lizard-bot-rsf');
+				.setAuthor({ name: 'Lizard-BOT', iconUrl: 'https://raw.githubusercontent.com/lizardman301/Lizard-bot-rsf/master/doc/assets/images/cmface.png', url: 'https://github.com/lizardman301/Lizard-bot-rsf' });
 			const embedFields = fields.splice(0, 25);
 			embed.addFields(embedFields);
 
@@ -47,16 +46,49 @@ module.exports = {
 			.setLabel('Next')
 			.setStyle('SUCCESS');
 
-		const buttonList = [
+		const row = new MessageActionRow().addComponents([
 			back,
 			forward,
-		];
+		]);
+		let activePage = 0;
 
-		try {
-			paginationEmbed(interaction, pages, buttonList);
-		}
-		catch (err) {
-			console.log(err);
-		}
+		const curPage = await interaction.reply({
+			embeds: [pages[activePage].setFooter({ text: `Page ${activePage + 1} / ${pages.length}` })],
+			components: [row],
+			fetchReply: true,
+		});
+
+		const filter = (interact) =>
+			interact.customId === back.customId ||
+			interact.customId === forward.customId;
+
+		const collector = await curPage.createMessageComponentCollector({ filter, time: 30 * 1000 });
+
+		collector.on('collect', async (interact) => {
+			switch (interact.customId) {
+			case back.customId:
+				activePage = activePage > 0 ? --activePage : pages.length - 1;
+				break;
+			case forward.customId:
+				activePage = activePage + 1 < pages.length ? ++activePage : 0;
+				break;
+			default:
+				break;
+			}
+			await interact.deferUpdate();
+			await interact.editReply({
+				embeds: [pages[activePage].setFooter(`Page ${activePage + 1} / ${pages.length}`)],
+				components: [row],
+			});
+			collector.resetTimer();
+		});
+
+		collector.on('end', async () => {
+			try {
+				await curPage.delete();
+			}
+			// eslint-disable-next-line no-empty
+			catch {}
+		});
 	},
 };
