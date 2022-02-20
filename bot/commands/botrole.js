@@ -1,6 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const utilities = require('util');
-const { getSetting } = require('../utilities/database/db_util');
 const { bold, get_bot_role } = require('../utilities/utilities');
 
 module.exports = {

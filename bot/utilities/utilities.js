@@ -93,5 +93,5 @@ module.exports = {
 	bold,
 	occurrences,
 	get_randomselect_data,
-	get_bot_role
+	get_bot_role,
 };

@@ -56,28 +56,30 @@ client.on('interactionCreate', async interaction => {
 
 	const command = client.commands.get(interaction.commandName);
 
-	const botrole_name = await get_bot_role(interaction);
-	
 	if (!command) return;
 
 	try {
 		await settingsExist(interaction.guildId, interaction.channelId);
 
+		const botrole_name = await get_bot_role(interaction);
+
+		// eslint-disable-next-line no-shadow
 		if (admin_commands.some(command => command === interaction.commandName)) {
 			if (interaction.member.roles.cache.some(role => role.name === botrole_name)) {
 				// has admin bot role
 				await command.execute(interaction);
-				await addStat(interaction.commandName);	
-			} else {
+				await addStat(interaction.commandName);
+			}
+			else {
 				// regular user attempting admin command
 				interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
 			}
-		} else {
+		}
+		else {
 			// regular command
 			await command.execute(interaction);
 			await addStat(interaction.commandName);
 		}
-		
 	}
 	catch (error) {
 		console.error(error);
