@@ -58,6 +58,7 @@ async def edit_botrole(command, msg, user, channel, *args, **kwargs):
 
 @register('edit bracket')
 @register('edit lobby')
+@register('edit matcherino')
 @register('edit pingtest')
 @register('edit status')
 @register('edit stream')
