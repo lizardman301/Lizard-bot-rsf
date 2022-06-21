@@ -126,7 +126,7 @@ async def on_message(message):
                 elif command in ['edit botrole', 'edit role']:
                     kwargs['guild_default_role'] = message.guild.default_role
                     kwargs['role_mentions'] = message.role_mentions
-                elif command in ['edit bracket', 'edit pingtest', 'edit status', 'edit seeding', 'edit stream', 'edit tos', 'edit lobby']:
+                elif command in ['edit bracket', 'edit pingtest', 'edit status', 'edit seeding', 'edit stream', 'edit tos', 'edit lobby', 'edit matcherino']:
                     kwargs['channel_mentions'] = message.channel_mentions
                     if command in ['edit tos']:
                         kwargs['mentions'] = message.mentions

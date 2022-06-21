@@ -28,6 +28,11 @@ async def bracket(command, msg, user, channel, *args, **kwargs):
     # Custom message for setting a bracket
     return read_db('channel', 'bracket', channel.id)
 
+@register('brad')
+async def brad(command, msg, user, channel, *args, **kwargs):
+    # Custom message for setting a bracket
+    return "fuck brad"
+
 @register('coin-flip')
 @register('flip')
 @register('cf')
@@ -334,6 +339,11 @@ async def help_lizard(command, msg, user, channel, *args, **kwargs):
 async def lizdiscord(command, msg, user, channel, *args, **kwargs):
     # Static message for the our help discord
     return "To reach out and ask questions about the bot, join https://discord.gg/94Pyh6KZTw"
+
+@register('matcherino')
+async def matcherino(command, msg, user, channel, *args, **kwargs):
+    # Custom message for setting a Matcherino link
+    return read_db('channel', 'matcherino', channel.id)
 
 @register('not-in-discord')
 @register('nid')

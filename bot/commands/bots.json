@@ -19,7 +19,8 @@
 		"edit botrole": ["edit botrole", "edit role", "This role determines what role is needed to access the TO Commands\nNew value must be a ping to the role desired\nDefault value: @everyone"],
 		"edit bracket": ["edit bracket", "Allows you to add a link to a bracket for users to view\nUnique for each channel\nDefault value: 'There is no bracket set for this channel'"],
 		"edit challonge": ["edit challonge", "Specifies the challonge subdomain to check for tournaments\nNecessary for Challonge integration\nDefault Value:"],
-		"edit lobby": ["edit lobby", "Allows you to add lobby information (like for a Strive tourney)\nUnique for each channel\nDefault value: 'There is no lobby information set for this channel'"],
+		"edit lobby": ["edit lobby", "Allows you to add lobby information (like for a Strive tournament)\nUnique for each channel\nDefault value: 'There is no lobby information set for this channel'"],
+		"edit matcherino": ["edit matcherino", "Allows you to add Matcherino information for a tournament\nUnique for each channel\nDefault value: 'There is no Matcherino information set for this channel'"],
 		"edit pingtest": ["edit pingtest", "Allows you to set a message for players to do a ping test\nDefault Value: Use <https://testmyspeed.onl/> for ping tests."],
 		"edit prefix-lizard": ["edit prefix-lizard", "Allows you to change the prefix for commands\nUseful if you use multiple bots that may have similar commands and prefixes\nDefault Value: !"],
 		"edit seeding": ["edit seeding", "Allows you to set the Google Sheets spreadsheet ID to be used to check points\nPlease see: [Our Documentation](https://github.com/lizardman301/Lizard-bot-rsf/blob/master/doc/seeding_with_sheets.md) for instructions on creating/adapting a spreadsheet\nUnique for each channel\nDefault value:"],
@@ -42,6 +43,7 @@
 			"Returns the role that allows access to the administrator commands"
 		],
 		"bracket": ["bracket", "Shows the current bracket set in the channel"],
+		"brad": ["brad", "Tell @/Its_BradM a special message"],
 		"challonge here":[
 			"challonge here",
 			"chal here",
@@ -79,8 +81,9 @@
 		],
 		"lobby":[
 			"lobby",
-			"Shows the current set lobby information."
+			"Shows the current lobby information for a channel"
 		],
+		"matcherino": ["matcherino","Shows the current set Matcherino info for a channel"],
 		"not-in-discord": ["not-in-discord", "nid", "Explains why somebody's name appears on the NOT IN DISCORD list"],
 		"pingtest": [
 			"pingtest",
