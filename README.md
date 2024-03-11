@@ -1,3 +1,5 @@
+# THIS PROJECT IS NOW ARCHIVED. THANK YOU EVERYONE THAT USED THIS BOT. IF YOU WISH TO USE RANDOM SELECT COMMANDS, PLEASE VISIT https://github.com/nogarremi/fgc-random-select-bot
+
 # Lizard-BOT
 
 Simple discord bot originally built for the [Online Local](https://twitter.com/theonlinelocal) (formerly r/StreetFighter) East Coast SFV weekly tournament to help players see current round and with some commands for TOs. Support for multiple channels to run multiple tournaments at once and allows for custom prefixes, round flavor text, and more. Requires discord.py and pymysql.
